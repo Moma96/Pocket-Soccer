@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">PocketSoccer</string>
+    <string name="title_activity_gameplay">GameplayActivity</string>
+    <string name="play_button_text">PLAY</string>
+</resources>
