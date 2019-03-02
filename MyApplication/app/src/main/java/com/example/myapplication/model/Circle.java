@@ -19,9 +19,9 @@ public class Circle extends Thread {
     private Vector center;
     private Vector speed;
 
-    private boolean collision_in_process = false;
-    private Circle collided_in_process = null;
-    //private String collided_in_progress = null;
+    //private boolean collision_in_process = false;
+    //private Circle collided_in_process = null;
+    private String collision_in_process = null;
 
     public static void setField(Field f) {
         synchronized(circles) {
@@ -112,7 +112,7 @@ public class Circle extends Thread {
         else return false;
     }
 
-    public boolean circleCollision(Circle collided) {
+    /*public boolean circleCollision(Circle collided) {
 
             if (collided == null)
                 return false;
@@ -161,9 +161,9 @@ public class Circle extends Thread {
                         ((speed.sub(collided.speed).dotProduct(center.sub(collided.center))) / Math.pow(center.sub(collided.center).intensity() , 2))
                 )
         );
-    }
+    }*/
 
-    public void move() {
+    /*public void move() {
         synchronized (circles) {
             center = center.add(speed.mul(0.015));
             // FRICTION
@@ -187,6 +187,130 @@ public class Circle extends Thread {
             }
 
             fieldCollision();
+        }
+    }*/
+
+
+    private void checkCollision() {
+        boolean collision_happened = false;
+        for (Circle circle : circles) {
+            if (this != circle) {
+                if (circleCollision(circle)) {
+                    collision_happened = true;
+                    break;
+                }
+            }
+        }
+
+        if (fieldCollision()) {
+            collision_happened = true;
+        }
+
+        if (collision_in_process != null && !collision_happened) {
+            collision_in_process = null;
+            Log.d(COLLISION_TAG, "Collision status for circle " + id + " reset");
+        }
+    }
+
+    private boolean circleCollision(Circle collided) {
+
+        if (collided == null)
+            return false;
+
+        if (center.sub(collided.center).intensity() <= radius + collided.radius) {
+
+            if (collision_in_process == Integer.toString(collided.id)) {
+                Log.d(COLLISION_TAG, "Circle " + id + " recovering from collision with circle " + collided.id);
+                return true;
+            }
+
+            collision_in_process = Integer.toString(collided.id);
+            collided.collision_in_process = Integer.toString(id);
+
+            Circle old = new Circle(this);
+            Circle oldCollided = new Circle(collided);
+
+            collisionUpdateSpeed(oldCollided);
+            collided.collisionUpdateSpeed(old);
+
+            if (oldCollided.speed.isZeroVector()) {
+                circles.notifyAll();
+            }
+
+            Log.d(COLLISION_TAG, "Circle " + id + " collided circle " + collided.id);
+            return true;
+        }
+
+        return false;
+    }
+
+    private boolean fieldCollision() {  ////////field collision recovery ODRADI
+        if (field == null) return false;
+
+        if (center.getY() - radius <= field.top()) {
+            if (collision_in_process == "top") {
+                Log.d(COLLISION_TAG, "Circle " + id + " recovering from collision with top wall");
+                return true;
+            }
+            speed.setY(-speed.getY());
+            Log.d(COLLISION_TAG, "Circle " + id + " collided top wall");
+            collision_in_process = "top";
+            return true;
+        }
+
+        if (center.getY() + radius >= field.bottom()) {
+            if (collision_in_process == "top") {
+                Log.d(COLLISION_TAG, "Circle " + id + " recovering from collision with bottom wall");
+                return true;
+            }
+            speed.setY(-speed.getY());
+            Log.d(COLLISION_TAG, "Circle " + id + " collided bottom wall");
+            collision_in_process = "bottom";
+            return true;
+        }
+
+        if (center.getX() - radius <= field.left()) {
+            if (collision_in_process == "top") {
+                Log.d(COLLISION_TAG, "Circle " + id + " recovering from collision with left wall");
+                return true;
+            }
+            speed.setX(-speed.getX());
+            Log.d(COLLISION_TAG, "Circle " + id + " collided left wall");
+            collision_in_process = "left";
+            return true;
+        }
+
+        if (center.getX() + radius >= field.right()) {
+            if (collision_in_process == "top") {
+                Log.d(COLLISION_TAG, "Circle " + id + " recovering from collision with right wall");
+                return true;
+            }
+            speed.setX(-speed.getX());
+            Log.d(COLLISION_TAG, "Circle " + id + " collided right wall");
+            collision_in_process = "right";
+            return true;
+        }
+
+        return false;
+    }
+
+    public synchronized void collisionUpdateSpeed(Circle collided) {
+        speed = speed.sub(
+                center.sub(collided.center).mul(
+                        (2*collided.mass/(mass + collided.mass)) *
+                                ((speed.sub(collided.speed).dotProduct(center.sub(collided.center))) / Math.pow(center.sub(collided.center).intensity() , 2))
+                )
+        );
+    }
+
+    private void move() {
+        synchronized (circles) {
+            center = center.add(speed.mul(0.015));
+            // FRICTION
+            //speed = speed.sub(speed.mul(0.00001*mass*radius)); //*radius*radius));
+           //speed = speed.mul(0.99);//00003*mass*radius);
+
+            checkCollision();
         }
     }
 
