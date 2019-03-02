@@ -21,6 +21,7 @@ public class Circle extends Thread {
 
     private boolean collision_in_process = false;
     private Circle collided_in_process = null;
+    //private String collided_in_progress = null;
 
     public static void setField(Field f) {
         synchronized(circles) {
@@ -144,7 +145,7 @@ public class Circle extends Thread {
             return false;
     }
 
-    public void fieldCollision() {
+    public void fieldCollision() {  ////////field collision recovery ODRADI
         if (field == null) return;
         if (center.getY() - radius <= field.top() || center.getY() + radius >= field.bottom())
             speed.setY( -speed.getY() );
@@ -164,9 +165,10 @@ public class Circle extends Thread {
 
     public void move() {
         synchronized (circles) {
-            center = center.add(speed.mul(0.03));
+            center = center.add(speed.mul(0.015));
             // FRICTION
-            //speed = speed.sub(speed.mul(0.0001*mass)); //*radius*radius));
+            //speed = speed.sub(speed.mul(0.00001*mass*radius)); //*radius*radius));
+            speed = speed.mul(0.99);//00003*mass*radius);
 
             boolean collision_happened = false;
             for (Circle circle : circles) {
@@ -204,7 +206,7 @@ public class Circle extends Thread {
                     }
                 }
                 move();
-                sleep(5);//(int)(10000/speed.intensity()));
+                sleep(5);
             }
         } catch (InterruptedException e) {
             e.printStackTrace();

@@ -17,7 +17,6 @@ public class GameplayActivity extends AppCompatActivity {
     private GestureDetectorCompat gestureDetectorCompat;
     private SoccerModel soccerModel;
     private ViewUpdater viewUpdater;
-    //private ImageView img;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

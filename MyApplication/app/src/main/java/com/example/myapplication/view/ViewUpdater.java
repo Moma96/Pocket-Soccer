@@ -13,7 +13,7 @@ import java.util.ArrayList;
 
 public class ViewUpdater extends Thread {
 
-    private static final int FPS = 100;
+    private static final int FPS = 60;
 
     private GameplayActivity gameplay;
     private static ArrayList<ImageView> views;
@@ -26,8 +26,7 @@ public class ViewUpdater extends Thread {
         for (Circle circle : Circle.getCircles()) {
 
             ImageView img = new ImageView(gameplay);
-            img.setBackgroundColor(Color.RED);
-            //..load something inside the ImageView, we just set the background color
+            img.setBackgroundResource(R.drawable.img5);
 
             FrameLayout.LayoutParams params = new FrameLayout.LayoutParams((int)(circle.getRadius()*2), (int)(circle.getRadius()*2));
             params.leftMargin = (int)(circle.getCenter().getX() - circle.getRadius());
