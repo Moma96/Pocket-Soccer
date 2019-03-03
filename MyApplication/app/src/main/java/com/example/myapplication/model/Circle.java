@@ -217,7 +217,7 @@ public class Circle extends Thread {
     private void move() {
         synchronized (circles) {
             center = center.add(speed.mul(0.03));
-            //speed = speed.mul(0.99);
+            speed = speed.mul(0.99);
 
             if (speed.intensity() < SPEED_ROUND_LIMIT)
                 speed.clear();
