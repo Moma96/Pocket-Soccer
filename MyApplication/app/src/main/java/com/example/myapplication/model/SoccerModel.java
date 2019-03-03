@@ -14,8 +14,7 @@ public class SoccerModel {
 
         field = new Field(x, y, width, height);
         Circle.setField(field);
-
-/*
+        /*
         Player player1 = new Player(new Vector(x + width/2, y + height/4));
         Player player2 = new Player(new Vector(x + width/2, y + height/2));
         Player player3 = new Player(new Vector(x + width/2, y + 3*(height/4)));
@@ -44,11 +43,11 @@ public class SoccerModel {
             player2[i].start();
         }
 
-        //Player extraplayer1 = new Player(new Vector(x + width/4, y + height/2));
-        //Player extraplayer2 = new Player(new Vector(x + 3*(width/4), y + height/2));
+        Player extraplayer1 = new Player(new Vector(x + width/4, y + height/2));
+        Player extraplayer2 = new Player(new Vector(x + 3*(width/4), y + height/2));
 
-        //extraplayer1.start();
-        //extraplayer2.start();
+        extraplayer1.start();
+        extraplayer2.start();
 
        // */
     }

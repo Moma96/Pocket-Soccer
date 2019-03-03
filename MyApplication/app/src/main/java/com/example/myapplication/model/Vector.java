@@ -54,6 +54,11 @@ public class Vector {
 
     public boolean isZeroVector() { return (x == 0 && y == 0); }
 
+    public void clear() {
+        x = 0;
+        y = 0;
+    }
+
     public double dotProduct(Vector v) {
         return x*v.x + y*v.y;
     }

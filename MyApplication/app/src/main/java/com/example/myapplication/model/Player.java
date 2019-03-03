@@ -4,8 +4,8 @@ import java.util.ArrayList;
 
 public class Player extends Circle {
 
-    private static final int MASS = 50;
-    private static final int RADIUS = 100;
+    private static final double MASS = 1;
+    private static final double RADIUS = 100;
 
     public static synchronized Player getPlayer(Vector dot) {
         Circle circle = Circle.getCircle(dot);
