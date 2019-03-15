@@ -219,8 +219,8 @@ public class Circle extends Thread {
     private synchronized void collisionUpdateSpeed(Circle collided) {
         speed = speed.sub(
                 center.sub(collided.center).mul(
-                        (2*collided.mass/(mass + collided.mass)) *
-                                ((speed.sub(collided.speed).dotProduct(center.sub(collided.center))) / Math.pow(center.sub(collided.center).intensity() , 2))
+                        2 * collided.mass/(mass + collided.mass) *
+                        ((speed.sub(collided.speed).dotProduct(center.sub(collided.center))) / Math.pow(center.sub(collided.center).intensity() , 2))
                 )
         );
     }
@@ -246,7 +246,7 @@ public class Circle extends Thread {
                 }
             }
 
-            while (true) {
+            while (true) {  ///////////////////////////NE MOZE OVAKO!!!!!!!!!!!!!!!!!!!!
                 while (speed.isZeroVector()) {
                     if (running)
                         Log.d(STATE_TAG, "Circle " + id + " stopped");

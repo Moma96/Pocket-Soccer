@@ -3,6 +3,7 @@ package com.example.myapplication.view;
 import android.graphics.Color;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
+import android.util.Log;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
@@ -16,8 +17,10 @@ import java.util.ArrayList;
 public class ViewUpdater extends Thread {
 
     private static final int FPS = 60;
+    private static final String STATE_TAG = "View updater";
 
     private GameplayActivity gameplay;
+    private BallImageUpdater ballImageUpdater;
     private static ArrayList<ImageView> views;
 
     public ViewUpdater(GameplayActivity gameplay) {
@@ -27,16 +30,22 @@ public class ViewUpdater extends Thread {
         views = new ArrayList<>();
 
         Ball ball = gameplay.getSoccerModel().getBall();
-        setAndAddImage(frame_layout, ball, R.drawable.ball0);
+        ImageView ballImageView = setAndAddImage(frame_layout, ball, R.drawable.ball0);
+        ballImageUpdater = new BallImageUpdater(this, ballImageView);
+        views.add(ballImageView);
 
         for (Player player : gameplay.getSoccerModel().getPlayer1())
-            setAndAddImage(frame_layout, player, R.drawable.img5);
+            views.add(setAndAddImage(frame_layout, player, R.drawable.img5));
 
         for (Player player : gameplay.getSoccerModel().getPlayer2())
-            setAndAddImage(frame_layout, player, R.drawable.img25);
+            views.add(setAndAddImage(frame_layout, player, R.drawable.img25));
     }
 
-    private void setAndAddImage(FrameLayout frame_layout, Circle circle, int resid) {
+    public GameplayActivity getGameplay() {
+        return gameplay;
+    }
+
+    private ImageView setAndAddImage(FrameLayout frame_layout, Circle circle, int resid) {
         ImageView img = new ImageView(gameplay);
         img.setBackgroundResource(resid);
 
@@ -45,7 +54,7 @@ public class ViewUpdater extends Thread {
         params.topMargin  = (int)(circle.getCenter().getY() - circle.getImgRadius());
         frame_layout.addView(img, params);
 
-        views.add(img);
+        return img;
     }
 
     private void refresh() {
@@ -66,6 +75,9 @@ public class ViewUpdater extends Thread {
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     public void run() {
+        Log.d(STATE_TAG, "View updater started!");
+
+        ballImageUpdater.start();
         while(!gameplay.isDestroyed()) {
             refresh();
             try {
@@ -74,5 +86,7 @@ public class ViewUpdater extends Thread {
                 e.printStackTrace();
             }
         }
+
+        Log.d(STATE_TAG, "View updater finished!");
     }
 }
