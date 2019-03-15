@@ -37,6 +37,10 @@ public class GameplayActivity extends AppCompatActivity {
         gestureDetectorCompat = new GestureDetectorCompat(this, gestureListener);
     }
 
+    public SoccerModel getSoccerModel() {
+        return soccerModel;
+    }
+
     public void respondOnSwipe(float x1, float y1, float x2, float y2) {
         Player player = Player.getPlayer(new Vector(x1, y1));
         if (player != null) {

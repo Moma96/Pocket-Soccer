@@ -19,6 +19,7 @@ public class Circle extends Thread {
 
     private double mass;
     private double radius;
+    private double img_radius;
     private Vector center;
     private Vector speed;
 
@@ -50,10 +51,11 @@ public class Circle extends Thread {
         return null;
     }
 
-    public Circle(double mass, double radius, Vector center, Vector speed) {
+    public Circle(double mass, double radius, double img_radius, Vector center, Vector speed) {
         id = next_id++;
         this.mass = mass;
         this.radius = radius;
+        this.img_radius = img_radius;
         this.center = center;
         this.speed = speed;
     }
@@ -63,12 +65,13 @@ public class Circle extends Thread {
         if (circle == null) return;
         mass = circle.mass;
         radius = circle.radius;
+        img_radius = circle.img_radius;
         center = new Vector(circle.center);
         speed = new Vector(circle.speed);
     }
 
-    public Circle(double mass, double radius, Vector center) {
-        this(mass, radius, center, new Vector(0, 0));
+    public Circle(double mass, double radius, double img_radius, Vector center) {
+        this(mass, radius, img_radius, center, new Vector(0, 0));
     }
 
     public int getCircleId() {
@@ -89,6 +92,14 @@ public class Circle extends Thread {
 
     public void setRadius(double radius) {
         this.radius = radius;
+    }
+
+    public double getImgRadius() {
+        return img_radius;
+    }
+
+    public void setImgRadius(double img_radius) {
+        this.img_radius = img_radius;
     }
 
     public Vector getCenter() {
