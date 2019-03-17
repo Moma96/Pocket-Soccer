@@ -2,6 +2,8 @@ package com.example.myapplication.model;
 
 public class Field {
 
+    public enum Wall { TOP, BOTTOM, LEFT, RIGHT };
+
     private int x;
     private int y;
     private int width;
@@ -45,6 +47,21 @@ public class Field {
     public void setHeight(int height) {
         this.height = height;
     }
+
+    /*
+    public int getWall(Wall wall) {
+        switch (wall) {
+            case TOP:
+                return y;
+            case BOTTOM:
+                return y + height;
+            case LEFT:
+                return x;
+            case RIGHT:
+                return x + width;
+        }
+        return -1;
+    }*/
 
     public int top() {
         return y;

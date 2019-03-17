@@ -40,7 +40,7 @@ public class BallImageUpdater extends Thread {
     @Override
     public void run() {
         Log.d(STATE_TAG, "Ball image updater started!");
-
+        setPriority(MIN_PRIORITY);
         try {
             Ball ball = viewUpdater.getGameplay().getSoccerModel().getBall();
 

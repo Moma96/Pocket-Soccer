@@ -3,6 +3,7 @@ package com.example.myapplication.model;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Circle extends Thread {
 
@@ -26,7 +27,7 @@ public class Circle extends Thread {
     private Vector center;
     private Vector speed;
 
-    private String collision_in_process = null; //OVO TREBA BITI NIZ U KOJI CE BRZO DA SE UBACUJU I IZBACUJU ELEMENTI (HASH MAP)
+    private HashMap<String, Double> collision_in_process = new HashMap<>(); //OVO TREBA BITI NIZ U KOJI CE BRZO DA SE UBACUJU I IZBACUJU ELEMENTI (HASH MAP)
     private Boolean running = true;
 
     public static void setField(Field f) {
@@ -124,77 +125,86 @@ public class Circle extends Thread {
         }
     }
 
-    public boolean isInside(Vector dot) {
+    public double getDistance(Circle circle) {
+        return center.sub(circle.center).intensity() - (radius + circle.radius);
+    }
+
+    public double getDistance(Field.Wall wall) {
+        switch(wall) {
+            case TOP:
+                return center.getY() - radius - field.top();
+            case BOTTOM:
+                return field.bottom() - (center.getY() + radius);
+            case LEFT:
+                return center.getX() - radius - field.left();
+            case RIGHT:
+                return field.right() - (center.getX() + radius);
+        }
+        return -1;
+    }
+
+    public boolean isInside(Vector dot) { //approximated
         if (dot.getX() >= center.getX() - radius && dot.getX() <= center.getX() + radius
          && dot.getY() >= center.getY() - radius && dot.getY() <= center.getY() + radius)
             return true;
         else return false;
     }
 
-    private boolean circleCollision(Circle collided) {
-
+    private void circleCollision(Circle collided) {
         if (collided == null)
-            return false;
+            return;
 
-        if (center.sub(collided.center).intensity() <= radius + collided.radius) {
-            if (collision_in_process == Integer.toString(collided.id))
-                Log.d(COLLISION_TAG, "Circle " + id + " recovering from collision with circle " + collided.id);
-            else {
-                collision_in_process = Integer.toString(collided.id);
-                collided.collision_in_process = Integer.toString(id);
+        double distance = getDistance(collided);
+        Double old_distance = collision_in_process.get(Integer.toString(collided.id));
+
+        if (distance <= 0) {
+            if (old_distance == null || (old_distance != null && distance < old_distance)) {
+
+                collision_in_process.put(Integer.toString(collided.id), distance);
+                collided.collision_in_process.put(Integer.toString(id), distance);
 
                 Circle old = new Circle(this);
                 Circle oldCollided = new Circle(collided);
-
                 collisionUpdateSpeed(oldCollided);
                 collided.collisionUpdateSpeed(old);
 
                 Log.d(COLLISION_TAG, "Circle " + id + " collided circle " + collided.id);
-            }
-            return true;
-        }
 
-        return false;
+            } else if (old_distance != null) // (distance >= old_distance) {
+                Log.d(COLLISION_TAG, "Circle " + id + " recovering from collision with circle " + collided.id);
+
+        } else {
+            if (old_distance != null) {
+                collision_in_process.remove(Integer.toString(collided.id));
+                Log.d(COLLISION_TAG, "Collision status for circle " + id + " and circle " + collided.id + " reset");
+            }
+        }
     }
 
-    private boolean fieldCollision() {
-        if (field == null) return false;
+    private void wallCollision(Field.Wall wall) {
+        if (field == null) return;
 
-        String collided = null;
+        double distance = getDistance(wall);
+        Double old_distance = collision_in_process.get(wall.toString());
 
-        if (center.getY() - radius <= field.top())
-            collided = "top";
+        if (distance <= 0) {
+            if (old_distance == null || (old_distance != null && distance < old_distance)) {
 
-        if (center.getY() + radius >= field.bottom())
-            collided = "bottom";
+                collision_in_process.put(wall.toString(), distance);
 
-        if (center.getX() - radius <= field.left())
-            collided = "left";
+                collisionUpdateSpeed(wall);
 
-        if (center.getX() + radius >= field.right())
-            collided = "right";
+                Log.d(COLLISION_TAG, "Circle " + id + " collided " + wall.toString() + " wall");
 
-        if (collided != null) {
-            if (collision_in_process == collided) {
-                Log.d(COLLISION_TAG, "Circle " + id + " recovering from collision with " + collided + " wall");
-            } else {
-                switch(collided) {
-                    case "top":
-                    case "bottom":
-                        speed.setY(-speed.getY());
-                        break;
-                    case "left":
-                    case "right":
-                        speed.setX(-speed.getX());
-                        break;
-                }
-                Log.d(COLLISION_TAG, "Circle " + id + " collided " + collided + " wall");
-                collision_in_process = collided;
+            } else if (old_distance != null) // (distance >= old_distance) {
+                Log.d(COLLISION_TAG, "Circle " + id + " recovering from collision with " + wall.toString() + " wall");
+
+        } else {
+            if (old_distance != null) {
+                collision_in_process.remove(wall.toString());
+                Log.d(COLLISION_TAG, "Collision status for circle " + id + " and " + wall.toString() + " wall reset");
             }
-            return true;
         }
-
-        return false;
     }
 
     private synchronized void collisionUpdateSpeed(Circle collided) {
@@ -206,25 +216,28 @@ public class Circle extends Thread {
         ));
     }
 
+    private synchronized void collisionUpdateSpeed(Field.Wall wall) { /////////// UPOTREBI OVDE SETSPEED!!!!!!!!
+        switch(wall) {
+            case TOP:
+            case BOTTOM:
+                speed.setY(-speed.getY());
+                break;
+            case LEFT:
+            case RIGHT:
+                speed.setX(-speed.getX());
+                break;
+        }
+
+    }
+
     private void checkCollision() {
-        boolean collision_happened = false;
         for (Circle circle : circles) {
-            if (this != circle) {
-                if (circleCollision(circle)) {
-                    collision_happened = true;
-                       //break;                          ///////NE TREBA BREAK OVDE!
-                }
-            }
+            if (this != circle)
+                circleCollision(circle);
         }
 
-        if (fieldCollision()) {
-            collision_happened = true;
-        }
-
-        if (collision_in_process != null && !collision_happened) {
-            collision_in_process = null;
-            Log.d(COLLISION_TAG, "Collision status for circle " + id + " reset");
-        }
+        for (Field.Wall wall : Field.Wall.values())
+            wallCollision(wall);
     }
 
     private void move() throws InterruptedException {
@@ -243,7 +256,7 @@ public class Circle extends Thread {
 
         synchronized (circles) {
             center = center.add(speed.mul(MOVING_INCREMENT));
-            speed = speed.mul(FRICTION_COEFFICIENT);
+            //speed = speed.mul(FRICTION_COEFFICIENT);
 
             if (speed.intensity() < SPEED_ROUND_LIMIT)
                 speed.clear();

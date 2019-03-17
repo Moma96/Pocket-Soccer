@@ -1,11 +1,9 @@
 package com.example.myapplication.model;
 
-import java.util.ArrayList;
-
 public class Player extends Circle {
 
     private static final double MASS = 1;
-    private static final double RADIUS = 200;
+    private static final double RADIUS = 100;
     public static final double IMG_RADIUS = RADIUS*1.05;
 
     public static synchronized Player getPlayer(Vector dot) {
