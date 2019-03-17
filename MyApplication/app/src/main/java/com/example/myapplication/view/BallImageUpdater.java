@@ -12,9 +12,10 @@ import com.example.myapplication.model.Circle;
 
 public class BallImageUpdater extends Thread {
 
-    private static final int[] images = { R.drawable.ball0, R.drawable.ball1, R.drawable.ball2, R.drawable.ball3, R.drawable.ball4, R.drawable.ball5, R.drawable.ball6, R.drawable.ball7, R.drawable.ball8, R.drawable.ball9 };
-
     private static final String STATE_TAG = "Ball image updater";
+
+    private static final int BALL_IMAGES = 11;
+    private static final String BALL_IMAGE_TAG = "ball";
 
     private ViewUpdater viewUpdater;
     private ImageView ballImageView;
@@ -29,8 +30,8 @@ public class BallImageUpdater extends Thread {
         viewUpdater.getGameplay().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                ballImageView.setBackgroundResource(images[current]);
-                current = ++current % 10;
+                ballImageView.setBackgroundResource(viewUpdater.getGameplay().getResources().getIdentifier(BALL_IMAGE_TAG + current, "drawable", viewUpdater.getGameplay().getPackageName()));
+                current = ++current % BALL_IMAGES;
             }
         });
     }

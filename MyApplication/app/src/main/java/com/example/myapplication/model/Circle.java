@@ -9,6 +9,9 @@ public class Circle extends Thread {
     private static final String COLLISION_TAG = "Circle collision";
     private static final String STATE_TAG = "Circle state";
 
+    private static final int MOVING_DELAY = 15; //ms
+    private static final double MOVING_INCREMENT = 0.03;
+    private static final double FRICTION_COEFFICIENT = 0.99;
     private static final double SPEED_ROUND_LIMIT = 0.5;
 
     private static ArrayList<Circle> circles = new ArrayList<>();
@@ -23,7 +26,7 @@ public class Circle extends Thread {
     private Vector center;
     private Vector speed;
 
-    private String collision_in_process = null;
+    private String collision_in_process = null; //OVO TREBA BITI NIZ U KOJI CE BRZO DA SE UBACUJU I IZBACUJU ELEMENTI (HASH MAP)
     private Boolean running = true;
 
     public static void setField(Field f) {
@@ -116,6 +119,9 @@ public class Circle extends Thread {
 
     public void setSpeed(Vector speed) {
         this.speed = speed;
+        synchronized (circles) {
+            circles.notifyAll();
+        }
     }
 
     public boolean isInside(Vector dot) {
@@ -123,27 +129,6 @@ public class Circle extends Thread {
          && dot.getY() >= center.getY() - radius && dot.getY() <= center.getY() + radius)
             return true;
         else return false;
-    }
-
-    private void checkCollision() {
-        boolean collision_happened = false;
-        for (Circle circle : circles) {
-            if (this != circle) {
-                if (circleCollision(circle)) {
-                    collision_happened = true;
-                    break;
-                }
-            }
-        }
-
-        if (fieldCollision()) {
-            collision_happened = true;
-        }
-
-        if (collision_in_process != null && !collision_happened) {
-            collision_in_process = null;
-            Log.d(COLLISION_TAG, "Collision status for circle " + id + " reset");
-        }
     }
 
     private boolean circleCollision(Circle collided) {
@@ -163,10 +148,6 @@ public class Circle extends Thread {
 
                 collisionUpdateSpeed(oldCollided);
                 collided.collisionUpdateSpeed(old);
-
-                if (oldCollided.speed.isZeroVector()) {
-                    circles.notifyAll();
-                }
 
                 Log.d(COLLISION_TAG, "Circle " + id + " collided circle " + collided.id);
             }
@@ -217,28 +198,65 @@ public class Circle extends Thread {
     }
 
     private synchronized void collisionUpdateSpeed(Circle collided) {
-        speed = speed.sub(
+        setSpeed(speed.sub(
                 center.sub(collided.center).mul(
                         2 * collided.mass/(mass + collided.mass) *
                         ((speed.sub(collided.speed).dotProduct(center.sub(collided.center))) / Math.pow(center.sub(collided.center).intensity() , 2))
                 )
-        );
+        ));
     }
 
-    private void move() {
+    private void checkCollision() {
+        boolean collision_happened = false;
+        for (Circle circle : circles) {
+            if (this != circle) {
+                if (circleCollision(circle)) {
+                    collision_happened = true;
+                       //break;                          ///////NE TREBA BREAK OVDE!
+                }
+            }
+        }
+
+        if (fieldCollision()) {
+            collision_happened = true;
+        }
+
+        if (collision_in_process != null && !collision_happened) {
+            collision_in_process = null;
+            Log.d(COLLISION_TAG, "Collision status for circle " + id + " reset");
+        }
+    }
+
+    private void move() throws InterruptedException {
+
+        while (speed.isZeroVector()) {
+            if (running)
+                Log.d(STATE_TAG, "Circle " + id + " stopped");
+            running = false;
+            synchronized (circles) {
+                circles.wait();
+            }
+        }
+        if (!running)
+            Log.d(STATE_TAG, "Circle " + id + " is moving");
+        running = true;
+
         synchronized (circles) {
-            center = center.add(speed.mul(0.03));
-            speed = speed.mul(0.99);
+            center = center.add(speed.mul(MOVING_INCREMENT));
+            speed = speed.mul(FRICTION_COEFFICIENT);
 
             if (speed.intensity() < SPEED_ROUND_LIMIT)
                 speed.clear();
 
             checkCollision();
         }
+
+        sleep(MOVING_DELAY);
     }
 
     @Override
     public void run() {
+        setPriority(MAX_PRIORITY);
         try {
             while (field == null) {
                 synchronized (circles) {
@@ -247,19 +265,7 @@ public class Circle extends Thread {
             }
 
             while (true) {  ///////////////////////////NE MOZE OVAKO!!!!!!!!!!!!!!!!!!!!
-                while (speed.isZeroVector()) {
-                    if (running)
-                        Log.d(STATE_TAG, "Circle " + id + " stopped");
-                    running = false;
-                    synchronized (circles) {
-                        circles.wait();
-                    }
-                }
-                if (!running)
-                    Log.d(STATE_TAG, "Circle " + id + " is moving");
-                running = true;
                 move();
-                sleep(15);
             }
         } catch (InterruptedException e) {
             e.printStackTrace();

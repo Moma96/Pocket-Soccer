@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public class Player extends Circle {
 
     private static final double MASS = 1;
-    private static final double RADIUS = 100;
+    private static final double RADIUS = 200;
     public static final double IMG_RADIUS = RADIUS*1.05;
 
     public static synchronized Player getPlayer(Vector dot) {
@@ -23,9 +23,5 @@ public class Player extends Circle {
 
     public void push(Vector force) {
         setSpeed(force);
-        ArrayList<Circle> circles = Circle.getCircles();
-        synchronized (circles) {
-            circles.notifyAll();
-        }
     }
 }
