@@ -16,7 +16,7 @@ import java.util.ArrayList;
 
 public class ViewUpdater extends Thread {
 
-    private static final int FPS = 30;
+    private static final int FPS = 40;
     private static final String STATE_TAG = "View updater";
 
     private GameplayActivity gameplay;

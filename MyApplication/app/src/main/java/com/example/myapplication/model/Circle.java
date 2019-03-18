@@ -156,6 +156,7 @@ public class Circle extends Thread {
     private void circleCollision(Circle collided) {
         if (collided == null)
             return;
+
         if (collision_adjusted.contains(collided.id)) {
             collision_adjusted.remove(collided.id);
             Log.d(COLLISION_TAG, "Collision for circle " + id + " and circle " + collided.id + " already adjusted");
@@ -191,6 +192,42 @@ public class Circle extends Thread {
             }
         }
     }
+/*
+    private HashMap<Integer, Circle> old_collided = new HashMap<>();
+    private void circleCollision(Circle collided) {
+        if (collided == null)
+            return;
+        double distance = getDistance(collided);
+        Double old_distance = collision_in_process.get(Integer.toString(collided.id));
+
+        if (distance <= 0) {
+
+            if (old_distance == null || (old_distance != null && distance < old_distance)) {
+
+                collision_in_process.put(Integer.toString(collided.id), distance);
+                collided.old_collided.put(id, new Circle(this));
+
+                Circle old = old_collided.get(collided.id);
+                if (old == null)
+                    old = new Circle(collided);
+                else
+                    old_collided.remove(collided.id);
+
+                collisionUpdateSpeed(old);
+
+                Log.d(COLLISION_TAG, "Circle " + id + " collided circle " + collided.id);
+
+            } else if (old_distance != null) // (distance >= old_distance) {
+                Log.d(COLLISION_TAG, "Circle " + id + " recovering from collision with circle " + collided.id);
+
+        } else {
+            if (old_distance != null) {
+                collision_in_process.remove(Integer.toString(collided.id));
+                Log.d(COLLISION_TAG, "Collision status for circle " + id + " and circle " + collided.id + " reset");
+            }
+        }
+    }
+    */
 
     private void wallCollision(Field.Wall wall) {
         if (field == null) return;
