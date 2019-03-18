@@ -4,15 +4,16 @@ import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 public class Circle extends Thread {
 
     private static final String COLLISION_TAG = "Circle collision";
     private static final String STATE_TAG = "Circle state";
 
-    private static final int MOVING_DELAY = 15; //ms
-    private static final double MOVING_INCREMENT = 0.03;
-    private static final double FRICTION_COEFFICIENT = 0.99;
+    private static final int MOVING_DELAY = 15; //15; //ms
+    private static final double MOVING_INCREMENT = 0.03; //0.03;
+    private static final double FRICTION_COEFFICIENT = 1;// 0.99;
     private static final double SPEED_ROUND_LIMIT = 0.5;
 
     private static ArrayList<Circle> circles = new ArrayList<>();
@@ -27,7 +28,9 @@ public class Circle extends Thread {
     private Vector center;
     private Vector speed;
 
-    private HashMap<String, Double> collision_in_process = new HashMap<>(); //OVO TREBA BITI NIZ U KOJI CE BRZO DA SE UBACUJU I IZBACUJU ELEMENTI (HASH MAP)
+    private HashMap<String, Double> collision_in_process = new HashMap<>();
+    private HashSet<Integer> collision_adjusted = new HashSet<>();
+
     private Boolean running = true;
 
     public static void setField(Field f) {
@@ -153,11 +156,18 @@ public class Circle extends Thread {
     private void circleCollision(Circle collided) {
         if (collided == null)
             return;
+        if (collision_adjusted.contains(collided.id)) {
+            collision_adjusted.remove(collided.id);
+            Log.d(COLLISION_TAG, "Collision for circle " + id + " and circle " + collided.id + " already adjusted");
+            return;
+        }
 
         double distance = getDistance(collided);
         Double old_distance = collision_in_process.get(Integer.toString(collided.id));
 
         if (distance <= 0) {
+            collided.collision_adjusted.add(id);
+
             if (old_distance == null || (old_distance != null && distance < old_distance)) {
 
                 collision_in_process.put(Integer.toString(collided.id), distance);
@@ -176,6 +186,7 @@ public class Circle extends Thread {
         } else {
             if (old_distance != null) {
                 collision_in_process.remove(Integer.toString(collided.id));
+                collided.collision_in_process.remove(Integer.toString(id));
                 Log.d(COLLISION_TAG, "Collision status for circle " + id + " and circle " + collided.id + " reset");
             }
         }
@@ -256,7 +267,7 @@ public class Circle extends Thread {
 
         synchronized (circles) {
             center = center.add(speed.mul(MOVING_INCREMENT));
-            //speed = speed.mul(FRICTION_COEFFICIENT);
+            speed = speed.mul(FRICTION_COEFFICIENT);
 
             if (speed.intensity() < SPEED_ROUND_LIMIT)
                 speed.clear();
