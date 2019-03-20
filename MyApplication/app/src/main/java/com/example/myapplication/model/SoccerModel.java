@@ -6,7 +6,7 @@ public class SoccerModel {
     Field field;
 
     Player[] player1 = new Player[3];
-    Player[] player2 = new Player[3];
+    Player[] player2 = new Player[2];
 
     Ball ball;
 
@@ -14,7 +14,7 @@ public class SoccerModel {
 
         field = new Field(x, y, width, height);
         Circle.setField(field);
-
+/*
         ball = new Ball(new Vector(x + width/2, y + height/2));
 
         player1[0] = new Player(new Vector(x + width/2, y + 3*(height/8)));
@@ -31,7 +31,7 @@ public class SoccerModel {
             player1[i].start();
             player2[i].start();
         }
-
+*/
         ///////TEST 1 -> player radius - 200, ball radius - 100
 /*
         ball = new Ball(new Vector(x + width/2, y + height/2));
@@ -45,7 +45,7 @@ public class SoccerModel {
         player2[0].start();
 //*/
         ///////TEST 2 -> player radius - 200, ball radius - 40
-/*
+
         ball = new Ball(new Vector(x + width/2, y + height/5));
 
         player1[0] = new Player(new Vector(x + width/4, y + height/2));

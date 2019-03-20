@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
-public class Circle extends Thread {
+public class Circle extends Thread implements Collidable {
 
     private static final String COLLISION_TAG = "Circle collision";
     private static final String STATE_TAG = "Circle state";
@@ -16,6 +16,7 @@ public class Circle extends Thread {
     private static final double FRICTION_COEFFICIENT = 1;// 0.99;
     private static final double SPEED_ROUND_LIMIT = 0.5;
 
+    private static ArrayList<Collidable> collidables = new ArrayList<>();
     private static ArrayList<Circle> circles = new ArrayList<>();
     private static Field field;
 
@@ -29,30 +30,36 @@ public class Circle extends Thread {
     private Vector speed;
 
     private HashMap<String, Double> collision_in_process = new HashMap<>();
-    private HashSet<Integer> collision_adjusted = new HashSet<>();
+    private HashSet<Circle> collision_adjusted = new HashSet<>();
 
     private Boolean running = true;
 
     public static void setField(Field f) {
-        synchronized(circles) {
+        synchronized(collidables) {
             field = f;
-            circles.notifyAll();
+            collidables.notifyAll();
         }
+    }
+
+    public static ArrayList<Collidable> getCollidables() {
+        return collidables;
     }
 
     public static ArrayList<Circle> getCircles() {
         return circles;
     }
 
-    public static void addCircle(Circle circle) {
-        if (circle == null) return;
-        circles.add(circle);
+    public static void addCollidable(Collidable collidable) {
+        if (collidable == null) return;
+        collidables.add(collidable);
+        if (collidable instanceof Circle)
+            circles.add((Circle)collidable);
     }
 
-    public static Circle getCircle(Vector dot) {
-        for (Circle circle : circles) {
-            if (circle.isInside(dot)) {
-                return circle;
+    public static Collidable getCollidable(Vector dot) {
+        for (Collidable collidable : collidables) {
+            if (collidable.isInside(dot)) {
+                return collidable;
             }
         }
         return null;
@@ -123,8 +130,8 @@ public class Circle extends Thread {
 
     public void setSpeed(Vector speed) {
         this.speed = speed;
-        synchronized (circles) {
-            circles.notifyAll();
+        synchronized (collidables) {
+            collidables.notifyAll();
         }
     }
 
@@ -132,23 +139,11 @@ public class Circle extends Thread {
         return center.sub(circle.center).intensity() - (radius + circle.radius);
     }
 
-    public double getDistance(Field.Wall wall) {
-        switch(wall) {
-            case TOP:
-                return center.getY() - radius - field.top();
-            case BOTTOM:
-                return field.bottom() - (center.getY() + radius);
-            case LEFT:
-                return center.getX() - radius - field.left();
-            case RIGHT:
-                return field.right() - (center.getX() + radius);
-        }
-        return -1;
-    }
-
     public boolean isInside(Vector dot) { //approximated
-        if (dot.getX() >= center.getX() - radius && dot.getX() <= center.getX() + radius
-         && dot.getY() >= center.getY() - radius && dot.getY() <= center.getY() + radius)
+        if (dot.getX() >= center.getX() - radius
+         && dot.getX() <= center.getX() + radius
+         && dot.getY() >= center.getY() - radius
+         && dot.getY() <= center.getY() + radius)
             return true;
         else return false;
     }
@@ -157,9 +152,9 @@ public class Circle extends Thread {
         if (collided == null)
             return;
 
-        if (collision_adjusted.contains(collided.id)) {
-            collision_adjusted.remove(collided.id);
-            Log.d(COLLISION_TAG, "Collision for circle " + id + " and circle " + collided.id + " already adjusted");
+        if (collision_adjusted.contains(collided)) {
+            collision_adjusted.remove(collided);
+            Log.d(COLLISION_TAG, "Collision for " + this + " and " + collided + " already adjusted");
             return;
         }
 
@@ -167,7 +162,7 @@ public class Circle extends Thread {
         Double old_distance = collision_in_process.get(Integer.toString(collided.id));
 
         if (distance <= 0) {
-            collided.collision_adjusted.add(id);
+            collided.collision_adjusted.add(this);
 
             if (old_distance == null || (old_distance != null && distance < old_distance)) {
 
@@ -179,60 +174,73 @@ public class Circle extends Thread {
                 collisionUpdateSpeed(oldCollided);
                 collided.collisionUpdateSpeed(old);
 
-                Log.d(COLLISION_TAG, "Circle " + id + " collided circle " + collided.id);
+                Log.d(COLLISION_TAG, this + " collided " + collided);
 
             } else if (old_distance != null) // (distance >= old_distance) {
-                Log.d(COLLISION_TAG, "Circle " + id + " recovering from collision with circle " + collided.id);
+                Log.d(COLLISION_TAG, this + " recovering from collision with " + collided);
 
         } else {
             if (old_distance != null) {
                 collision_in_process.remove(Integer.toString(collided.id));
                 collided.collision_in_process.remove(Integer.toString(id));
-                Log.d(COLLISION_TAG, "Collision status for circle " + id + " and circle " + collided.id + " reset");
+                Log.d(COLLISION_TAG, "Collision status for " + this + " and " + collided + " reset");
             }
         }
     }
-/*
-    private HashMap<Integer, Circle> old_collided = new HashMap<>();
-    private void circleCollision(Circle collided) {
+    //*/
+
+    /*public void preCollision(Collidable collided) {
+        if (collision_adjusted.contains(collided)) {
+            collision_adjusted.remove(collided);
+            Log.d(COLLISION_TAG, "Collision for " + this + " and " + collided + " already adjusted");
+            return;
+        }
+    }
+
+    private void collision(Collidable collided) {
         if (collided == null)
             return;
-        double distance = getDistance(collided);
+
+        if (collision_adjusted.contains(collided.id)) {
+            collision_adjusted.remove(collided.id);
+            Log.d(COLLISION_TAG, "Collision for " + this + " and " + collided + " already adjusted");
+            return;
+        }
+
+        double distance = collided.getDistance(this);
         Double old_distance = collision_in_process.get(Integer.toString(collided.id));
 
         if (distance <= 0) {
+            collided.collision_adjusted.add(this); /////////////////////////////////////RESI OVO
 
             if (old_distance == null || (old_distance != null && distance < old_distance)) {
 
                 collision_in_process.put(Integer.toString(collided.id), distance);
-                collided.old_collided.put(id, new Circle(this));
+                collided.collision_in_process.put(Integer.toString(id), distance);
 
-                Circle old = old_collided.get(collided.id);
-                if (old == null)
-                    old = new Circle(collided);
-                else
-                    old_collided.remove(collided.id);
+                Circle old = new Circle(this);
+                Circle oldCollided = new Circle(collided);
+                collisionUpdateSpeed(oldCollided);
+                collided.collisionUpdateSpeed(old);
 
-                collisionUpdateSpeed(old);
-
-                Log.d(COLLISION_TAG, "Circle " + id + " collided circle " + collided.id);
+                Log.d(COLLISION_TAG, this + " collided " + collided);
 
             } else if (old_distance != null) // (distance >= old_distance) {
-                Log.d(COLLISION_TAG, "Circle " + id + " recovering from collision with circle " + collided.id);
+                Log.d(COLLISION_TAG, this + " recovering from collision with " + collided);
 
         } else {
             if (old_distance != null) {
                 collision_in_process.remove(Integer.toString(collided.id));
-                Log.d(COLLISION_TAG, "Collision status for circle " + id + " and circle " + collided.id + " reset");
+                collided.collision_in_process.remove(Integer.toString(id));
+                Log.d(COLLISION_TAG, "Collision status for " + this + " and " + collided + " reset");
             }
         }
     }
-    */
+*/
+    private void wallCollision(Wall wall) {
+        if (wall == null) return;
 
-    private void wallCollision(Field.Wall wall) {
-        if (field == null) return;
-
-        double distance = getDistance(wall);
+        double distance = wall.getDistance(this);
         Double old_distance = collision_in_process.get(wall.toString());
 
         if (distance <= 0) {
@@ -240,22 +248,23 @@ public class Circle extends Thread {
 
                 collision_in_process.put(wall.toString(), distance);
 
-                collisionUpdateSpeed(wall);
+                wall.collisionUpdateSpeed(this);
 
-                Log.d(COLLISION_TAG, "Circle " + id + " collided " + wall.toString() + " wall");
+                Log.d(COLLISION_TAG, this + " collided " + wall.toString());
 
             } else if (old_distance != null) // (distance >= old_distance) {
-                Log.d(COLLISION_TAG, "Circle " + id + " recovering from collision with " + wall.toString() + " wall");
+                Log.d(COLLISION_TAG, this + " recovering from collision with " + wall.toString());
 
         } else {
             if (old_distance != null) {
                 collision_in_process.remove(wall.toString());
-                Log.d(COLLISION_TAG, "Collision status for circle " + id + " and " + wall.toString() + " wall reset");
+                Log.d(COLLISION_TAG, "Collision status for " + this + " and " + wall.toString());
             }
         }
     }
+    //*/
 
-    private synchronized void collisionUpdateSpeed(Circle collided) {
+    public synchronized void collisionUpdateSpeed(Circle collided) {
         setSpeed(speed.sub(
                 center.sub(collided.center).mul(
                         2 * collided.mass/(mass + collided.mass) *
@@ -264,45 +273,36 @@ public class Circle extends Thread {
         ));
     }
 
-    private synchronized void collisionUpdateSpeed(Field.Wall wall) { /////////// UPOTREBI OVDE SETSPEED!!!!!!!!
-        switch(wall) {
-            case TOP:
-            case BOTTOM:
-                speed.setY(-speed.getY());
-                break;
-            case LEFT:
-            case RIGHT:
-                speed.setX(-speed.getX());
-                break;
-        }
-
-    }
-
     private void checkCollision() {
-        for (Circle circle : circles) {
-            if (this != circle)
-                circleCollision(circle);
+        for (Collidable collidable : collidables) {
+            if (this != collidable) {
+                //circleCollision(collidable);
+                if (collidable instanceof Circle) {
+                    circleCollision((Circle) collidable);
+                } else
+                    wallCollision((Wall) collidable);
+            }
         }
-
-        for (Field.Wall wall : Field.Wall.values())
-            wallCollision(wall);
+        /*
+        for (Wall wall : field.getWalls())
+            wallCollision(wall);*/
     }
 
     private void move() throws InterruptedException {
 
         while (speed.isZeroVector()) {
             if (running)
-                Log.d(STATE_TAG, "Circle " + id + " stopped");
+                Log.d(STATE_TAG, this + " stopped");
             running = false;
-            synchronized (circles) {
-                circles.wait();
+            synchronized (collidables) {
+                collidables.wait();
             }
         }
         if (!running)
-            Log.d(STATE_TAG, "Circle " + id + " is moving");
+            Log.d(STATE_TAG, this + " is moving");
         running = true;
 
-        synchronized (circles) {
+        synchronized (collidables) {
             center = center.add(speed.mul(MOVING_INCREMENT));
             speed = speed.mul(FRICTION_COEFFICIENT);
 
@@ -315,13 +315,17 @@ public class Circle extends Thread {
         sleep(MOVING_DELAY);
     }
 
+    public String toString() {
+        return "Circle " + id;
+    }
+
     @Override
     public void run() {
         setPriority(MAX_PRIORITY);
         try {
             while (field == null) {
-                synchronized (circles) {
-                    circles.wait();
+                synchronized (collidables) {
+                    collidables.wait();
                 }
             }
 

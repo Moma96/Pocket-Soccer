@@ -46,8 +46,8 @@ public class BallImageUpdater extends Thread {
 
             while(!viewUpdater.getGameplay().isDestroyed()) {
                 while (ball.getSpeed().isZeroVector()) {
-                    synchronized (Circle.getCircles()) {
-                        Circle.getCircles().wait();
+                    synchronized (Circle.getCollidables()) {
+                        Circle.getCollidables().wait();
                     }
                 }
                 updateImage();

@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import com.example.myapplication.R;
 import com.example.myapplication.model.Ball;
 import com.example.myapplication.model.Circle;
+import com.example.myapplication.model.Collidable;
 import com.example.myapplication.model.Player;
 
 import java.util.ArrayList;

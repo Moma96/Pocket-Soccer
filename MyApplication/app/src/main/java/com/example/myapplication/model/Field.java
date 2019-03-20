@@ -2,80 +2,85 @@ package com.example.myapplication.model;
 
 public class Field {
 
-    public enum Wall { TOP, BOTTOM, LEFT, RIGHT };
+    private Wall walls[] = new Wall[4];
 
-    private int x;
-    private int y;
-    private int width;
-    private int height;
-
-    public Field(int x, int y, int width, int height) {
-        this.x = x;
-        this.y = y;
-        this.width = width;
-        this.height = height;
+    public Field (int x, int y, int width, int height) {
+        walls[0] = new Wall(Wall.Direction.NORTH, y); //top
+        walls[1] = new Wall(Wall.Direction.SOUTH, y + height); //bottom
+        walls[2] = new Wall(Wall.Direction.WEST, x); //left
+        walls[3] = new Wall(Wall.Direction.EAST, x + width); //right
+        for (Wall wall : walls) {
+            Circle.addCollidable(wall);
+        }
     }
 
-    public int getX() {
-        return x;
+    public Wall[] getWalls() {
+        return walls;
     }
 
-    public void setX(int x) {
-        this.x = x;
-    }
-
-    public int getY() {
-        return y;
-    }
-
-    public void setY(int y) {
-        this.y = y;
-    }
-
-    public int getWidth() {
-        return width;
-    }
-
-    public void setWidth(int width) {
-        this.width = width;
-    }
-
-    public int getHeight() {
-        return height;
-    }
-
-    public void setHeight(int height) {
-        this.height = height;
+    public void setWalls(Wall[] walls) {
+        this.walls = walls;
     }
 
     /*
-    public int getWall(Wall wall) {
-        switch (wall) {
-            case TOP:
-                return y;
-            case BOTTOM:
-                return y + height;
-            case LEFT:
-                return x;
-            case RIGHT:
-                return x + width;
+        public Field(int x, int y, int width, int height) {
+            this.x = x;
+            this.y = y;
+            this.width = width;
+            this.height = height;
         }
-        return -1;
+
+        public int getX() {
+            return x;
+        }
+
+        public void setX(int x) {
+            this.x = x;
+        }
+
+        public int getY() {
+            return y;
+        }
+
+        public void setY(int y) {
+            this.y = y;
+        }
+
+        public int getWidth() {
+            return width;
+        }
+
+        public void setWidth(int width) {
+            this.width = width;
+        }
+
+        public int getHeight() {
+            return height;
+        }
+
+        public void setHeight(int height) {
+            this.height = height;
+        }
+    */
+    /*
+    public double top() {
+        //return y;
+        return walls[0].getXY();
+    }
+
+    public double bottom() {
+
+        //return y + height;
+        return walls[1].getXY();
+    }
+
+    public double left() {
+        //return x;
+        return walls[2].getXY();
+    }
+
+    public double right() {
+        //return x + width;
+        return walls[3].getXY();
     }*/
-
-    public int top() {
-        return y;
-    }
-
-    public int left() {
-        return x;
-    }
-
-    public int right() {
-        return x + width;
-    }
-
-    public int bottom() {
-        return y + height;
-    }
 }
