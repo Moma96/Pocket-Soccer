@@ -1,16 +1,16 @@
-package com.example.myapplication.model;
+package com.example.myapplication.model.collidables;
 
 import android.util.Log;
 
+import com.example.myapplication.model.Vector;
+
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Hashtable;
 
-public class Circle extends Thread implements Collidable {
+public abstract class ActiveObject extends Thread implements Collidable {
 
-    private static final String COLLISION_TAG = "Circle collision";
-    private static final String STATE_TAG = "Circle state";
+    private static final String COLLISION_TAG = "Active collision";
+    private static final String STATE_TAG = "Active state";
 
     private static final int MOVING_DELAY = 15; //15; //ms
     private static final double MOVING_INCREMENT = 0.03; //0.03;
@@ -18,46 +18,50 @@ public class Circle extends Thread implements Collidable {
     private static final double SPEED_ROUND_LIMIT = 0.5;
 
     private static ArrayList<Collidable> collidables = new ArrayList<>();
-    private static ArrayList<Circle> circles = new ArrayList<>();
+    private static ArrayList<ActiveObject> activeCollidables = new ArrayList<>();
     private static Field field;
 
-    private static int next_id = 0;
-    private int id;
+    protected static int next_id = 0;
+    protected int id;
 
-    private double mass;
-    private double radius;
-    private double img_radius;
-    private Vector center;
-    private Vector speed;
+    protected double mass;
+    protected Vector center;
+    protected Vector speed;
 
     private HashMap<String, Double> collision_in_process;
-    private HashMap<Integer, Circle> old;
+    private HashMap<Integer, ActiveObject> old;
 
     private Boolean running = true;
 
     public static void setField(Field f) {
-        synchronized(collidables) {
+        synchronized(activeCollidables) {
             field = f;
-            collidables.notifyAll();
+            activeCollidables.notifyAll();
         }
     }
 
+    public ActiveObject getIdenticalCopy() {
+        ActiveObject copy = getCopy();
+        copy.id = id;
+        return copy;
+    }
+    
     public static ArrayList<Collidable> getCollidables() {
         return collidables;
     }
 
-    public static ArrayList<Circle> getCircles() {
-        return circles;
+    public static ArrayList<ActiveObject> getActiveCollidables() {
+        return activeCollidables;
     }
 
     public static void addCollidable(Collidable collidable) {
         if (collidable == null) return;
         collidables.add(collidable);
-        if (collidable instanceof Circle)
-            circles.add((Circle)collidable);
+        if (collidable instanceof ActiveObject)
+            activeCollidables.add((ActiveObject) collidable);
     }
 
-    public static Collidable getCollidable(Vector dot) {
+    public static Collidable getCollidable(Vector dot) { ////////////////////OBRATI PAZNJU
         for (Collidable collidable : collidables) {
             if (collidable.isInside(dot)) {
                 return collidable;
@@ -66,34 +70,39 @@ public class Circle extends Thread implements Collidable {
         return null;
     }
 
-    public Circle(double mass, double radius, double img_radius, Vector center, Vector speed) {
+    public static ActiveObject getActive(Vector dot) {
+        for (ActiveObject active : activeCollidables) {
+            if (active.isInside(dot)) {
+                return  active;
+            }
+        }
+        return null;
+    }
+
+    public ActiveObject(double mass, Vector center, Vector speed) {
         id = next_id++;
         this.mass = mass;
-        this.radius = radius;
-        this.img_radius = img_radius;
         this.center = center;
         this.speed = speed;
         collision_in_process = new HashMap<>();
         old = new HashMap<>();
     }
 
-    public Circle(Circle circle) {
+    public ActiveObject(ActiveObject active) {
         id = next_id++;
-        if (circle == null) return;
-        mass = circle.mass;
-        radius = circle.radius;
-        img_radius = circle.img_radius;
-        center = new Vector(circle.center);
-        speed = new Vector(circle.speed);
-        collision_in_process = new HashMap<>(circle.collision_in_process);
-        old = new HashMap<>(circle.old);
+        if (active == null) return;
+        mass = active.mass;
+        center = new Vector(active.center);
+        speed = new Vector(active.speed);
+        collision_in_process = new HashMap<>(active.collision_in_process);
+        old = new HashMap<>(active.old);
     }
 
-    public Circle(double mass, double radius, double img_radius, Vector center) {
-        this(mass, radius, img_radius, center, new Vector(0, 0));
+    public ActiveObject(double mass, Vector center) {
+        this(mass, center, new Vector(0, 0));
     }
 
-    public int getCircleId() {
+    public int getActiveId() {
         return id;
     }
 
@@ -103,22 +112,6 @@ public class Circle extends Thread implements Collidable {
 
     public void setMass(double mass) {
         this.mass = mass;
-    }
-
-    public double getRadius() {
-        return radius;
-    }
-
-    public void setRadius(double radius) {
-        this.radius = radius;
-    }
-
-    public double getImgRadius() {
-        return img_radius;
-    }
-
-    public void setImgRadius(double img_radius) {
-        this.img_radius = img_radius;
     }
 
     public Vector getCenter() {
@@ -140,27 +133,26 @@ public class Circle extends Thread implements Collidable {
         notifyAll();
     }
 
-    public double getDistance(Circle circle) {
-        return center.sub(circle.center).intensity() - (radius + circle.radius);
+    public double getDistance(ActiveObject active) {
+        return center.sub(active.center).intensity() - (getRadius() + active.getRadius());
     }
 
     public double getDistance(Vector dot) {
-        return center.sub(dot).intensity() - radius;
+        return center.sub(dot).intensity() - getRadius();
     }
 
-    public boolean isInside(Vector dot) { //APPROXIMATED
+    public boolean isInside(Vector dot) {
         return getDistance(dot) <= 0;
     }
 
-    public Circle preCollision(Circle collided) {
-        Circle old_collided = old.get(collided.id);
+    private ActiveObject preCollision(ActiveObject collided) {
+        ActiveObject old_collided = old.get(collided.id);
 
         if (old_collided != null) {
             old.remove(collided.id);
             return old_collided;
         } else {
-            Circle copy = new Circle(this);
-            copy.id = id;
+            ActiveObject copy = getIdenticalCopy();
             collided.old.put(id, copy);
             synchronized (collided) {
                 collided.notifyAll();
@@ -169,11 +161,11 @@ public class Circle extends Thread implements Collidable {
         }
     }
 
-    public void collision(Collidable collided) {
+    private void collision(Collidable collided) {
         if (collided == null) return;
 
-        if (collided instanceof Circle) {
-            collided = preCollision((Circle) collided);
+        if (collided instanceof ActiveObject) {
+            collided = preCollision((ActiveObject) collided);
         }
 
         double distance = collided.getDistance(this);
@@ -200,19 +192,21 @@ public class Circle extends Thread implements Collidable {
         }
     }
 
-    public synchronized void collisionUpdateSpeed(Circle collided) { ///UPDATES COLLIDED
+    public synchronized void collisionUpdateSpeed(ActiveObject collided) {
         if (speed.isZeroVector() && collided.speed.isZeroVector()) return;
 
-        collided.setSpeed(collided.speed.sub(
-                collided.center.sub(center).mul(
-                        2 * mass / (collided.mass + mass) *
-                        ((collided.speed.sub(speed).dotProduct(collided.center.sub(center))) / Math.pow(collided.center.sub(center).intensity(), 2))
-                )
-        ));
+        if (collided instanceof Circle) {
+            collided.setSpeed(collided.speed.sub(
+                    collided.center.sub(center).mul(
+                            2 * mass / (collided.mass + mass) *
+                                    ((collided.speed.sub(speed).dotProduct(collided.center.sub(center))) / Math.pow(collided.center.sub(center).intensity(), 2))
+                    )
+            ));
+        }
     }
 
     private void checkCollision() {
-        synchronized (collidables) {
+        synchronized (activeCollidables) {
             for (Collidable collidable : collidables) {
                 if (this != collidable) {
                     collision(collidable);
@@ -242,7 +236,7 @@ public class Circle extends Thread implements Collidable {
 
     private void waitField() throws InterruptedException {
         while (field == null) {
-            synchronized (collidables) {
+            synchronized (activeCollidables) {
                 collidables.wait();
             }
         }
@@ -271,4 +265,8 @@ public class Circle extends Thread implements Collidable {
     public String toString() {
         return "Circle " + id;
     }
+
+    public abstract double getRadius(); ///////////////////////////////NAZOVI DRUGACIJE
+
+    public abstract ActiveObject getCopy();
 }

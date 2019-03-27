@@ -1,4 +1,4 @@
-package com.example.myapplication.view;
+package com.example.myapplication.view.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -6,7 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import com.example.myapplication.R;
-import com.example.myapplication.view.GameplayActivity;
+import com.example.myapplication.view.activities.GameplayActivity;
 
 public class MainActivity extends AppCompatActivity {
 

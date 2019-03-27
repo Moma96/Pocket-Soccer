@@ -1,14 +1,12 @@
-package com.example.myapplication.view;
+package com.example.myapplication.view.updaters;
 
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.util.Log;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 
-import com.example.myapplication.R;
-import com.example.myapplication.model.Ball;
-import com.example.myapplication.model.Circle;
+import com.example.myapplication.model.soccer.Ball;
+import com.example.myapplication.model.collidables.Circle;
 
 public class BallImageUpdater extends Thread {
 

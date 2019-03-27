@@ -1,4 +1,8 @@
-package com.example.myapplication.model;
+package com.example.myapplication.model.soccer;
+
+import com.example.myapplication.model.collidables.ActiveObject;
+import com.example.myapplication.model.collidables.Circle;
+import com.example.myapplication.model.Vector;
 
 public class Player extends Circle {
 
@@ -7,9 +11,9 @@ public class Player extends Circle {
     public static final double IMG_RADIUS = RADIUS*1.05;
 
     public static synchronized Player getPlayer(Vector dot) {
-        Collidable collidable = Circle.getCollidable(dot);
-        if (collidable instanceof Player) {
-            return (Player)collidable;
+        ActiveObject active = ActiveObject.getActive(dot);
+        if (active instanceof Player) {
+            return (Player)active;
         }
         return null;
     }

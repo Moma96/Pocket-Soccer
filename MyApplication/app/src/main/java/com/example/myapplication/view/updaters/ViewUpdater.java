@@ -1,6 +1,5 @@
-package com.example.myapplication.view;
+package com.example.myapplication.view.updaters;
 
-import android.graphics.Color;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.util.Log;
@@ -8,16 +7,18 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import com.example.myapplication.R;
-import com.example.myapplication.model.Ball;
-import com.example.myapplication.model.Circle;
-import com.example.myapplication.model.Collidable;
-import com.example.myapplication.model.Player;
+import com.example.myapplication.model.collidables.ActiveObject;
+import com.example.myapplication.model.soccer.Ball;
+import com.example.myapplication.model.collidables.Circle;
+import com.example.myapplication.model.soccer.Player;
+import com.example.myapplication.view.activities.GameplayActivity;
+import com.example.myapplication.view.updaters.BallImageUpdater;
 
 import java.util.ArrayList;
 
 public class ViewUpdater extends Thread {
 
-    private static final int FPS = 40;
+    private static final int FPS = 60;
     private static final String STATE_TAG = "View updater";
 
     private GameplayActivity gameplay;
@@ -62,12 +63,15 @@ public class ViewUpdater extends Thread {
         gameplay.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                ArrayList<Circle> circles = Circle.getCircles();
+                ArrayList<ActiveObject> activeObjects = ActiveObject.getActiveCollidables();
                 for (int i = 0; i < views.size(); i++) {
-                    FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) views.get(i).getLayoutParams();
-                    params.leftMargin = (int)(circles.get(i).getCenter().getX() - circles.get(i).getImgRadius());
-                    params.topMargin  = (int)(circles.get(i).getCenter().getY() - circles.get(i).getImgRadius());
-                    views.get(i).setLayoutParams(params);
+                   // if (activeObjects.get(i) instanceof Circle) {
+                        Circle circle = (Circle)activeObjects.get(i);
+                        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) views.get(i).getLayoutParams();
+                        params.leftMargin = (int) (circle.getCenter().getX() - circle.getImgRadius());
+                        params.topMargin = (int) (circle.getCenter().getY() - circle.getImgRadius());
+                        views.get(i).setLayoutParams(params);
+                   // }
                 }
             }
         });

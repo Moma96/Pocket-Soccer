@@ -1,7 +1,9 @@
-package com.example.myapplication.view;
+package com.example.myapplication.view.listeners;
 
 import android.view.GestureDetector;
 import android.view.MotionEvent;
+
+import com.example.myapplication.view.activities.GameplayActivity;
 
 public class SwipeGestureListener extends GestureDetector.SimpleOnGestureListener {
 

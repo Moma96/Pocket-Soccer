@@ -1,24 +1,28 @@
-package com.example.myapplication.model;
+package com.example.myapplication.model.collidables;
+
+import com.example.myapplication.model.Vector;
+import com.example.myapplication.model.collidables.ActiveObject;
+import com.example.myapplication.model.collidables.Collidable;
 
 public class Wall implements Collidable {
 
     @Override
-    public double getDistance(Circle circle) {
+    public double getDistance(ActiveObject active) {
         switch(direction) {
             case NORTH:
-                return circle.getCenter().getY() - circle.getRadius() - xy;
+                return active.getCenter().getY() - active.getRadius() - xy;
             case SOUTH:
-                return xy - (circle.getCenter().getY() + circle.getRadius());
+                return xy - (active.getCenter().getY() + active.getRadius());
             case WEST:
-                return circle.getCenter().getX() - circle.getRadius() - xy;
+                return active.getCenter().getX() - active.getRadius() - xy;
             case EAST:
-                return xy - (circle.getCenter().getX() + circle.getRadius());
+                return xy - (active.getCenter().getX() + active.getRadius());
         }
         return -1;
     }
 
     @Override
-    public void collisionUpdateSpeed(Circle circle) {
+    public void collisionUpdateSpeed(ActiveObject circle) {
         Vector new_speed = circle.getSpeed();
         switch(direction) {
             case NORTH:

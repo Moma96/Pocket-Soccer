@@ -1,4 +1,4 @@
-package com.example.myapplication.view;
+package com.example.myapplication.view.activities;
 
 import android.graphics.Point;
 import android.os.Bundle;
@@ -8,9 +8,11 @@ import android.view.Display;
 import android.view.MotionEvent;
 
 import com.example.myapplication.R;
-import com.example.myapplication.model.Player;
-import com.example.myapplication.model.SoccerModel;
+import com.example.myapplication.model.soccer.Player;
+import com.example.myapplication.model.soccer.SoccerModel;
 import com.example.myapplication.model.Vector;
+import com.example.myapplication.view.listeners.SwipeGestureListener;
+import com.example.myapplication.view.updaters.ViewUpdater;
 
 public class GameplayActivity extends AppCompatActivity {
 

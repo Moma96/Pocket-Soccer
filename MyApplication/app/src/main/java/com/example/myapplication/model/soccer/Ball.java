@@ -1,4 +1,7 @@
-package com.example.myapplication.model;
+package com.example.myapplication.model.soccer;
+
+import com.example.myapplication.model.collidables.Circle;
+import com.example.myapplication.model.Vector;
 
 public class Ball extends Circle {
 

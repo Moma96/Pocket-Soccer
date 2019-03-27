@@ -1,9 +1,12 @@
-package com.example.myapplication.model;
+package com.example.myapplication.model.soccer;
 
+
+import com.example.myapplication.model.collidables.Circle;
+import com.example.myapplication.model.Vector;
 
 public class SoccerModel {
 
-    Field field;
+    SoccerField field;
 
     Player[] player1 = new Player[3];
     Player[] player2 = new Player[3];
@@ -12,7 +15,7 @@ public class SoccerModel {
 
     public SoccerModel(int x, int y, int width, int height) {
 
-        field = new Field(x, y, width, height);
+        field = new SoccerField(x, y, width, height);
         Circle.setField(field);
 
         ball = new Ball(new Vector(x + width/2, y + height/2));

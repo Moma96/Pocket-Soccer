@@ -9,7 +9,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".view.MainActivity">
+        <activity android:name=".view.activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -17,13 +17,13 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".view.GameplayActivity"
+            android:name=".view.activities.GameplayActivity"
             android:label="@string/title_activity_gameplay"
-            android:parentActivityName=".view.MainActivity"
+            android:parentActivityName=".view.activities.MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.myapplication.view.MainActivity" />
+                android:value="com.example.myapplication.view.activities.MainActivity" />
         </activity>
     </application>
 </manifest>
