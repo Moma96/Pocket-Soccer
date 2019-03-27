@@ -14,7 +14,7 @@ public class Circle extends Thread implements Collidable {
 
     private static final int MOVING_DELAY = 15; //15; //ms
     private static final double MOVING_INCREMENT = 0.03; //0.03;
-    private static final double FRICTION_COEFFICIENT = 0.99;// 0.99;
+    private static final double FRICTION_COEFFICIENT = 1;// 0.99;
     private static final double SPEED_ROUND_LIMIT = 0.5;
 
     private static ArrayList<Collidable> collidables = new ArrayList<>();
@@ -144,23 +144,20 @@ public class Circle extends Thread implements Collidable {
         return center.sub(circle.center).intensity() - (radius + circle.radius);
     }
 
-    public boolean isInside(Vector dot) { //APPROXIMATED
-        if (dot.getX() >= center.getX() - radius
-         && dot.getX() <= center.getX() + radius
-         && dot.getY() >= center.getY() - radius
-         && dot.getY() <= center.getY() + radius)
-            return true;
-        else return false;
+    public double getDistance(Vector dot) {
+        return center.sub(dot).intensity() - radius;
     }
 
-    private void circleCollision(Circle collided) {
-        if (collided == null) return;
+    public boolean isInside(Vector dot) { //APPROXIMATED
+        return getDistance(dot) <= 0;
+    }
 
+    public Circle preCollision(Circle collided) {
         Circle old_collided = old.get(collided.id);
 
         if (old_collided != null) {
-            collided = old_collided;
             old.remove(collided.id);
+            return old_collided;
         } else {
             Circle copy = new Circle(this);
             copy.id = id;
@@ -168,6 +165,15 @@ public class Circle extends Thread implements Collidable {
             synchronized (collided) {
                 collided.notifyAll();
             }
+            return collided;
+        }
+    }
+
+    public void collision(Collidable collided) {
+        if (collided == null) return;
+
+        if (collided instanceof Circle) {
+            collided = preCollision((Circle) collided);
         }
 
         double distance = collided.getDistance(this);
@@ -194,33 +200,6 @@ public class Circle extends Thread implements Collidable {
         }
     }
 
-    private void wallCollision(Wall wall) {
-        if (wall == null) return;
-
-        double distance = wall.getDistance(this);
-        Double old_distance = collision_in_process.get(wall.toString());
-
-        if (distance <= 0) {
-            if (old_distance == null || (old_distance != null && distance < old_distance)) {
-
-                collision_in_process.put(wall.toString(), distance);
-
-                wall.collisionUpdateSpeed(this);
-
-                Log.d(COLLISION_TAG, this + " collided " + wall);
-
-            } else if (old_distance != null) // (distance >= old_distance) {
-                Log.d(COLLISION_TAG, this + " recovering from collision with " + wall);
-
-        } else {
-            if (old_distance != null) {
-                collision_in_process.remove(wall.toString());
-                Log.d(COLLISION_TAG, "Collision status for " + this + " and " + wall + " reset");
-            }
-        }
-    }
-    //*/
-
     public synchronized void collisionUpdateSpeed(Circle collided) { ///UPDATES COLLIDED
         if (speed.isZeroVector() && collided.speed.isZeroVector()) return;
 
@@ -236,73 +215,60 @@ public class Circle extends Thread implements Collidable {
         synchronized (collidables) {
             for (Collidable collidable : collidables) {
                 if (this != collidable) {
-                    //collision(collidable);
-                    if (collidable instanceof Circle) {
-                        circleCollision((Circle) collidable);
-                    } else
-                        wallCollision((Wall) collidable);
+                    collision(collidable);
                 }
             }
         }
     }
 
     private synchronized  void checkSpeed() throws InterruptedException {
-        /*while (speed.isZeroVector()) {
+        if (speed.isZeroVector()) { //////////////////////POPRAVI OVO
             if (running) {
                 Log.d(STATE_TAG, this + " stopped");
                 running = false;
             }
             wait();
-           // synchronized (collidables) {
-                //collidables.wait();
-           // }
         }
-        if (!running)
+        if (!running) {
             Log.d(STATE_TAG, this + " is moving");
-        running = true;*/
-    }
-
-    private void move() throws InterruptedException {
-
-        if (speed.isZeroVector()) {
-            synchronized (this) {
-                wait();
-            }
-        }
-
-        checkCollision();
-       // checkSpeed();
-
-        if (!speed.isZeroVector()) {
-            //synchronized (collidables) {
-            synchronized (this) {
-                center = center.add(speed.mul(MOVING_INCREMENT));
-                speed = speed.mul(FRICTION_COEFFICIENT);
-            }
-
-            sleep(MOVING_DELAY);
+            running = true;
         }
     }
 
-    public String toString() {
-        return "Circle " + id;
+    private synchronized void move() {
+        center = center.add(speed.mul(MOVING_INCREMENT));
+        speed = speed.mul(FRICTION_COEFFICIENT);
+    }
+
+    private void waitField() throws InterruptedException {
+        while (field == null) {
+            synchronized (collidables) {
+                collidables.wait();
+            }
+        }
     }
 
     @Override
     public void run() {
         setPriority(MAX_PRIORITY);
         try {
-            while (field == null) {
-                synchronized (collidables) {
-                    collidables.wait();
-                }
-            }
+            waitField();
 
             while (true) {  ///////////////////////////NE MOZE OVAKO!!!!!!!!!!!!!!!!!!!!
-                move();
+                checkCollision();
+                checkSpeed();
+                if (!speed.isZeroVector()) {
+                    move();
+                    sleep(MOVING_DELAY);
+                };
             }
+
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    public String toString() {
+        return "Circle " + id;
     }
 }
