@@ -6,7 +6,6 @@ import android.util.Log;
 import android.widget.ImageView;
 
 import com.example.myapplication.model.soccer.Ball;
-import com.example.myapplication.model.collidables.Circle;
 
 public class BallImageUpdater extends Thread {
 
@@ -44,8 +43,8 @@ public class BallImageUpdater extends Thread {
 
             while(!viewUpdater.getGameplay().isDestroyed()) {
                 while (ball.getSpeed().isZeroVector()) {
-                    synchronized (Circle.getCollidables()) {
-                        Circle.getCollidables().wait();
+                    synchronized (ball) {
+                        ball.wait();
                     }
                 }
                 updateImage();

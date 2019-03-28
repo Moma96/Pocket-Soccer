@@ -25,13 +25,6 @@ public class Circle extends ActiveObject {
         this.radius = radius;
         this.img_radius = img_radius;
     }
-/*
-    @Override
-    public ActiveObject getIdenticalCopy() {
-        Circle copy = new Circle(this);
-        copy.id = id;
-        return copy;
-    }*/
 
     public ActiveObject getCopy() {
         return new Circle(this);

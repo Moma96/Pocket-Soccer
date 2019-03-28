@@ -6,6 +6,7 @@ import com.example.myapplication.model.Vector;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 public abstract class ActiveObject extends Thread implements Collidable {
 
@@ -224,6 +225,7 @@ public abstract class ActiveObject extends Thread implements Collidable {
             wait();
         }
         if (!running) {
+            notifyAll();
             Log.d(STATE_TAG, this + " is moving");
             running = true;
         }
@@ -234,11 +236,27 @@ public abstract class ActiveObject extends Thread implements Collidable {
         speed = speed.mul(FRICTION_COEFFICIENT);
     }
 
+    protected void work() {}
+
     private void waitField() throws InterruptedException {
         while (field == null) {
             synchronized (activeCollidables) {
-                collidables.wait();
+                activeCollidables.wait();
             }
+        }
+    }
+
+    HashSet<ActiveObject> passed_barrier = new HashSet<>();
+
+    private void barrier() throws InterruptedException {
+        synchronized (passed_barrier) {
+            if (!passed_barrier.contains(this)) {
+                passed_barrier.add(this);
+                if (passed_barrier.size() == activeCollidables.size()) {
+                    passed_barrier.notifyAll();
+                    activeCollidables.clear();
+                }
+            } else passed_barrier.wait();
         }
     }
 
@@ -248,13 +266,15 @@ public abstract class ActiveObject extends Thread implements Collidable {
         try {
             waitField();
 
-            while (true) {  ///////////////////////////NE MOZE OVAKO!!!!!!!!!!!!!!!!!!!!
+            while (true) {  ///////////////NE MOZE OVAKO!!!!!!!!!!!!!!!!!!!!
                 checkCollision();
                 checkSpeed();
                 if (!speed.isZeroVector()) {
                     move();
+                    work();
                     sleep(MOVING_DELAY);
                 };
+               // barrier();
             }
 
         } catch (InterruptedException e) {

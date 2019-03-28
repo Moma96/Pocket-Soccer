@@ -13,4 +13,8 @@ public class Ball extends Circle {
         super(MASS, RADIUS, IMG_RADIUS, center);
         addCollidable(this);
     }
+
+    /*protected synchronized void () {
+        notifyAll();
+    }*/
 }
