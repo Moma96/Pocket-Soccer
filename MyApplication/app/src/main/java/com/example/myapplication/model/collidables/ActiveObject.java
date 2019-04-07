@@ -146,28 +146,9 @@ public abstract class ActiveObject extends Thread implements Collidable {
         return getDistance(dot) <= 0;
     }
 
-    private ActiveObject preCollision(ActiveObject collided) {
-        ActiveObject old_collided = old.get(collided.id);
-
-        if (old_collided != null) {
-            old.remove(collided.id);
-            return old_collided;
-        } else {
-            ActiveObject copy = getIdenticalCopy();
-            collided.old.put(id, copy);
-            synchronized (collided) {
-                collided.notifyAll();
-            }
-            return collided;
-        }
-    }
 
     private void collision(Collidable collided) {
         if (collided == null) return;
-
-        if (collided instanceof ActiveObject) {
-            collided = preCollision((ActiveObject) collided);
-        }
 
         double distance = collided.getDistance(this);
         Double old_distance = collision_in_process.get(collided.toString());
@@ -192,6 +173,8 @@ public abstract class ActiveObject extends Thread implements Collidable {
             }
         }
     }
+
+    
 
     public synchronized void collisionUpdateSpeed(ActiveObject collided) {
         if (speed.isZeroVector() && collided.speed.isZeroVector()) return;
@@ -272,8 +255,10 @@ public abstract class ActiveObject extends Thread implements Collidable {
                 if (!speed.isZeroVector()) {
                     move();
                     work();
+                    //Log.d("COLLISION CHECK", "BEFORE sleep for " + this); /////////////////////////////
                     sleep(MOVING_DELAY);
-                };
+                    //Log.d("COLLISION CHECK", "AFTER sleep for " + this); /////////////////////////////
+                }
                // barrier();
             }
 

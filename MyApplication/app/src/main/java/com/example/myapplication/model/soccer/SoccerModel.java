@@ -40,8 +40,8 @@ public class SoccerModel {
         ball = new Ball(new Vector(x + width/2, y + height/2));
         player1[0] = new Player(new Vector(x + width/4, y + height/2));
         player2[0] = new Player(new Vector(x + 3*(width/4), y + height/2));
-        player1[0].setSpeed(new Vector(30, 0));
-        player2[0].setSpeed(new Vector(-30, 0));
+        player1[0].setSpeed(new Vector(100, 0));
+        player2[0].setSpeed(new Vector(-100, 0));
 
         ball.start();
         player1[0].start();
