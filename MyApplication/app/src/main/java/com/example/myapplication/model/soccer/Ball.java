@@ -5,8 +5,8 @@ import com.example.myapplication.model.Vector;
 
 public class Ball extends Circle {
 
-    private static final double MASS = 0.3; //0.3
-    private static final double RADIUS = 40; //40
+    private static final double MASS = 1; //0.3
+    private static final double RADIUS = 50; //40
     private static final double IMG_RADIUS = RADIUS*2.5;
 
     public Ball(Vector center) {

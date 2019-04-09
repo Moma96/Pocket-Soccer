@@ -18,7 +18,7 @@ import java.util.ArrayList;
 
 public class ViewUpdater extends Thread {
 
-    private static final int FPS = 60;
+    private static final int FPS = 30;
     private static final String STATE_TAG = "View updater";
 
     private GameplayActivity gameplay;
@@ -87,7 +87,7 @@ public class ViewUpdater extends Thread {
         while(!gameplay.isDestroyed()) {
             refresh();
             try {
-                sleep(1000 / FPS);
+                sleep( 10);//1000 / FPS);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

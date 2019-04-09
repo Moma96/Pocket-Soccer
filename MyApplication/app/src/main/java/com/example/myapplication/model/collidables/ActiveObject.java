@@ -13,10 +13,10 @@ public abstract class ActiveObject extends Thread implements Collidable {
     private static final String COLLISION_TAG = "Active collision";
     private static final String STATE_TAG = "Active state";
 
-    public static final int MOVING_DELAY = 15; //15; //ms
-    public static final double MOVING_INCREMENT = 0.03; //0.03;
-    private static final double FRICTION_COEFFICIENT = 1;// 0.99;
-    private static final double SPEED_ROUND_LIMIT = 0.5;
+    protected static final int MOVING_DELAY = 10; //15; //ms
+    protected static final double MOVING_INCREMENT = 0.03; //0.03;
+    private static final double FRICTION_COEFFICIENT = 0.01;// 0.01;
+    private static final double SPEED_ROUND_LIMIT = 0.05;
 
     private static ArrayList<Collidable> collidables = new ArrayList<>();
     private static ArrayList<ActiveObject> activeCollidables = new ArrayList<>();
@@ -221,7 +221,7 @@ public abstract class ActiveObject extends Thread implements Collidable {
     }
 
     private synchronized  void checkSpeed() throws InterruptedException {
-        if (speed.isZeroVector()) { //////////////////////POPRAVI OVO
+        if (speed.isZeroVector()) {
             if (running) {
                 Log.d(STATE_TAG, this + " stopped");
                 running = false;
@@ -236,8 +236,8 @@ public abstract class ActiveObject extends Thread implements Collidable {
     }
 
     private synchronized void move() {
-        center = center.add(speed); //speed.mul(MOVING_INCREMENT));
-        speed = speed.mul(FRICTION_COEFFICIENT);
+        center = center.add(speed);
+        setSpeed(speed.mul(1 - FRICTION_COEFFICIENT));
     }
 
     protected void work() {}
