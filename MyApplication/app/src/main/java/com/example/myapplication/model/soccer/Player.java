@@ -6,7 +6,7 @@ import com.example.myapplication.model.Vector;
 
 public class Player extends Circle {
 
-    private static final double MASS = 3; //1
+    private static final double MASS = 3; //3
     private static final double RADIUS = 100; // 100
     public static final double IMG_RADIUS = RADIUS*1.05;
 
@@ -24,6 +24,6 @@ public class Player extends Circle {
     }
 
     public void push(Vector force) {
-        setSpeed(force.mul(MOVING_INCREMENT));
+        setSpeed(force);
     }
 }

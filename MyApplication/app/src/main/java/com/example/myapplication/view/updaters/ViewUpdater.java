@@ -87,7 +87,7 @@ public class ViewUpdater extends Thread {
         while(!gameplay.isDestroyed()) {
             refresh();
             try {
-                sleep( 10);//1000 / FPS);
+                sleep( 15);//1000 / FPS);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

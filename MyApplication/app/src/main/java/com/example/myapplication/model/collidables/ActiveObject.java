@@ -13,9 +13,9 @@ public abstract class ActiveObject extends Thread implements Collidable {
     private static final String COLLISION_TAG = "Active collision";
     private static final String STATE_TAG = "Active state";
 
-    protected static final int MOVING_DELAY = 10; //15; //ms
+    protected static final int MOVING_DELAY = 15; //15; //ms
     protected static final double MOVING_INCREMENT = 0.03; //0.03;
-    private static final double FRICTION_COEFFICIENT = 0.01;// 0.01;
+    private static final double FRICTION_COEFFICIENT = 0.00;// 0.01;
     private static final double SPEED_ROUND_LIMIT = 0.05;
 
     private static ArrayList<Collidable> collidables = new ArrayList<>();
@@ -28,11 +28,10 @@ public abstract class ActiveObject extends Thread implements Collidable {
     protected double mass;
     protected Vector center;
     protected Vector speed;
+    protected Vector step;
 
     private HashMap<String, Double> collision_in_process;
     private HashMap<Integer, ActiveObject> old;
-
-    private Boolean running = true;
 
     public static void setField(Field f) {
         synchronized(activeCollidables) {
@@ -84,7 +83,7 @@ public abstract class ActiveObject extends Thread implements Collidable {
         id = next_id++;
         this.mass = mass;
         this.center = center;
-        this.speed = speed;
+        setSpeed(speed);
         collision_in_process = new HashMap<>();
         old = new HashMap<>();
     }
@@ -94,7 +93,7 @@ public abstract class ActiveObject extends Thread implements Collidable {
         if (active == null) return;
         mass = active.mass;
         center = new Vector(active.center);
-        speed = new Vector(active.speed);
+        setSpeed(new Vector(active.speed));
         collision_in_process = new HashMap<>(active.collision_in_process);
         old = new HashMap<>(active.old);
     }
@@ -131,6 +130,7 @@ public abstract class ActiveObject extends Thread implements Collidable {
         this.speed = speed;
         if (speed.intensity() < SPEED_ROUND_LIMIT)
             speed.clear();
+        step = speed.mul(MOVING_INCREMENT);
         notifyAll();
     }
 
@@ -177,16 +177,13 @@ public abstract class ActiveObject extends Thread implements Collidable {
 
         if (distance <= 0) {
             collided.duringCollision(this);
+            collision_in_process.put(collided.toString(), distance);
 
             if (old_distance == null || (old_distance != null && distance < old_distance)) {
-
-                collision_in_process.put(collided.toString(), distance);
-
                 collided.collisionUpdateSpeed(this);
-
                 Log.d(COLLISION_TAG, this + " collided " + collided);
 
-            } else if (old_distance != null) // (distance >= old_distance) {
+            } else if (old_distance != null)// (distance >= old_distance) {
                 Log.d(COLLISION_TAG, this + " recovering from collision with " + collided);
 
         } else {
@@ -222,21 +219,21 @@ public abstract class ActiveObject extends Thread implements Collidable {
 
     private synchronized  void checkSpeed() throws InterruptedException {
         if (speed.isZeroVector()) {
-            if (running) {
+            if (moving.contains(this)) {
+                moving.remove(this);
                 Log.d(STATE_TAG, this + " stopped");
-                running = false;
             }
             wait();
         }
-        if (!running) {
+        if (!moving.contains(this)) {
             notifyAll();
+            moving.add(this);
             Log.d(STATE_TAG, this + " is moving");
-            running = true;
         }
     }
 
     private synchronized void move() {
-        center = center.add(speed);
+        center = center.add(step);
         setSpeed(speed.mul(1 - FRICTION_COEFFICIENT));
     }
 
@@ -250,7 +247,8 @@ public abstract class ActiveObject extends Thread implements Collidable {
         }
     }
 
-    HashSet<ActiveObject> passed_barrier = new HashSet<>();
+    private static HashSet<ActiveObject> passed_barrier = new HashSet<>();
+    private static HashSet<ActiveObject> moving = new HashSet<>();
 
     private void barrier() throws InterruptedException {
         synchronized (passed_barrier) {
@@ -277,7 +275,7 @@ public abstract class ActiveObject extends Thread implements Collidable {
                     move();
                     work();
                     sleep(MOVING_DELAY);
-                    // barrier();
+                    //barrier();
                 };
             }
 

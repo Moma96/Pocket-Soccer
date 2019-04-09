@@ -35,13 +35,13 @@ public class SoccerModel {
             player2[i].start();
         }
 //*/
-        ///////TEST 1 -> player radius - 200, ball radius - 100
+        ///////TEST 1 -> player radius - 200, ball radius - 150
 /*
         ball = new Ball(new Vector(x + width/2, y + height/2));
         player1[0] = new Player(new Vector(x + width/4, y + height/2));
         player2[0] = new Player(new Vector(x + 3*(width/4), y + height/2));
-        player1[0].setSpeed(new Vector(100, 0));
-        player2[0].setSpeed(new Vector(-100, 0));
+        player1[0].setSpeed(new Vector(50, 0));
+        player2[0].setSpeed(new Vector(-50, 0));
 
         ball.start();
         player1[0].start();
