@@ -10,4 +10,8 @@ public interface Collidable {
     void collisionUpdateSpeed(ActiveObject active); //ActiveObject
 
     boolean isInside(Vector dot);
+
+    Collidable beforeCollision(ActiveObject active);
+
+    void duringCollision(ActiveObject active);
 }

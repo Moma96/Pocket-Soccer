@@ -24,6 +24,6 @@ public class Player extends Circle {
     }
 
     public void push(Vector force) {
-        setSpeed(force);
+        setSpeed(force.mul(MOVING_INCREMENT));
     }
 }

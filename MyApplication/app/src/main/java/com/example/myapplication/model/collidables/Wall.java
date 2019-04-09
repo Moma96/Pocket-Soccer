@@ -4,7 +4,7 @@ import com.example.myapplication.model.Vector;
 import com.example.myapplication.model.collidables.ActiveObject;
 import com.example.myapplication.model.collidables.Collidable;
 
-public class Wall implements Collidable {
+public class Wall extends InactiveObject {
 
     @Override
     public double getDistance(ActiveObject active) {

@@ -13,8 +13,8 @@ public abstract class ActiveObject extends Thread implements Collidable {
     private static final String COLLISION_TAG = "Active collision";
     private static final String STATE_TAG = "Active state";
 
-    private static final int MOVING_DELAY = 15; //15; //ms
-    private static final double MOVING_INCREMENT = 0.03; //0.03;
+    public static final int MOVING_DELAY = 15; //15; //ms
+    public static final double MOVING_INCREMENT = 0.03; //0.03;
     private static final double FRICTION_COEFFICIENT = 1;// 0.99;
     private static final double SPEED_ROUND_LIMIT = 0.5;
 
@@ -146,56 +146,38 @@ public abstract class ActiveObject extends Thread implements Collidable {
         return getDistance(dot) <= 0;
     }
 
-    /*private ActiveObject preCollision(ActiveObject collided) {
-        ActiveObject old_collided = old.get(collided.id);
-
-        if (old_collided != null) {
-            old.remove(collided.id);
+    public Collidable beforeCollision(ActiveObject active) {
+        ActiveObject old_collided = active.old.get(id);
+        if (old_collided != null)
             return old_collided;
-        } else {
-            ActiveObject copy = getIdenticalCopy();
-            collided.old.put(id, copy);
-            synchronized (collided) {
-                collided.notifyAll();
+        else
+            return this;
+    }
+
+    public void duringCollision(ActiveObject active) {
+        ActiveObject old_collided = active.old.get(id);
+        if (old_collided == null) {
+
+            ActiveObject copy = active.getIdenticalCopy();
+            old.put(active.id, copy);
+            synchronized (this) {
+                notifyAll();
             }
-            return collided;
-        }
-    }*/
+
+        } else
+            active.old.remove(id);
+    }
 
     private void collision(Collidable collided) {
         if (collided == null) return;
 
-        if (collided instanceof ActiveObject) {
-            //collided = preCollision((ActiveObject) collided);
-            ActiveObject activeCollided = (ActiveObject) collided;
-            ActiveObject old_collided = old.get(activeCollided.id);
-            if (old_collided != null) {
-
-                old.remove(activeCollided.id);
-                collided = old_collided;
-
-            }
-        }
-
+        collided = collided.beforeCollision(this);
         double distance = collided.getDistance(this);
         Double old_distance = collision_in_process.get(collided.toString());
 
         if (distance <= 0) {
-            ////////////////////
-            if (collided instanceof ActiveObject) {
-                ActiveObject activeCollided = (ActiveObject) collided;
-                ActiveObject old_collided = old.get(activeCollided.id);
-                if (old_collided == null) {
+            collided.duringCollision(this);
 
-                    ActiveObject copy = getIdenticalCopy();
-                    activeCollided.old.put(id, copy);
-                    synchronized (activeCollided) {
-                        activeCollided.notifyAll();
-                    }
-
-                }
-            }
-            ///////////////////
             if (old_distance == null || (old_distance != null && distance < old_distance)) {
 
                 collision_in_process.put(collided.toString(), distance);
@@ -254,7 +236,7 @@ public abstract class ActiveObject extends Thread implements Collidable {
     }
 
     private synchronized void move() {
-        center = center.add(speed.mul(MOVING_INCREMENT));
+        center = center.add(speed); //speed.mul(MOVING_INCREMENT));
         speed = speed.mul(FRICTION_COEFFICIENT);
     }
 
@@ -295,8 +277,8 @@ public abstract class ActiveObject extends Thread implements Collidable {
                     move();
                     work();
                     sleep(MOVING_DELAY);
+                    // barrier();
                 };
-                // barrier();
             }
 
         } catch (InterruptedException e) {
