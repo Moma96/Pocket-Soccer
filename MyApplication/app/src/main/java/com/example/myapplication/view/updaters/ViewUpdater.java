@@ -35,11 +35,14 @@ public class ViewUpdater extends Thread {
         ballImageUpdater = new BallImageUpdater(this, ballImageView);
         views.put(ball, ballImageView);
 
+        int team1 = gameplay.getResources().getIdentifier("team" + 25, "drawable", gameplay.getPackageName());
+        int team2 = gameplay.getResources().getIdentifier("team" + 5, "drawable", gameplay.getPackageName());
+
         for (Player player : gameplay.getSoccerModel().getPlayer1())
-            views.put(player, setAndAddImage(frame_layout, player, R.drawable.img5));
+            views.put(player, setAndAddImage(frame_layout, player, team1));
 
         for (Player player : gameplay.getSoccerModel().getPlayer2())
-            views.put(player, setAndAddImage(frame_layout, player, R.drawable.img25));
+            views.put(player, setAndAddImage(frame_layout, player, team2));
     }
 
     public GameplayActivity getGameplay() {
@@ -72,7 +75,7 @@ public class ViewUpdater extends Thread {
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     public void run() {
-        Log.d(STATE_TAG, "View updater started!");
+        Log.d(STATE_TAG, "View updater started");
         setPriority(MAX_PRIORITY - 1);
 
         ballImageUpdater.start();
@@ -85,6 +88,6 @@ public class ViewUpdater extends Thread {
             }
         }
 
-        Log.d(STATE_TAG, "View updater finished!");
+        Log.d(STATE_TAG, "View updater finished");
     }
 }

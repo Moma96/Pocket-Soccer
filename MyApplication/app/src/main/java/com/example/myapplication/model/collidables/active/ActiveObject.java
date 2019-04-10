@@ -66,15 +66,6 @@ public abstract class ActiveObject extends Thread implements Collidable {
             activeCollidables.add((ActiveObject) collidable);
     }
 
-    /*public static Collidable getCollidable(Vector dot) {
-        for (Collidable collidable : collidables) {
-            if (collidable.isInside(dot)) {
-                return collidable;
-            }
-        }
-        return null;
-    }*/
-
     public static ActiveObject getActive(Vector dot) {
         for (ActiveObject active : activeCollidables) {
             if (active.isInside(dot)) {
@@ -274,7 +265,6 @@ public abstract class ActiveObject extends Thread implements Collidable {
         setPriority(MAX_PRIORITY);
         try {
             waitField();
-
             while (true) {  ///////////////NE MOZE OVAKO!!!!!!!!!!!!!!!!!!!!
                 checkCollision();
                 checkSpeed();
@@ -285,7 +275,6 @@ public abstract class ActiveObject extends Thread implements Collidable {
                     barrier();
                 };
             }
-
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

@@ -12,7 +12,6 @@ public class BallImageUpdater extends Thread {
     private static final String STATE_TAG = "Ball image updater";
 
     private static final int BALL_IMAGES = 11;
-    private static final String BALL_IMAGE_TAG = "ball";
 
     private ViewUpdater viewUpdater;
     private ImageView ballImageView;
@@ -27,7 +26,7 @@ public class BallImageUpdater extends Thread {
         viewUpdater.getGameplay().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                ballImageView.setBackgroundResource(viewUpdater.getGameplay().getResources().getIdentifier(BALL_IMAGE_TAG + current, "drawable", viewUpdater.getGameplay().getPackageName()));
+                ballImageView.setBackgroundResource(viewUpdater.getGameplay().getResources().getIdentifier("ball" + current, "drawable", viewUpdater.getGameplay().getPackageName()));
                 current = ++current % BALL_IMAGES;
             }
         });
