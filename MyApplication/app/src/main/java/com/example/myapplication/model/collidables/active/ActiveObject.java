@@ -1,6 +1,8 @@
 package com.example.myapplication.model.collidables.active;
 
 import android.util.Log;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 
 import com.example.myapplication.model.Vector;
 import com.example.myapplication.model.collidables.Collidable;
@@ -64,14 +66,14 @@ public abstract class ActiveObject extends Thread implements Collidable {
             activeCollidables.add((ActiveObject) collidable);
     }
 
-    public static Collidable getCollidable(Vector dot) {
+    /*public static Collidable getCollidable(Vector dot) {
         for (Collidable collidable : collidables) {
             if (collidable.isInside(dot)) {
                 return collidable;
             }
         }
         return null;
-    }
+    }*/
 
     public static ActiveObject getActive(Vector dot) {
         for (ActiveObject active : activeCollidables) {
@@ -288,6 +290,8 @@ public abstract class ActiveObject extends Thread implements Collidable {
             e.printStackTrace();
         }
     }
+
+    public abstract void draw(ImageView view);
 
     public abstract double getRadius();
 

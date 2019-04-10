@@ -1,5 +1,8 @@
 package com.example.myapplication.model.collidables.active;
 
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+
 import com.example.myapplication.model.Vector;
 
 public class Circle extends ActiveObject {
@@ -46,5 +49,13 @@ public class Circle extends ActiveObject {
 
     public String toString() {
         return "Circle " + id;
+    }
+
+    public void draw(ImageView view) {
+        if (view == null) return;
+        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) view.getLayoutParams();
+        params.leftMargin = (int) (getCenter().getX() - getImgRadius());
+        params.topMargin = (int) (getCenter().getY() - getImgRadius());
+        view.setLayoutParams(params);
     }
 }

@@ -1,6 +1,19 @@
 package com.example.myapplication.model.collidables.inactive;
 
-public class Line {
+import com.example.myapplication.model.Vector;
+import com.example.myapplication.model.collidables.active.ActiveObject;
+
+public class Line extends InactiveObject {
+
+    @Override
+    public double getDistance(ActiveObject active) {
+        return 0;
+    }
+
+    @Override
+    public void collisionUpdateSpeed(ActiveObject active) {
+
+    }
 
     public enum Orientation { HORIZONTAL, VERTICAL };
 

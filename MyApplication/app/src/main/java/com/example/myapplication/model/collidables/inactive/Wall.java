@@ -37,11 +37,6 @@ public class Wall extends InactiveObject {
         circle.setSpeed(new_speed);
     }
 
-    @Override
-    public boolean isInside(Vector dot) {
-        return false;
-    }
-
     public enum Direction { NORTH, SOUTH, WEST, EAST };
 
     private Direction direction;

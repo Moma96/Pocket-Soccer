@@ -14,6 +14,7 @@ import com.example.myapplication.model.soccer.Player;
 import com.example.myapplication.view.activities.GameplayActivity;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class ViewUpdater extends Thread {
 
@@ -22,24 +23,23 @@ public class ViewUpdater extends Thread {
 
     private GameplayActivity gameplay;
     private BallImageUpdater ballImageUpdater;
-    private static ArrayList<ImageView> views;
+    private HashMap<ActiveObject, ImageView> views = new HashMap<>();
 
     public ViewUpdater(GameplayActivity gameplay) {
         this.gameplay = gameplay;
 
         FrameLayout frame_layout = gameplay.findViewById(R.id.background);
-        views = new ArrayList<>();
 
         Ball ball = gameplay.getSoccerModel().getBall();
         ImageView ballImageView = setAndAddImage(frame_layout, ball, R.drawable.ball0);
         ballImageUpdater = new BallImageUpdater(this, ballImageView);
-        views.add(ballImageView);
+        views.put(ball, ballImageView);
 
         for (Player player : gameplay.getSoccerModel().getPlayer1())
-            views.add(setAndAddImage(frame_layout, player, R.drawable.img5));
+            views.put(player, setAndAddImage(frame_layout, player, R.drawable.img5));
 
         for (Player player : gameplay.getSoccerModel().getPlayer2())
-            views.add(setAndAddImage(frame_layout, player, R.drawable.img25));
+            views.put(player, setAndAddImage(frame_layout, player, R.drawable.img25));
     }
 
     public GameplayActivity getGameplay() {
@@ -63,15 +63,8 @@ public class ViewUpdater extends Thread {
             @Override
             public void run() {
                 ArrayList<ActiveObject> activeObjects = ActiveObject.getActiveCollidables();
-                for (int i = 0; i < views.size(); i++) {
-                   // if (activeObjects.get(i) instanceof Circle) {
-                        Circle circle = (Circle)activeObjects.get(i);
-                        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) views.get(i).getLayoutParams();
-                        params.leftMargin = (int) (circle.getCenter().getX() - circle.getImgRadius());
-                        params.topMargin = (int) (circle.getCenter().getY() - circle.getImgRadius());
-                        views.get(i).setLayoutParams(params);
-                   // }
-                }
+                for (ActiveObject active : activeObjects)
+                    active.draw(views.get(active));
             }
         });
     }
