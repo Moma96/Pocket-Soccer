@@ -1,8 +1,8 @@
 package com.example.myapplication.model.soccer;
 
-import com.example.myapplication.model.collidables.Circle;
+import com.example.myapplication.model.collidables.active.Circle;
 import com.example.myapplication.model.collidables.Field;
-import com.example.myapplication.model.collidables.Wall;
+import com.example.myapplication.model.collidables.inactive.Wall;
 
 public class SoccerField extends Field {
 

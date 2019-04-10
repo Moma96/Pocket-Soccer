@@ -1,8 +1,10 @@
-package com.example.myapplication.model.collidables;
+package com.example.myapplication.model.collidables.active;
 
 import android.util.Log;
 
 import com.example.myapplication.model.Vector;
+import com.example.myapplication.model.collidables.Collidable;
+import com.example.myapplication.model.collidables.Field;
 
 import java.util.ArrayList;
 import java.util.HashMap;

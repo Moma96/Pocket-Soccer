@@ -1,4 +1,4 @@
-package com.example.myapplication.model.collidables;
+package com.example.myapplication.model.collidables.inactive;
 
 public class Line {
 

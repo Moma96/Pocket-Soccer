@@ -7,12 +7,11 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import com.example.myapplication.R;
-import com.example.myapplication.model.collidables.ActiveObject;
+import com.example.myapplication.model.collidables.active.ActiveObject;
 import com.example.myapplication.model.soccer.Ball;
-import com.example.myapplication.model.collidables.Circle;
+import com.example.myapplication.model.collidables.active.Circle;
 import com.example.myapplication.model.soccer.Player;
 import com.example.myapplication.view.activities.GameplayActivity;
-import com.example.myapplication.view.updaters.BallImageUpdater;
 
 import java.util.ArrayList;
 
@@ -28,7 +27,7 @@ public class ViewUpdater extends Thread {
     public ViewUpdater(GameplayActivity gameplay) {
         this.gameplay = gameplay;
 
-        FrameLayout frame_layout = gameplay.findViewById(R.id.frame_layout);
+        FrameLayout frame_layout = gameplay.findViewById(R.id.background);
         views = new ArrayList<>();
 
         Ball ball = gameplay.getSoccerModel().getBall();

@@ -1,5 +1,7 @@
 package com.example.myapplication.model.collidables;
 
+import com.example.myapplication.model.collidables.inactive.Wall;
+
 public abstract class Field {
 
     protected Wall walls[];

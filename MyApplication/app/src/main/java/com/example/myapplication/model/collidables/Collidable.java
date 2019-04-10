@@ -1,7 +1,7 @@
 package com.example.myapplication.model.collidables;
 
 import com.example.myapplication.model.Vector;
-import com.example.myapplication.model.collidables.ActiveObject;
+import com.example.myapplication.model.collidables.active.ActiveObject;
 
 public interface Collidable {
 

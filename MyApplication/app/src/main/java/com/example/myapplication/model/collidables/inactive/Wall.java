@@ -1,8 +1,8 @@
-package com.example.myapplication.model.collidables;
+package com.example.myapplication.model.collidables.inactive;
 
 import com.example.myapplication.model.Vector;
-import com.example.myapplication.model.collidables.ActiveObject;
-import com.example.myapplication.model.collidables.Collidable;
+import com.example.myapplication.model.collidables.active.ActiveObject;
+import com.example.myapplication.model.collidables.inactive.InactiveObject;
 
 public class Wall extends InactiveObject {
 

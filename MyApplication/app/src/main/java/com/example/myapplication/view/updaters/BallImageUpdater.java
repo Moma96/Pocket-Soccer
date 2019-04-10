@@ -48,7 +48,7 @@ public class BallImageUpdater extends Thread {
                     }
                 }
                 updateImage();
-                sleep((int)(10000 / ball.getSpeed().intensity()));
+                sleep((int)(100 / ball.getSpeed().intensity()));
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
