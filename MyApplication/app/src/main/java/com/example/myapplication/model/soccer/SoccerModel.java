@@ -35,19 +35,25 @@ public class SoccerModel {
             player2[i].start();
         }
 //*/
-        ///////TEST 1 -> player radius - 200, ball radius - 150
+        //TEST
 /*
         ball = new Ball(new Vector(x + width/2, y + height/2));
+        ball.setRadius(150);
+
         player1[0] = new Player(new Vector(x + width/4, y + height/2));
         player2[0] = new Player(new Vector(x + 3*(width/4), y + height/2));
-        player1[0].setSpeed(new Vector(50, 0));
-        player2[0].setSpeed(new Vector(-50, 0));
+        player1[0].setRadius(200);
+        player2[0].setRadius(200);
+        player1[0].setMass(100);
+        player2[0].setMass(100);
+        player1[0].setSpeed(new Vector(10, 0));
+        player2[0].setSpeed(new Vector(-10, 0));
 
         ball.start();
         player1[0].start();
         player2[0].start();
 //*/
-        ///////TEST 2 -> player radius - 200, ball radius - 40
+        ///////TEST 2
 /*
         ball = new Ball(new Vector(x + width/2, y + height/5));
 
@@ -56,14 +62,16 @@ public class SoccerModel {
         player1[2] = new Player(new Vector(x + width/2, y + height/2));
         player2[0] = new Player(new Vector(x + width/2, y + 1*(height/3)));
         player2[1] = new Player(new Vector(x + width/2, y + 2*(height/3)));
+        player2[2] = new Player(new Vector(x + width/2, y + 4*(height/5)));
 
         ball.start();
 
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < 3; i++) {
+            player1[i].setRadius(200);
+            player2[i].setRadius(200);
             player1[i].start();
             player2[i].start();
         }
-        player1[2].start();
 //*/
     }
 

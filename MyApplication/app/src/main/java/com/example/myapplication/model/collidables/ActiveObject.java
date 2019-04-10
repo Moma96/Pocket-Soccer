@@ -15,11 +15,13 @@ public abstract class ActiveObject extends Thread implements Collidable {
 
     protected static final int MOVING_DELAY = 15; //15; //ms
     protected static final double MOVING_INCREMENT = 0.03; //0.03;
-    private static final double FRICTION_COEFFICIENT = 0.00;// 0.01;
+    private static final double FRICTION_COEFFICIENT = 0.01;// 0.01;
     private static final double SPEED_ROUND_LIMIT = 0.05;
 
     private static ArrayList<Collidable> collidables = new ArrayList<>();
     private static ArrayList<ActiveObject> activeCollidables = new ArrayList<>();
+    private static HashSet<ActiveObject> moving = new HashSet<>();
+    private static HashSet<ActiveObject> barrier = new HashSet<>();
     private static Field field;
 
     protected static int next_id = 0;
@@ -28,7 +30,6 @@ public abstract class ActiveObject extends Thread implements Collidable {
     protected double mass;
     protected Vector center;
     protected Vector speed;
-    protected Vector step;
 
     private HashMap<String, Double> collision_in_process;
     private HashMap<Integer, ActiveObject> old;
@@ -61,7 +62,7 @@ public abstract class ActiveObject extends Thread implements Collidable {
             activeCollidables.add((ActiveObject) collidable);
     }
 
-    public static Collidable getCollidable(Vector dot) { ////////////////////OBRATI PAZNJU
+    public static Collidable getCollidable(Vector dot) {
         for (Collidable collidable : collidables) {
             if (collidable.isInside(dot)) {
                 return collidable;
@@ -81,8 +82,8 @@ public abstract class ActiveObject extends Thread implements Collidable {
 
     public ActiveObject(double mass, Vector center, Vector speed) {
         id = next_id++;
-        this.mass = mass;
-        this.center = center;
+        setMass(mass);
+        setCenter(center);
         setSpeed(speed);
         collision_in_process = new HashMap<>();
         old = new HashMap<>();
@@ -91,8 +92,8 @@ public abstract class ActiveObject extends Thread implements Collidable {
     public ActiveObject(ActiveObject active) {
         id = next_id++;
         if (active == null) return;
-        mass = active.mass;
-        center = new Vector(active.center);
+        setMass(active.mass);
+        setCenter(new Vector(active.center));
         setSpeed(new Vector(active.speed));
         collision_in_process = new HashMap<>(active.collision_in_process);
         old = new HashMap<>(active.old);
@@ -130,7 +131,6 @@ public abstract class ActiveObject extends Thread implements Collidable {
         this.speed = speed;
         if (speed.intensity() < SPEED_ROUND_LIMIT)
             speed.clear();
-        step = speed.mul(MOVING_INCREMENT);
         notifyAll();
     }
 
@@ -197,14 +197,12 @@ public abstract class ActiveObject extends Thread implements Collidable {
     public synchronized void collisionUpdateSpeed(ActiveObject collided) {
         if (speed.isZeroVector() && collided.speed.isZeroVector()) return;
 
-        if (collided instanceof Circle) {
-            collided.setSpeed(collided.speed.sub(
-                    collided.center.sub(center).mul(
-                            2 * mass / (collided.mass + mass) *
-                                    ((collided.speed.sub(speed).dotProduct(collided.center.sub(center))) / Math.pow(collided.center.sub(center).intensity(), 2))
-                    )
-            ));
-        }
+        collided.setSpeed(collided.speed.sub(
+                collided.center.sub(center).mul(
+                        2 * mass / (collided.mass + mass) *
+                                ((collided.speed.sub(speed).dotProduct(collided.center.sub(center))) / Math.pow(collided.center.sub(center).intensity(), 2))
+                )
+        ));
     }
 
     private void checkCollision() {
@@ -219,21 +217,25 @@ public abstract class ActiveObject extends Thread implements Collidable {
 
     private synchronized  void checkSpeed() throws InterruptedException {
         if (speed.isZeroVector()) {
-            if (moving.contains(this)) {
-                moving.remove(this);
-                Log.d(STATE_TAG, this + " stopped");
+            synchronized (barrier) {
+                if (moving.contains(this)) {
+                    moving.remove(this);
+                    Log.d(STATE_TAG, this + " stopped");
+                }
             }
             wait();
         }
-        if (!moving.contains(this)) {
-            notifyAll();
-            moving.add(this);
-            Log.d(STATE_TAG, this + " is moving");
+        synchronized(barrier) {
+            if (!moving.contains(this)) {
+                notifyAll();
+                moving.add(this);
+                Log.d(STATE_TAG, this + " is moving");
+            }
         }
     }
 
     private synchronized void move() {
-        center = center.add(step);
+        center = center.add(speed);
         setSpeed(speed.mul(1 - FRICTION_COEFFICIENT));
     }
 
@@ -247,18 +249,19 @@ public abstract class ActiveObject extends Thread implements Collidable {
         }
     }
 
-    private static HashSet<ActiveObject> passed_barrier = new HashSet<>();
-    private static HashSet<ActiveObject> moving = new HashSet<>();
-
     private void barrier() throws InterruptedException {
-        synchronized (passed_barrier) {
-            if (!passed_barrier.contains(this)) {
-                passed_barrier.add(this);
-                if (passed_barrier.size() == activeCollidables.size()) {
-                    passed_barrier.notifyAll();
-                    activeCollidables.clear();
+        synchronized (barrier) {
+            if (!barrier.contains(this)) {
+                barrier.add(this);
+                if (barrier.size() == moving.size()) {
+                    barrier.notifyAll();
+                    barrier.clear();
+                } else {
+                    barrier.wait();
                 }
-            } else passed_barrier.wait();
+            } else {
+                Log.e(COLLISION_TAG, "Barrier is not working properly");
+            }
         }
     }
 
@@ -275,7 +278,7 @@ public abstract class ActiveObject extends Thread implements Collidable {
                     move();
                     work();
                     sleep(MOVING_DELAY);
-                    //barrier();
+                    barrier();
                 };
             }
 
@@ -284,11 +287,7 @@ public abstract class ActiveObject extends Thread implements Collidable {
         }
     }
 
-    public String toString() {
-        return "Circle " + id;
-    }
-
-    public abstract double getRadius(); ///////////////////////////////NAZOVI DRUGACIJE
+    public abstract double getRadius();
 
     public abstract ActiveObject getCopy();
 }
