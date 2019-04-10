@@ -1,16 +1,11 @@
 package com.example.myapplication.view.activities;
 
-import android.graphics.Point;
-import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.RequiresApi;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.view.Display;
 import android.view.MotionEvent;
-import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 
 import com.example.myapplication.R;
 import com.example.myapplication.model.soccer.Player;
@@ -31,7 +26,9 @@ public class GameplayActivity extends AppCompatActivity {
         setContentView(R.layout.activity_gameplay);
 
         final FrameLayout background = findViewById(R.id.background);
-        background.setBackgroundResource(R.drawable.field1);
+
+        int field = getResources().getIdentifier("field" + 3, "drawable", getPackageName());
+        background.setBackgroundResource(field);
 
         background.post(new Runnable() {
             @Override

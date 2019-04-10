@@ -23,40 +23,54 @@ public class ViewUpdater extends Thread {
 
     private GameplayActivity gameplay;
     private BallImageUpdater ballImageUpdater;
-    private HashMap<ActiveObject, ImageView> views = new HashMap<>();
+    private HashMap<ActiveObject, ImageView> activeViews = new HashMap<>();
+    private ImageView goalposts;
+
 
     public ViewUpdater(GameplayActivity gameplay) {
         this.gameplay = gameplay;
 
-        FrameLayout frame_layout = gameplay.findViewById(R.id.background);
+        FrameLayout background = gameplay.findViewById(R.id.background);
 
         Ball ball = gameplay.getSoccerModel().getBall();
-        ImageView ballImageView = setAndAddImage(frame_layout, ball, R.drawable.ball0);
+        ImageView ballImageView = setAndAddImage(background, ball, R.drawable.ball0);
         ballImageUpdater = new BallImageUpdater(this, ballImageView);
-        views.put(ball, ballImageView);
+        activeViews.put(ball, ballImageView);
 
         int team1 = gameplay.getResources().getIdentifier("team" + 25, "drawable", gameplay.getPackageName());
         int team2 = gameplay.getResources().getIdentifier("team" + 5, "drawable", gameplay.getPackageName());
 
         for (Player player : gameplay.getSoccerModel().getPlayer1())
-            views.put(player, setAndAddImage(frame_layout, player, team1));
+            activeViews.put(player, setAndAddImage(background, player, team1));
 
         for (Player player : gameplay.getSoccerModel().getPlayer2())
-            views.put(player, setAndAddImage(frame_layout, player, team2));
+            activeViews.put(player, setAndAddImage(background, player, team2));
+
+        drawGoalPosts(background);
     }
 
     public GameplayActivity getGameplay() {
         return gameplay;
     }
 
-    private ImageView setAndAddImage(FrameLayout frame_layout, Circle circle, int resid) {
+    private void drawGoalPosts(FrameLayout background) {
+        goalposts = new ImageView(gameplay);
+        goalposts.setBackgroundResource(R.drawable.goalposts);
+
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(background.getWidth(), background.getHeight());
+        params.leftMargin = 0;
+        params.topMargin  = 0;
+        background.addView(goalposts, params);
+    }
+
+    private ImageView setAndAddImage(FrameLayout background, Circle circle, int resid) {
         ImageView img = new ImageView(gameplay);
         img.setBackgroundResource(resid);
 
         FrameLayout.LayoutParams params = new FrameLayout.LayoutParams((int)(circle.getImgRadius()*2), (int)(circle.getImgRadius()*2));
         params.leftMargin = (int)(circle.getCenter().getX() - circle.getImgRadius());
         params.topMargin  = (int)(circle.getCenter().getY() - circle.getImgRadius());
-        frame_layout.addView(img, params);
+        background.addView(img, params);
 
         return img;
     }
@@ -67,7 +81,9 @@ public class ViewUpdater extends Thread {
             public void run() {
                 ArrayList<ActiveObject> activeObjects = ActiveObject.getActiveCollidables();
                 for (ActiveObject active : activeObjects)
-                    active.draw(views.get(active));
+                    active.draw(activeViews.get(active));
+
+                goalposts.setBackgroundResource(R.drawable.goalposts);
             }
         });
     }
