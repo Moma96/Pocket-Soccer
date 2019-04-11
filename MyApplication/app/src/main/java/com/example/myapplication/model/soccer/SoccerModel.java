@@ -25,13 +25,13 @@ public class SoccerModel {
 
         ball = new Ball(new Vector(x + width/2, y + height/2));
 
-        player1[0] = new Player(new Vector(x + width/2, y + 3*(height/8)));
-        player1[1] = new Player(new Vector(x + width/4, y + height/4));
-        player1[2] = new Player(new Vector(x + 3*(width/4), y + height/4));
+        player1[0] = new Player(new Vector(x + width/2, y + height/4));
+        player1[1] = new Player(new Vector(x + width/5, y + height/8));
+        player1[2] = new Player(new Vector(x + 4*(width/5), y + height/8));
 
-        player2[0] = new Player(new Vector(x + width/2, y + 5*(height/8)));
-        player2[1] = new Player(new Vector(x + width/4, y + 3*(height/4)));
-        player2[2] = new Player(new Vector(x + 3*(width/4), y + 3*(height/4)));
+        player2[0] = new Player(new Vector(x + width/2, y + 3*(height/4)));
+        player2[1] = new Player(new Vector(x + width/5, y + 7*(height/8)));
+        player2[2] = new Player(new Vector(x + 4*(width/5), y + 7*(height/8)));
 
         ball.start();
 
