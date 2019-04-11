@@ -5,63 +5,60 @@ import com.example.myapplication.model.collidables.active.ActiveObject;
 
 public class Line extends InactiveObject {
 
-    @Override
-    public double getDistance(ActiveObject active) {
-        return 0;
-    }
-
-    @Override
-    public void collisionUpdateSpeed(ActiveObject active) {
-
-    }
-
     public enum Orientation { HORIZONTAL, VERTICAL };
 
     private Orientation orientation;
-    private double x;
-    private double y;
+    private Vector position;
     private double length;
 
     public Line(Orientation orientation, double x, double y, double length) {
         this.orientation = orientation;
-        this.x = x;
-        this.y = y;
-        this.length = length;
-    }
-
-    public Orientation getOrientation() {
-        return orientation;
-    }
-
-    public void setOrientation(Orientation orientation) {
-        this.orientation = orientation;
-    }
-
-    public double getX() {
-        return x;
-    }
-
-    public void setX(double x) {
-        this.x = x;
-    }
-
-    public double getY() {
-        return y;
-    }
-
-    public void setY(double y) {
-        this.y = y;
-    }
-
-    public double getLength() {
-        return length;
-    }
-
-    public void setLength(double length) {
+        position = new Vector(x, y);
         this.length = length;
     }
 
     public String toString() {
-        return "Wall";
+        return "Line";
+    }
+
+    @Override
+    public double getDistance(ActiveObject active) {
+        if (active == null) return 1;
+
+        switch(orientation) {
+            case VERTICAL:
+                if (active.getCenter().getY() < position.getY() + length && active.getCenter().getY() > position.getY()) {
+                    if (active.getCenter().getX() > position.getX())
+                        return active.getCenter().getX() - position.getX() - active.getRadius();
+                    else
+                        return position.getX() - active.getCenter().getX() - active.getRadius();
+                }
+                break;
+            case HORIZONTAL:
+                if (active.getCenter().getX() < position.getX() + length && active.getCenter().getX() > position.getX()) {
+                    if (active.getCenter().getY() > position.getY())
+                        return active.getCenter().getY() - position.getY() - active.getRadius();
+                    else
+                        return position.getY() - active.getCenter().getY() - active.getRadius();
+                }
+                break;
+        }
+        return Double.MAX_VALUE;
+    }
+
+    @Override
+    public void collisionUpdateSpeed(ActiveObject active) {
+        if (active == null) return;
+
+        Vector new_speed = active.getSpeed();
+        switch(orientation) {
+            case HORIZONTAL:
+                new_speed.setY(-new_speed.getY());
+                break;
+            case VERTICAL:
+                new_speed.setX(-new_speed.getX());
+                break;
+        }
+        active.setSpeed(new_speed);
     }
 }

@@ -1,22 +1,27 @@
 package com.example.myapplication.model.soccer;
 
-
 import com.example.myapplication.model.collidables.active.Circle;
 import com.example.myapplication.model.Vector;
 
 public class SoccerModel {
 
-    SoccerField field;
+    private static final double GOAL_WIDTH = 300;
+    private static final double GOAL_HEIGHT = 100;
 
-    Player[] player1 = new Player[3];
-    Player[] player2 = new Player[3];
+    private SoccerField field;
+    private Goal[] goals = new Goal[2];
 
-    Ball ball;
+    private Player[] player1 = new Player[3];
+    private Player[] player2 = new Player[3];
+
+    private Ball ball;
 
     public SoccerModel(int x, int y, int width, int height) {
 
         field = new SoccerField(x, y, width, height);
         Circle.setField(field);
+        goals[0] = new Goal(GoalPost.Direction.NORTH, x + width/2 - GOAL_WIDTH/2, y, GOAL_WIDTH, GOAL_HEIGHT);
+        goals[1] = new Goal(GoalPost.Direction.SOUTH, x + width/2 - GOAL_WIDTH/2, y + height - GOAL_HEIGHT,GOAL_WIDTH, GOAL_HEIGHT);
 
         ball = new Ball(new Vector(x + width/2, y + height/2));
 
@@ -35,7 +40,7 @@ public class SoccerModel {
             player2[i].start();
         }
 //*/
-        //TEST
+        //////TEST 1
 /*
         ball = new Ball(new Vector(x + width/2, y + height/2));
         ball.setRadius(150);

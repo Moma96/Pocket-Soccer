@@ -130,10 +130,14 @@ public abstract class ActiveObject extends Thread implements Collidable {
     }
 
     public double getDistance(ActiveObject active) {
+        if (active == null) return 1;
+
         return center.sub(active.center).intensity() - (getRadius() + active.getRadius());
     }
 
     public double getDistance(Vector dot) {
+        if (dot == null) return 1;
+
         return center.sub(dot).intensity() - getRadius();
     }
 
@@ -142,6 +146,8 @@ public abstract class ActiveObject extends Thread implements Collidable {
     }
 
     public Collidable beforeCollision(ActiveObject active) {
+        if (active == null) return this;
+
         ActiveObject old_collided = active.old.get(id);
         if (old_collided != null)
             return old_collided;
@@ -150,6 +156,8 @@ public abstract class ActiveObject extends Thread implements Collidable {
     }
 
     public void duringCollision(ActiveObject active) {
+        if (active == null) return;
+
         ActiveObject old_collided = active.old.get(id);
         if (old_collided == null) {
 
@@ -189,17 +197,6 @@ public abstract class ActiveObject extends Thread implements Collidable {
         }
     }
 
-    public synchronized void collisionUpdateSpeed(ActiveObject collided) {
-        if (speed.isZeroVector() && collided.speed.isZeroVector()) return;
-
-        collided.setSpeed(collided.speed.sub(
-                collided.center.sub(center).mul(
-                        2 * mass / (collided.mass + mass) *
-                                ((collided.speed.sub(speed).dotProduct(collided.center.sub(center))) / Math.pow(collided.center.sub(center).intensity(), 2))
-                )
-        ));
-    }
-
     private void checkCollision() {
         synchronized (activeCollidables) {
             for (Collidable collidable : collidables) {
@@ -234,8 +231,6 @@ public abstract class ActiveObject extends Thread implements Collidable {
         setSpeed(speed.mul(1 - FRICTION_COEFFICIENT));
     }
 
-    protected void work() {}
-
     private void waitField() throws InterruptedException {
         while (field == null) {
             synchronized (activeCollidables) {
@@ -259,6 +254,8 @@ public abstract class ActiveObject extends Thread implements Collidable {
             }
         }
     }
+
+    protected void work() {}
 
     @Override
     public void run() {

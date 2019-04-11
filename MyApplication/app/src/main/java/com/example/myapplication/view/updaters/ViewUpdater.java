@@ -46,16 +46,16 @@ public class ViewUpdater extends Thread {
         for (Player player : gameplay.getSoccerModel().getPlayer2())
             activeViews.put(player, setAndAddImage(background, player, team2));
 
-        drawGoalPosts(background);
+        drawGoals(background);
     }
 
     public GameplayActivity getGameplay() {
         return gameplay;
     }
 
-    private void drawGoalPosts(FrameLayout background) {
+    private void drawGoals(FrameLayout background) {
         goalposts = new ImageView(gameplay);
-        goalposts.setBackgroundResource(R.drawable.goalposts);
+        goalposts.setBackgroundResource(R.drawable.goals);
 
         FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(background.getWidth(), background.getHeight());
         params.leftMargin = 0;
@@ -83,7 +83,7 @@ public class ViewUpdater extends Thread {
                 for (ActiveObject active : activeObjects)
                     active.draw(activeViews.get(active));
 
-                goalposts.setBackgroundResource(R.drawable.goalposts);
+                goalposts.setBackgroundResource(R.drawable.goals);
             }
         });
     }

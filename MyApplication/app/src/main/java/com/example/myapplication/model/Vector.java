@@ -9,10 +9,10 @@ public class Vector {
         this.y = y;
     }
 
-    public Vector(Vector vector) {
-        if (vector == null) return;
-        x = vector.x;
-        y = vector.y;
+    public Vector(Vector v) {
+        if (v == null) return;
+        x = v.x;
+        y = v.y;
      }
 
     public double getX() {
@@ -61,5 +61,9 @@ public class Vector {
 
     public double dotProduct(Vector v) {
         return x*v.x + y*v.y;
+    }
+
+    public boolean isEqual(Vector v) {
+        return (x == v.x && y == v.y);
     }
 }

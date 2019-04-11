@@ -30,14 +30,6 @@ public class Circle extends ActiveObject {
         setRadius(radius);
     }
 
-    public ActiveObject getCopy() {
-        return new Circle(this);
-    }
-
-    public double getRadius() {
-        return radius;
-    }
-
     public void setRadius(double radius) {
         this.radius = radius;
         img_radius = radius*img_radius_coefficient;
@@ -58,4 +50,25 @@ public class Circle extends ActiveObject {
         params.topMargin = (int) (getCenter().getY() - getImgRadius());
         view.setLayoutParams(params);
     }
+
+    public synchronized void collisionUpdateSpeed(ActiveObject collided) {
+        if (collided == null) return;
+        if (speed.isZeroVector() && collided.speed.isZeroVector()) return;
+
+        collided.setSpeed(collided.speed.sub(
+                collided.center.sub(center).mul(
+                        2 * mass / (collided.mass + mass) *
+                                ((collided.speed.sub(speed).dotProduct(collided.center.sub(center))) / Math.pow(collided.center.sub(center).intensity(), 2))
+                )
+        ));
+    }
+
+    public ActiveObject getCopy() {
+        return new Circle(this);
+    }
+
+    public double getRadius() {
+        return radius;
+    }
+
 }
