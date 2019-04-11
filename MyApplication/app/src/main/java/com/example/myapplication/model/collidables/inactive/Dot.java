@@ -5,20 +5,10 @@ import com.example.myapplication.model.collidables.active.ActiveObject;
 
 public class Dot extends InactiveObject {
 
-    private double radius;
     private Vector center;
 
     public Dot(double x, double y) {
-        this.radius = 0;
         this.center = new Vector(x, y);
-    }
-
-    public double getRadius() {
-        return radius;
-    }
-
-    public void setRadius(double radius) {
-        this.radius = radius;
     }
 
     public Vector getCenter() {
@@ -31,7 +21,7 @@ public class Dot extends InactiveObject {
 
     @Override
     public double getDistance(ActiveObject active) {
-        return center.sub(active.getCenter()).intensity() - (radius + active.getRadius());
+        return center.sub(active.getCenter()).intensity() - active.getRadius();
     }
 
     @Override
@@ -44,5 +34,9 @@ public class Dot extends InactiveObject {
                    2 * ((collided.getSpeed().dotProduct(collided.getCenter().sub(center))) / Math.pow(collided.getCenter().sub(center).intensity(), 2))
            )
         ));
+    }
+
+    public String toString() {
+        return "Dot " + id;
     }
 }

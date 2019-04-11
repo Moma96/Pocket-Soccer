@@ -32,9 +32,6 @@ public class Wall extends InactiveObject {
         this.xy = xy;
     }
 
-    public String toString() {
-        return "Wall " + direction;
-    }
 
     @Override
     public double getDistance(ActiveObject active) {
@@ -69,5 +66,9 @@ public class Wall extends InactiveObject {
                 break;
         }
         active.setSpeed(new_speed);
+    }
+
+    public String toString() {
+        return direction + " Wall " + id;
     }
 }

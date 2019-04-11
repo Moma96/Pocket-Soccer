@@ -207,22 +207,26 @@ public abstract class ActiveObject extends Thread implements Collidable {
         }
     }
 
-    private synchronized  void checkSpeed() throws InterruptedException {
+    private void checkSpeed() throws InterruptedException {
         if (speed.isZeroVector()) {
-            synchronized (barrier) {
-                if (moving.contains(this)) {
+            if (moving.contains(this)) {
+                synchronized (barrier) {
                     moving.remove(this);
-                    Log.d(STATE_TAG, this + " stopped");
                 }
+                Log.d(STATE_TAG, this + " stopped");
             }
-            wait();
+            synchronized (this) {
+                wait();
+            }
         }
-        synchronized(barrier) {
-            if (!moving.contains(this)) {
+        if (!moving.contains(this)) {
+            synchronized (this) {
                 notifyAll();
-                moving.add(this);
-                Log.d(STATE_TAG, this + " is moving");
             }
+            synchronized (barrier) {
+                moving.add(this);
+            }
+            Log.d(STATE_TAG, this + " is moving");
         }
     }
 
@@ -259,7 +263,7 @@ public abstract class ActiveObject extends Thread implements Collidable {
 
     @Override
     public void run() {
-        setPriority(MAX_PRIORITY);
+        //setPriority(MAX_PRIORITY);
         try {
             waitField();
             while (true) {  ///////////////NE MOZE OVAKO!!!!!!!!!!!!!!!!!!!!
@@ -269,7 +273,7 @@ public abstract class ActiveObject extends Thread implements Collidable {
                     move();
                     work();
                     sleep(MOVING_DELAY);
-                    barrier();
+                    //barrier();
                 };
             }
         } catch (InterruptedException e) {

@@ -6,7 +6,7 @@ import com.example.myapplication.model.collidables.inactive.Wall;
 
 public class SoccerField extends Field {
 
-    public SoccerField(int x, int y, int width, int height) {
+    public SoccerField(double x, double y, double width, double height) {
 
         walls = new Wall[4];
         walls[0] = new Wall(Wall.Direction.NORTH, y);

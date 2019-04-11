@@ -18,7 +18,7 @@ import java.util.HashMap;
 
 public class ViewUpdater extends Thread {
 
-    private static final int FPS = 30;
+    private static final int FPS = 60;
     private static final String STATE_TAG = "View updater";
 
     private GameplayActivity gameplay;
@@ -92,7 +92,7 @@ public class ViewUpdater extends Thread {
     @Override
     public void run() {
         Log.d(STATE_TAG, "View updater started");
-        setPriority(MAX_PRIORITY - 1);
+       // setPriority(MAX_PRIORITY - 1);
 
         ballImageUpdater.start();
         while(!gameplay.isDestroyed()) {

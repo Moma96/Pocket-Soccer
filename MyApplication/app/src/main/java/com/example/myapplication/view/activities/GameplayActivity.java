@@ -1,5 +1,6 @@
 package com.example.myapplication.view.activities;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -53,11 +54,17 @@ public class GameplayActivity extends AppCompatActivity {
         return soccerModel;
     }
 
-    public void respondOnSwipe(float x1, float y1, float x2, float y2) {
-        Player player = Player.getPlayer(new Vector(x1, y1));
-        if (player != null) {
-            player.push(new Vector(x2 - x1, y2 - y1));
-        }
+    public void respondOnSwipe(final float x1, final float y1, final float x2, final float y2) {
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground( final Void ... params ) {
+                Player player = Player.getPlayer(new Vector(x1, y1));
+                if (player != null) {
+                    player.push(new Vector(x2 - x1, y2 - y1));
+                }
+                return null;
+            }
+        }.execute();
     }
 
     @Override

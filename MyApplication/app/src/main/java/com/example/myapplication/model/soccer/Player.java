@@ -7,7 +7,7 @@ import com.example.myapplication.model.Vector;
 public class Player extends Circle {
 
     private static final double MASS = 10;
-    private static final double RADIUS = 75;
+    private static final double RADIUS = 80; //80;
     public static final double IMG_RADIUS_COEFFICIENT = 1.05;
 
     public static synchronized Player getPlayer(Vector dot) {
@@ -25,5 +25,9 @@ public class Player extends Circle {
 
     public void push(Vector force) {
         setSpeed(force.mul(MOVING_INCREMENT));
+    }
+
+    public String toString() {
+        return "Player " + id;
     }
 }

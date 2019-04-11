@@ -5,6 +5,13 @@ import com.example.myapplication.model.collidables.active.ActiveObject;
 
 public abstract class InactiveObject implements Collidable {
 
+    protected static int next_id = 0;
+    protected int id;
+
+    public InactiveObject() {
+        id = next_id++;
+    }
+
     @Override
     public Collidable beforeCollision(ActiveObject active) {
         return this;
@@ -12,5 +19,9 @@ public abstract class InactiveObject implements Collidable {
 
     @Override
     public void duringCollision(ActiveObject active) {
+    }
+
+    public String toString() {
+        return "InactiveObject " + id;
     }
 }

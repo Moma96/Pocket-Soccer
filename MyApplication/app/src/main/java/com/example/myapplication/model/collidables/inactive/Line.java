@@ -18,7 +18,7 @@ public class Line extends InactiveObject {
     }
 
     public String toString() {
-        return "Line";
+        return "Line " + id;
     }
 
     @Override

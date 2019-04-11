@@ -8,6 +8,15 @@ public class SoccerModel {
     private static final double GOAL_WIDTH = 300;
     private static final double GOAL_HEIGHT = 100;
 
+    private static final double BALL_X = 1.0/2;
+    private static final double BALL_Y = 1.0/2;
+
+    private static final double[] PLAYER_1_X = { 1.0/2, 1.0/5, 4.0/5 };
+    private static final double[] PLAYER_1_Y = { 1.0/4, 1.0/8, 1.0/8 };
+
+    private static final double[] PLAYER_2_X = { 1.0/2, 1.0/5, 4.0/5 };
+    private static final double[] PLAYER_2_Y = { 3.0/4, 7.0/8, 7.0/8 };
+
     private SoccerField field;
     private Goal[] goals = new Goal[2];
 
@@ -16,22 +25,20 @@ public class SoccerModel {
 
     private Ball ball;
 
-    public SoccerModel(int x, int y, int width, int height) {
+    public SoccerModel(double x, double y, double width, double height) {
 
         field = new SoccerField(x, y, width, height);
         Circle.setField(field);
         goals[0] = new Goal(GoalPost.Direction.NORTH, x + width/2 - GOAL_WIDTH/2, y, GOAL_WIDTH, GOAL_HEIGHT);
-        goals[1] = new Goal(GoalPost.Direction.SOUTH, x + width/2 - GOAL_WIDTH/2, y + height - GOAL_HEIGHT,GOAL_WIDTH, GOAL_HEIGHT);
+        goals[1] = new Goal(GoalPost.Direction.SOUTH, x + width/2 - GOAL_WIDTH/2, y + height - GOAL_HEIGHT, GOAL_WIDTH, GOAL_HEIGHT);
 
-        ball = new Ball(new Vector(x + width/2, y + height/2));
+/*
+        ball = new Ball(new Vector(x + width*BALL_X, y + height*BALL_Y), this);
 
-        player1[0] = new Player(new Vector(x + width/2, y + height/4));
-        player1[1] = new Player(new Vector(x + width/5, y + height/8));
-        player1[2] = new Player(new Vector(x + 4*(width/5), y + height/8));
-
-        player2[0] = new Player(new Vector(x + width/2, y + 3*(height/4)));
-        player2[1] = new Player(new Vector(x + width/5, y + 7*(height/8)));
-        player2[2] = new Player(new Vector(x + 4*(width/5), y + 7*(height/8)));
+        for (int i = 0; i < 3; i++) {
+            player1[i] = new Player(new Vector(x + width * PLAYER_1_X[i], y + height * PLAYER_1_Y[i]));
+            player2[i] = new Player(new Vector(x + width * PLAYER_2_X[i], y + height * PLAYER_2_Y[i]));
+        }
 
         ball.start();
 
@@ -42,7 +49,7 @@ public class SoccerModel {
 //*/
         //////TEST 1
 /*
-        ball = new Ball(new Vector(x + width/2, y + height/2));
+        ball = new Ball(new Vector(x + width/2, y + height/2), this);
         ball.setRadius(150);
 
         player1[0] = new Player(new Vector(x + width/4, y + height/2));
@@ -59,8 +66,8 @@ public class SoccerModel {
         player2[0].start();
 //*/
         ///////TEST 2
-/*
-        ball = new Ball(new Vector(x + width/2, y + height/5));
+
+        ball = new Ball(new Vector(x + width/2, y + height/5), this);
 
         player1[0] = new Player(new Vector(x + width/4, y + height/2));
         player1[1] = new Player(new Vector(x + 3*(width/4), y + height/2));
@@ -91,4 +98,6 @@ public class SoccerModel {
     public Player[] getPlayer2() {
         return player2;
     }
+
+    public Goal[] getGoals() { return goals; }
 }

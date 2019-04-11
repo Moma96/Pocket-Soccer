@@ -42,4 +42,8 @@ public class GoalPost extends InactiveObject {
             dot.collisionUpdateSpeed(active);
         else line.collisionUpdateSpeed(active);
     }
+
+    public String toString() {
+        return direction + " GoalPost " + id;
+    }
 }
