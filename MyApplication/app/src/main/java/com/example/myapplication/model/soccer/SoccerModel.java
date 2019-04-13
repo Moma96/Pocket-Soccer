@@ -32,7 +32,6 @@ public class SoccerModel {
         goals[0] = new Goal(GoalPost.Direction.NORTH, x + width/2 - GOAL_WIDTH/2, y, GOAL_WIDTH, GOAL_HEIGHT);
         goals[1] = new Goal(GoalPost.Direction.SOUTH, x + width/2 - GOAL_WIDTH/2, y + height - GOAL_HEIGHT, GOAL_WIDTH, GOAL_HEIGHT);
 
-/*
         ball = new Ball(new Vector(x + width*BALL_X, y + height*BALL_Y), this);
 
         for (int i = 0; i < 3; i++) {
@@ -41,7 +40,6 @@ public class SoccerModel {
         }
 
         ball.start();
-
         for (int i = 0; i < 3; i++) {
             player1[i].start();
             player2[i].start();
@@ -56,8 +54,8 @@ public class SoccerModel {
         player2[0] = new Player(new Vector(x + 3*(width/4), y + height/2));
         player1[0].setRadius(200);
         player2[0].setRadius(200);
-        player1[0].setMass(100);
-        player2[0].setMass(100);
+        player1[0].setMass(200);
+        player2[0].setMass(200);
         player1[0].setSpeed(new Vector(10, 0));
         player2[0].setSpeed(new Vector(-10, 0));
 
@@ -66,7 +64,7 @@ public class SoccerModel {
         player2[0].start();
 //*/
         ///////TEST 2
-
+/*
         ball = new Ball(new Vector(x + width/2, y + height/5), this);
 
         player1[0] = new Player(new Vector(x + width/4, y + height/2));
@@ -77,7 +75,6 @@ public class SoccerModel {
         player2[2] = new Player(new Vector(x + width/2, y + 4*(height/5)));
 
         ball.start();
-
         for (int i = 0; i < 3; i++) {
             player1[i].setRadius(200);
             player2[i].setRadius(200);

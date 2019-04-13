@@ -51,18 +51,6 @@ public class Circle extends ActiveObject {
         view.setLayoutParams(params);
     }
 
-    public synchronized void collisionUpdateSpeed(ActiveObject collided) {
-        if (collided == null) return;
-        if (speed.isZeroVector() && collided.speed.isZeroVector()) return;
-
-        collided.setSpeed(collided.speed.sub(
-                collided.center.sub(center).mul(
-                        2 * mass / (collided.mass + mass) *
-                                ((collided.speed.sub(speed).dotProduct(collided.center.sub(center))) / Math.pow(collided.center.sub(center).intensity(), 2))
-                )
-        ));
-    }
-
     public ActiveObject getCopy() {
         return new Circle(this);
     }

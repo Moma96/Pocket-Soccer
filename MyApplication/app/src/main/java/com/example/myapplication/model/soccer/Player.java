@@ -23,11 +23,19 @@ public class Player extends Circle {
         addCollidable(this);
     }
 
+    public Player(Player player) {
+        super(player);
+    }
+
     public void push(Vector force) {
         setSpeed(force.mul(MOVING_INCREMENT));
     }
 
     public String toString() {
         return "Player " + id;
+    }
+
+    public ActiveObject getCopy() {
+        return new Player(this);
     }
 }

@@ -39,16 +39,12 @@ public abstract class ActiveObject extends Thread implements Collidable {
     private HashMap<Integer, ActiveObject> old;
 
     public static void setField(Field f) {
-        synchronized(activeCollidables) {
+        if (f == null) return;
+
+        synchronized (activeCollidables) {
             field = f;
             activeCollidables.notifyAll();
         }
-    }
-
-    public ActiveObject getIdenticalCopy() {
-        ActiveObject copy = getCopy();
-        copy.id = id;
-        return copy;
     }
 
     public static ArrayList<Collidable> getCollidables() {
@@ -61,22 +57,34 @@ public abstract class ActiveObject extends Thread implements Collidable {
 
     public static void addCollidable(Collidable collidable) {
         if (collidable == null) return;
-        collidables.add(collidable);
-        if (collidable instanceof ActiveObject)
-            activeCollidables.add((ActiveObject) collidable);
+
+        synchronized (collidables) {
+            collidables.add(collidable);
+        }
+
+        synchronized (activeCollidables) {
+            if (collidable instanceof ActiveObject)
+                activeCollidables.add((ActiveObject) collidable);
+        }
     }
 
     public static ActiveObject getActive(Vector dot) {
-        for (ActiveObject active : activeCollidables) {
-            if (active.isInside(dot)) {
-                return  active;
+        if (dot == null) return null;
+
+        synchronized (activeCollidables) {
+            for (ActiveObject active : activeCollidables) {
+                if (active.isInside(dot)) {
+                    return active;
+                }
             }
+            return null;
         }
-        return null;
     }
 
     public ActiveObject(double mass, Vector center, Vector speed) {
-        id = next_id++;
+        synchronized (activeCollidables) {
+            id = next_id++;
+        }
         setMass(mass);
         setCenter(center);
         setSpeed(speed);
@@ -85,7 +93,9 @@ public abstract class ActiveObject extends Thread implements Collidable {
     }
 
     public ActiveObject(ActiveObject active) {
-        id = next_id++;
+        synchronized (activeCollidables) {
+            id = next_id++;
+        }
         if (active == null) return;
         setMass(active.mass);
         setCenter(new Vector(active.center));
@@ -98,23 +108,32 @@ public abstract class ActiveObject extends Thread implements Collidable {
         this(mass, center, new Vector(0, 0));
     }
 
+    public synchronized ActiveObject getIdenticalCopy() {
+        ActiveObject copy = getCopy();
+        copy.id = id;
+        synchronized (activeCollidables) {
+            next_id--;
+        }
+        return copy;
+    }
+
     public int getActiveId() {
         return id;
     }
 
-    public double getMass() {
+    public synchronized double getMass() {
         return mass;
     }
 
-    public void setMass(double mass) {
+    public synchronized void setMass(double mass) {
         this.mass = mass;
     }
 
-    public Vector getCenter() {
+    public synchronized Vector getCenter() {
         return center;
     }
 
-    public void setCenter(Vector center) {
+    public synchronized void setCenter(Vector center) {
         this.center = center;
     }
 
@@ -129,13 +148,13 @@ public abstract class ActiveObject extends Thread implements Collidable {
         notifyAll();
     }
 
-    public double getDistance(ActiveObject active) {
+    public synchronized double getDistance(ActiveObject active) {
         if (active == null) return 1;
 
         return center.sub(active.center).intensity() - (getRadius() + active.getRadius());
     }
 
-    public double getDistance(Vector dot) {
+    public synchronized double getDistance(Vector dot) {
         if (dot == null) return 1;
 
         return center.sub(dot).intensity() - getRadius();
@@ -145,7 +164,7 @@ public abstract class ActiveObject extends Thread implements Collidable {
         return getDistance(dot) <= 0;
     }
 
-    public Collidable beforeCollision(ActiveObject active) {
+    public synchronized Collidable beforeCollision(ActiveObject active) {
         if (active == null) return this;
 
         ActiveObject old_collided = active.old.get(id);
@@ -155,7 +174,7 @@ public abstract class ActiveObject extends Thread implements Collidable {
             return this;
     }
 
-    public void duringCollision(ActiveObject active) {
+    public synchronized void duringCollision(ActiveObject active) {
         if (active == null) return;
 
         ActiveObject old_collided = active.old.get(id);
@@ -163,9 +182,7 @@ public abstract class ActiveObject extends Thread implements Collidable {
 
             ActiveObject copy = active.getIdenticalCopy();
             old.put(active.id, copy);
-            synchronized (this) {
-                notifyAll();
-            }
+            notifyAll();
 
         } else
             active.old.remove(id);
@@ -174,59 +191,68 @@ public abstract class ActiveObject extends Thread implements Collidable {
     private void collision(Collidable collided) {
         if (collided == null) return;
 
-        collided = collided.beforeCollision(this);
-        double distance = collided.getDistance(this);
-        Double old_distance = collision_in_process.get(collided.toString());
+        synchronized (activeCollidables) {
+            collided = collided.beforeCollision(this);
+            double distance = collided.getDistance(this);
+            Double old_distance = collision_in_process.get(collided.toString());
 
-        if (distance <= 0) {
-            collided.duringCollision(this);
-            collision_in_process.put(collided.toString(), distance);
+            if (distance <= 0) {
+                collided.duringCollision(this);
+                collision_in_process.put(collided.toString(), distance);
 
-            if (old_distance == null || (old_distance != null && distance < old_distance)) {
-                collided.collisionUpdateSpeed(this);
-                Log.d(COLLISION_TAG, this + " collided " + collided);
+                if (old_distance == null || (old_distance != null && distance < old_distance)) {
+                    collided.collisionUpdateSpeed(this);
+                    Log.d(COLLISION_TAG, this + " collided " + collided);
 
-            } else if (old_distance != null)// (distance >= old_distance) {
-                Log.d(COLLISION_TAG, this + " recovering from collision with " + collided);
+                } else if (old_distance != null)// (distance >= old_distance) {
+                    Log.d(COLLISION_TAG, this + " recovering from collision with " + collided);
 
-        } else {
-            if (old_distance != null) {
-                collision_in_process.remove(collided.toString());
-                Log.d(COLLISION_TAG, "Collision status for " + this + " and " + collided + " reset");
+            } else {
+                if (old_distance != null) {
+                    collision_in_process.remove(collided.toString());
+                    Log.d(COLLISION_TAG, "Collision status for " + this + " and " + collided + " reset");
+                }
             }
         }
+    }
+
+    public synchronized void collisionUpdateSpeed(ActiveObject collided) {
+        if (collided == null) return;
+        if (speed.isZeroVector() && collided.speed.isZeroVector()) return;
+
+        collided.setSpeed(collided.speed.sub(
+                collided.center.sub(center).mul(
+                        2 * mass / (collided.mass + mass) *
+                                ((collided.speed.sub(speed).dotProduct(collided.center.sub(center))) / Math.pow(collided.center.sub(center).intensity(), 2))
+                )
+        ));
     }
 
     private void checkCollision() {
-        synchronized (activeCollidables) {
-            for (Collidable collidable : collidables) {
-                if (this != collidable) {
-                    collision(collidable);
-                }
+        for (Collidable collidable : collidables) {
+            if (this != collidable) {
+                collision(collidable);
             }
         }
     }
 
-    private void checkSpeed() throws InterruptedException {
-        if (speed.isZeroVector()) {
-            if (moving.contains(this)) {
-                synchronized (barrier) {
-                    moving.remove(this);
-                }
+    private synchronized void checkSpeed() throws InterruptedException {
+        synchronized (barrier) {
+            if (speed.isZeroVector() && moving.contains(this)) {
+                moving.remove(this);
                 Log.d(STATE_TAG, this + " stopped");
             }
-            synchronized (this) {
-                wait();
-            }
         }
-        if (!moving.contains(this)) {
-            synchronized (this) {
-                notifyAll();
-            }
-            synchronized (barrier) {
+
+        if (speed.isZeroVector()) {
+            wait();
+        }
+
+        synchronized (barrier) {
+            if (!moving.contains(this)) {
                 moving.add(this);
+                Log.d(STATE_TAG, this + " is moving");
             }
-            Log.d(STATE_TAG, this + " is moving");
         }
     }
 
@@ -236,8 +262,8 @@ public abstract class ActiveObject extends Thread implements Collidable {
     }
 
     private void waitField() throws InterruptedException {
-        while (field == null) {
-            synchronized (activeCollidables) {
+        synchronized (activeCollidables) {
+            while (field == null) {
                 activeCollidables.wait();
             }
         }
@@ -250,9 +276,8 @@ public abstract class ActiveObject extends Thread implements Collidable {
                 if (barrier.size() == moving.size()) {
                     barrier.notifyAll();
                     barrier.clear();
-                } else {
+                } else
                     barrier.wait();
-                }
             } else {
                 Log.e(COLLISION_TAG, "Barrier is not working properly");
             }
@@ -263,7 +288,6 @@ public abstract class ActiveObject extends Thread implements Collidable {
 
     @Override
     public void run() {
-        //setPriority(MAX_PRIORITY);
         try {
             waitField();
             while (true) {  ///////////////NE MOZE OVAKO!!!!!!!!!!!!!!!!!!!!
@@ -273,8 +297,8 @@ public abstract class ActiveObject extends Thread implements Collidable {
                     move();
                     work();
                     sleep(MOVING_DELAY);
-                    //barrier();
-                };
+                    barrier();
+                }
             }
         } catch (InterruptedException e) {
             e.printStackTrace();

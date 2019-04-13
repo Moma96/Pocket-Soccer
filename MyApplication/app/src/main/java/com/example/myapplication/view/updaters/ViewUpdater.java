@@ -92,7 +92,6 @@ public class ViewUpdater extends Thread {
     @Override
     public void run() {
         Log.d(STATE_TAG, "View updater started");
-       // setPriority(MAX_PRIORITY - 1);
 
         ballImageUpdater.start();
         while(!gameplay.isDestroyed()) {

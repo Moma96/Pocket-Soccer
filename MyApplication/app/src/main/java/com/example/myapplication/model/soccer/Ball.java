@@ -2,13 +2,14 @@ package com.example.myapplication.model.soccer;
 
 import android.util.Log;
 
+import com.example.myapplication.model.collidables.active.ActiveObject;
 import com.example.myapplication.model.collidables.active.Circle;
 import com.example.myapplication.model.Vector;
 
 public class Ball extends Circle {
 
     private static final double MASS = 1;
-    private static final double RADIUS = 25;
+    private static final double RADIUS = 30;
     private static final double IMG_RADIUS_COEFFICIENT = 2.5;
 
     private SoccerModel soccer;
@@ -18,6 +19,10 @@ public class Ball extends Circle {
         super(MASS, RADIUS, IMG_RADIUS_COEFFICIENT, center);
         this.soccer = soccer;
         addCollidable(this);
+    }
+
+    public Ball(Ball ball) {
+        super(ball);
     }
 
     protected void work() {
@@ -37,5 +42,9 @@ public class Ball extends Circle {
 
     public String toString() {
         return "Ball " + id;
+    }
+
+    public ActiveObject getCopy() {
+        return new Ball(this);
     }
 }
