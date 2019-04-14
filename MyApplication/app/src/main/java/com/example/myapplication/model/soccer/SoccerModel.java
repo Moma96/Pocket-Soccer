@@ -16,11 +16,11 @@ public class SoccerModel {
     public static final double BALL_X = 1.0/2;
     public static final double BALL_Y = 1.0/2;
 
-    public static final double[] PLAYER_1_X = { 1.0/2, 1.0/5, 4.0/5 };
-    public static final double[] PLAYER_1_Y = { 1.0/4, 1.0/8, 1.0/8 };
+    public static final double[][] PLAYER_X = {{ 1.0/2, 1.0/5, 4.0/5 },
+                                               { 1.0/2, 1.0/5, 4.0/5 }};
 
-    public static final double[] PLAYER_2_X = { 1.0/2, 1.0/5, 4.0/5 };
-    public static final double[] PLAYER_2_Y = { 3.0/4, 7.0/8, 7.0/8 };
+    public static final double[][] PLAYER_Y = {{ 1.0/4, 1.0/8, 1.0/8 },
+                                              { 3.0/4, 7.0/8, 7.0/8 }};
 
     public static final int GOAL_WAIT = 3; //s
 
@@ -31,8 +31,8 @@ public class SoccerModel {
 
     private Ball ball;
 
-    private Player[] player1 = new Player[3];
-    private Player[] player2 = new Player[3];
+    private Player[][] player = new Player[2][3];
+    private int active = 0;
 
     private int[] scores = {0, 0};
     private boolean responsiveness = false;
@@ -55,15 +55,15 @@ public class SoccerModel {
 
         ball = new Ball(new Vector(x + width*BALL_X, y + height*BALL_Y), this);
 
-        for (int i = 0; i < 3; i++) {
-            player1[i] = new Player(new Vector(x + width * PLAYER_1_X[i], y + height * PLAYER_1_Y[i]));
-            player2[i] = new Player(new Vector(x + width * PLAYER_2_X[i], y + height * PLAYER_2_Y[i]));
+        for (int p = 0; p < 2; p++) {
+            for (int i = 0; i < 3; i++)
+                player[p][i] = new Player(new Vector(x + width * PLAYER_X[p][i], y + height * PLAYER_Y[p][i]));
         }
 
         ball.start();
-        for (int i = 0; i < 3; i++) {
-            player1[i].start();
-            player2[i].start();
+        for (int p = 0; p < 2; p++) {
+            for (int i = 0; i < 3; i++)
+                player[p][i].start();
         }
 //*/
         //////TEST 1
@@ -106,6 +106,10 @@ public class SoccerModel {
         setResponsiveness();
     }
 
+    private void changeActive() {
+        active = (active + 1) % 2;
+    }
+
     private void disableResponsiveness(int wait) {
         resetResponsiveness();
         try {
@@ -116,11 +120,11 @@ public class SoccerModel {
         setResponsiveness();
     }
 
-    public void goal(int player) {
+    public void goal(int p) {
         if (!responsive()) return;
 
-        scores[player]++;
-        Log.d(GOAL_TAG, "PLayer " + player + " scored! result: " + scores[0] + ":" + scores[1]);
+        scores[p]++;
+        Log.d(GOAL_TAG, "PLayer " + p + " scored! result: " + scores[0] + ":" + scores[1]);
 
         new AsyncTask<Void, Void, Void>() {
             @Override
@@ -129,12 +133,11 @@ public class SoccerModel {
 
                 ball.setCenter(new Vector(x + width*BALL_X, y + height*BALL_Y));
                 ball.clearSpeed();
-
-                for (int i = 0; i < 3; i++) {
-                    player1[i].setCenter(new Vector(x + width * PLAYER_1_X[i], y + height * PLAYER_1_Y[i]));
-                    player2[i].setCenter(new Vector(x + width * PLAYER_2_X[i], y + height * PLAYER_2_Y[i]));
-                    player1[i].clearSpeed();
-                    player2[i].clearSpeed();
+                for (int p = 0; p < 2; p++) {
+                    for (int i = 0; i < 3; i++) {
+                        player[p][i].setCenter(new Vector(x + width * PLAYER_X[p][i], y + height * PLAYER_Y[p][i]));
+                        player[p][i].clearSpeed();
+                    }
                 }
                 return null;
             }
@@ -147,10 +150,11 @@ public class SoccerModel {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground( final Void ... params ) {
-                Player player = Player.getPlayer(new Vector(x1, y1));
-                if (player != null) {
+                //Player player = Player.getPlayer(new Vector(x1, y1));
+                Player player = getActivePlayer(new Vector(x1, y1));
+                if (player != null)
                     player.push(new Vector(x2 - x1, y2 - y1));
-                }
+                changeActive();
                 return null;
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -172,12 +176,26 @@ public class SoccerModel {
         return ball;
     }
 
-    public Player[] getPlayer1() {
-        return player1;
+    public Player[] getPlayers(int p) {
+        return player[p];
     }
 
-    public Player[] getPlayer2() {
-        return player2;
+    public Player[] getActivePlayers() {
+        return player[active];
+    }
+
+    public Player getActivePlayer(Vector dot) {
+        Player[] players = getActivePlayers();
+        double min_distance = Double.MAX_VALUE;
+        Player player = null;
+        for (Player p : players) {
+            double distance = p.getDistance(dot);
+            if (distance < min_distance) {
+                min_distance = distance;
+                player = p;
+            }
+        }
+        return player;
     }
 
     public Goal[] getGoals() { return goals; }
