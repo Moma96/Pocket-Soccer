@@ -39,20 +39,21 @@ public class ViewUpdater extends Thread {
 
         int[] team = { gameplay.getResources().getIdentifier("team" + 25, "drawable", gameplay.getPackageName()),
                        gameplay.getResources().getIdentifier("team" + 5, "drawable", gameplay.getPackageName()) };
-        //int team2 = gameplay.getResources().getIdentifier("team" + 5, "drawable", gameplay.getPackageName());
 
         for (int p = 0; p < 2; p++) {
             for (Player player : gameplay.getSoccerModel().getPlayers(p))
                 activeViews.put(player, setAndAddImage(background, player, team[p]));
         }
-        //for (Player player : gameplay.getSoccerModel().getPlayer2())
-          //  activeViews.put(player, setAndAddImage(background, player, team2));
 
         drawGoals(background);
     }
 
     public GameplayActivity getGameplay() {
         return gameplay;
+    }
+
+    public HashMap<ActiveObject, ImageView> getViews() {
+        return activeViews;
     }
 
     private void drawGoals(FrameLayout background) {

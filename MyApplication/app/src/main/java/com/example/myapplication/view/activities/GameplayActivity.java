@@ -1,5 +1,8 @@
 package com.example.myapplication.view.activities;
 
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.media.Image;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.view.GestureDetectorCompat;
@@ -9,11 +12,15 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import com.example.myapplication.R;
+import com.example.myapplication.model.collidables.active.ActiveObject;
 import com.example.myapplication.model.soccer.Player;
 import com.example.myapplication.model.soccer.SoccerModel;
 import com.example.myapplication.model.Vector;
 import com.example.myapplication.view.listeners.SwipeGestureListener;
 import com.example.myapplication.view.updaters.ViewUpdater;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class GameplayActivity extends AppCompatActivity {
 
@@ -39,11 +46,17 @@ public class GameplayActivity extends AppCompatActivity {
         });
     }
 
+    public ViewUpdater getViewUpdater() {
+        return viewUpdater;
+    }
+
     private void setup(FrameLayout background) {
-        soccerModel = new SoccerModel(0, 0, background.getWidth(), background.getHeight());
+        soccerModel = new SoccerModel(this, 0, 0, background.getWidth(), background.getHeight());
 
         viewUpdater = new ViewUpdater(this);
         viewUpdater.start();
+
+        soccerModel.darkenInactive();
 
         SwipeGestureListener gestureListener = new SwipeGestureListener();
         gestureListener.setActivity(this);

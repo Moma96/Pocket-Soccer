@@ -2,9 +2,14 @@ package com.example.myapplication.model.soccer;
 
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.ImageView;
 
+import com.example.myapplication.model.collidables.active.ActiveObject;
 import com.example.myapplication.model.collidables.active.Circle;
 import com.example.myapplication.model.Vector;
+import com.example.myapplication.view.activities.GameplayActivity;
+
+import java.util.HashMap;
 
 import static java.lang.Thread.sleep;
 
@@ -31,7 +36,7 @@ public class SoccerModel {
 
     private Ball ball;
 
-    private Player[][] player = new Player[2][3];
+    private Player[][] players = new Player[2][3];
     private int active = 0;
 
     private int[] scores = {0, 0};
@@ -42,7 +47,10 @@ public class SoccerModel {
     private double width;
     private double height;
 
-    public SoccerModel(double x, double y, double width, double height) {
+    private GameplayActivity gameplay;
+
+    public SoccerModel(GameplayActivity gameplay, double x, double y, double width, double height) {
+        this.gameplay = gameplay;
         this.x = x;
         this.y = y;
         this.width = width;
@@ -57,13 +65,13 @@ public class SoccerModel {
 
         for (int p = 0; p < 2; p++) {
             for (int i = 0; i < 3; i++)
-                player[p][i] = new Player(new Vector(x + width * PLAYER_X[p][i], y + height * PLAYER_Y[p][i]));
+                players[p][i] = new Player(new Vector(x + width * PLAYER_X[p][i], y + height * PLAYER_Y[p][i]));
         }
 
         ball.start();
         for (int p = 0; p < 2; p++) {
             for (int i = 0; i < 3; i++)
-                player[p][i].start();
+                players[p][i].start();
         }
 //*/
         //////TEST 1
@@ -71,36 +79,36 @@ public class SoccerModel {
         ball = new Ball(new Vector(x + width/2, y + height/2), this);
         ball.setRadius(150);
 
-        player1[0] = new Player(new Vector(x + width/4, y + height/2));
-        player2[0] = new Player(new Vector(x + 3*(width/4), y + height/2));
-        player1[0].setRadius(200);
-        player2[0].setRadius(200);
-        player1[0].setMass(200);
-        player2[0].setMass(200);
-        player1[0].setSpeed(new Vector(10, 0));
-        player2[0].setSpeed(new Vector(-10, 0));
+        player[0][0] = new Player(new Vector(x + width/4, y + height/2));
+        player[1][0] = new Player(new Vector(x + 3*(width/4), y + height/2));
+
+        player[0][0].setSpeed(new Vector(10, 0));
+        player[1][0].setSpeed(new Vector(-10, 0));
 
         ball.start();
-        player1[0].start();
-        player2[0].start();
+        for (int p = 0; p <2; p++) {
+            player[p][0].setRadius(200);
+            player[p][0].setMass(200);
+            player[p][0].start();
+        }
 //*/
         ///////TEST 2
 /*
         ball = new Ball(new Vector(x + width/2, y + height/5), this);
 
-        player1[0] = new Player(new Vector(x + width/4, y + height/2));
-        player1[1] = new Player(new Vector(x + 3*(width/4), y + height/2));
-        player1[2] = new Player(new Vector(x + width/2, y + height/2));
-        player2[0] = new Player(new Vector(x + width/2, y + 1*(height/3)));
-        player2[1] = new Player(new Vector(x + width/2, y + 2*(height/3)));
-        player2[2] = new Player(new Vector(x + width/2, y + 4*(height/5)));
+        player[0][0] = new Player(new Vector(x + width/4, y + height/2));
+        player[0][1] = new Player(new Vector(x + 3*(width/4), y + height/2));
+        player[0][2] = new Player(new Vector(x + width/2, y + height/2));
+        player[1][0] = new Player(new Vector(x + width/2, y + 1*(height/3)));
+        player[1][1] = new Player(new Vector(x + width/2, y + 2*(height/3)));
+        player[1][2] = new Player(new Vector(x + width/2, y + 4*(height/5)));
 
         ball.start();
-        for (int i = 0; i < 3; i++) {
-            player1[i].setRadius(200);
-            player2[i].setRadius(200);
-            player1[i].start();
-            player2[i].start();
+        for (int p = 0; p < 2; p++) {
+            for (int i = 0; i < 3; i++) {
+                player[p][i].setRadius(200);
+                player[p][i].start();
+            }
         }
 //*/
         setResponsiveness();
@@ -108,6 +116,7 @@ public class SoccerModel {
 
     private void changeActive() {
         active = (active + 1) % 2;
+        darkenInactive();
     }
 
     private void disableResponsiveness(int wait) {
@@ -135,13 +144,33 @@ public class SoccerModel {
                 ball.clearSpeed();
                 for (int p = 0; p < 2; p++) {
                     for (int i = 0; i < 3; i++) {
-                        player[p][i].setCenter(new Vector(x + width * PLAYER_X[p][i], y + height * PLAYER_Y[p][i]));
-                        player[p][i].clearSpeed();
+                        players[p][i].clearSpeed();
+                        players[p][i].setCenter(new Vector(x + width * PLAYER_X[p][i], y + height * PLAYER_Y[p][i]));
                     }
                 }
                 return null;
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    public void darkenInactive() {
+        gameplay.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Player[] active = getActivePlayers();
+                Player[] non_active = getNonActivePlayers();
+                HashMap<ActiveObject, ImageView> views = gameplay.getViewUpdater().getViews();
+
+                for (Player player : active) {
+                    ImageView view = views.get(player);
+                    view.setAlpha((float) 1);
+                }
+                for (Player player : non_active) {
+                    ImageView view = views.get(player);
+                    view.setAlpha((float) 0.7);
+                }
+            }
+        });
     }
 
     public void push(final float x1, final float y1, final float x2, final float y2) {
@@ -150,10 +179,8 @@ public class SoccerModel {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground( final Void ... params ) {
-                //Player player = Player.getPlayer(new Vector(x1, y1));
                 Player player = getActivePlayer(new Vector(x1, y1));
-                if (player != null)
-                    player.push(new Vector(x2 - x1, y2 - y1));
+                player.push(new Vector(x2 - x1, y2 - y1));
                 changeActive();
                 return null;
             }
@@ -176,12 +203,20 @@ public class SoccerModel {
         return ball;
     }
 
+    public Player[][] getPlayers() {
+        return players;
+    }
+
     public Player[] getPlayers(int p) {
-        return player[p];
+        return players[p];
     }
 
     public Player[] getActivePlayers() {
-        return player[active];
+        return players[active];
+    }
+
+    public Player[] getNonActivePlayers() {
+        return players[(active + 1) % 2];
     }
 
     public Player getActivePlayer(Vector dot) {
