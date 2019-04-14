@@ -1,19 +1,12 @@
-package com.example.myapplication.model.soccer;
+package com.example.myapplication.model.soccer.models;
 
-import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.ImageView;
-
-import com.example.myapplication.model.collidables.active.ActiveObject;
-import com.example.myapplication.model.collidables.active.Circle;
 import com.example.myapplication.model.Vector;
-import com.example.myapplication.view.activities.GameplayActivity;
-
-import java.util.HashMap;
-
 import static java.lang.Thread.sleep;
 
 public class SoccerModel {
+
+    public static final int GOAL_WAIT = 3; //s
 
     public static final double GOAL_WIDTH = 300;
     public static final double GOAL_HEIGHT = 100;
@@ -27,8 +20,6 @@ public class SoccerModel {
     public static final double[][] PLAYER_Y = {{ 1.0/4, 1.0/8, 1.0/8 },
                                               { 3.0/4, 7.0/8, 7.0/8 }};
 
-    public static final int GOAL_WAIT = 3; //s
-
     private static final String GOAL_TAG = "Goal";
 
     private SoccerField field;
@@ -38,19 +29,16 @@ public class SoccerModel {
 
     private Player[][] players = new Player[2][3];
     private int active = 0;
+    private boolean responsiveness = false;
 
     private int[] scores = {0, 0};
-    private boolean responsiveness = false;
 
     private double x;
     private double y;
     private double width;
     private double height;
 
-    private GameplayActivity gameplay;
-
-    public SoccerModel(GameplayActivity gameplay, double x, double y, double width, double height) {
-        this.gameplay = gameplay;
+    public SoccerModel(double x, double y, double width, double height) {
         this.x = x;
         this.y = y;
         this.width = width;
@@ -111,12 +99,12 @@ public class SoccerModel {
             }
         }
 //*/
+
         setResponsiveness();
     }
 
-    private void changeActive() {
+    public void changeActive() {
         active = (active + 1) % 2;
-        darkenInactive();
     }
 
     private void disableResponsiveness(int wait) {
@@ -129,62 +117,34 @@ public class SoccerModel {
         setResponsiveness();
     }
 
-    public void goal(int p) {
-        if (!responsive()) return;
+    public boolean score(int player) {
+        if (!responsive()) return false;
 
-        scores[p]++;
-        Log.d(GOAL_TAG, "PLayer " + p + " scored! result: " + scores[0] + ":" + scores[1]);
+        scores[player]++;
+        Log.d(GOAL_TAG, "PLayer " + player + " scored! result: " + scores[0] + ":" + scores[1]);
 
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground( final Void ... params ) {
-                disableResponsiveness(GOAL_WAIT);
+        disableResponsiveness(GOAL_WAIT);
 
-                ball.setCenter(new Vector(x + width*BALL_X, y + height*BALL_Y));
-                ball.clearSpeed();
-                for (int p = 0; p < 2; p++) {
-                    for (int i = 0; i < 3; i++) {
-                        players[p][i].clearSpeed();
-                        players[p][i].setCenter(new Vector(x + width * PLAYER_X[p][i], y + height * PLAYER_Y[p][i]));
-                    }
-                }
-                return null;
+        ball.setCenter(new Vector(x + width*BALL_X, y + height*BALL_Y));
+        ball.clearSpeed();
+        for (int p = 0; p < 2; p++) {
+            for (int i = 0; i < 3; i++) {
+                players[p][i].clearSpeed();
+                players[p][i].setCenter(new Vector(x + width * PLAYER_X[p][i], y + height * PLAYER_Y[p][i]));
             }
-        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        }
+
+        active = (player + 1) % 2;
+        return true;
     }
 
-    public void darkenInactive() {
-        gameplay.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Player[] active = getActivePlayers();
-                Player[] non_active = getNonActivePlayers();
-                HashMap<ActiveObject, ImageView> views = gameplay.getViewUpdater().getViews();
+    public boolean push(final float x1, final float y1, final float x2, final float y2) {
+        if (!responsive()) return false;
 
-                for (Player player : active) {
-                    ImageView view = views.get(player);
-                    view.setAlpha((float) 1);
-                }
-                for (Player player : non_active) {
-                    ImageView view = views.get(player);
-                    view.setAlpha((float) 0.7);
-                }
-            }
-        });
-    }
-
-    public void push(final float x1, final float y1, final float x2, final float y2) {
-        if (!responsive()) return;
-
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground( final Void ... params ) {
-                Player player = getActivePlayer(new Vector(x1, y1));
-                player.push(new Vector(x2 - x1, y2 - y1));
-                changeActive();
-                return null;
-            }
-        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        Player player = getActivePlayer(new Vector(x1, y1));
+        player.push(new Vector(x2 - x1, y2 - y1));
+        changeActive();
+        return true;
     }
 
     public synchronized boolean responsive() {

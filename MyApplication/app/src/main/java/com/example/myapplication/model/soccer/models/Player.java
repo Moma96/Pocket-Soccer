@@ -1,7 +1,6 @@
-package com.example.myapplication.model.soccer;
+package com.example.myapplication.model.soccer.models;
 
 import com.example.myapplication.model.collidables.active.ActiveObject;
-import com.example.myapplication.model.collidables.active.Circle;
 import com.example.myapplication.model.Vector;
 
 public class Player extends Circle {

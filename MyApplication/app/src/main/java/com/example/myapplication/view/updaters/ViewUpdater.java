@@ -8,9 +8,9 @@ import android.widget.ImageView;
 
 import com.example.myapplication.R;
 import com.example.myapplication.model.collidables.active.ActiveObject;
-import com.example.myapplication.model.soccer.Ball;
-import com.example.myapplication.model.collidables.active.Circle;
-import com.example.myapplication.model.soccer.Player;
+import com.example.myapplication.model.soccer.models.Ball;
+import com.example.myapplication.model.soccer.models.Circle;
+import com.example.myapplication.model.soccer.models.Player;
 import com.example.myapplication.view.activities.GameplayActivity;
 
 import java.util.ArrayList;

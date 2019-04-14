@@ -1,31 +1,22 @@
 package com.example.myapplication.view.activities;
 
-import android.graphics.Color;
-import android.graphics.PorterDuff;
-import android.media.Image;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 
 import com.example.myapplication.R;
-import com.example.myapplication.model.collidables.active.ActiveObject;
-import com.example.myapplication.model.soccer.Player;
-import com.example.myapplication.model.soccer.SoccerModel;
-import com.example.myapplication.model.Vector;
+import com.example.myapplication.model.soccer.SoccerFacade;
+import com.example.myapplication.model.soccer.models.SoccerModel;
 import com.example.myapplication.view.listeners.SwipeGestureListener;
 import com.example.myapplication.view.updaters.ViewUpdater;
-
-import java.util.ArrayList;
-import java.util.HashMap;
 
 public class GameplayActivity extends AppCompatActivity {
 
     private GestureDetectorCompat gestureDetectorCompat;
     private SoccerModel soccerModel;
+    private SoccerFacade soccerFacade;
     private ViewUpdater viewUpdater;
 
     @Override
@@ -51,12 +42,15 @@ public class GameplayActivity extends AppCompatActivity {
     }
 
     private void setup(FrameLayout background) {
-        soccerModel = new SoccerModel(this, 0, 0, background.getWidth(), background.getHeight());
+
+        soccerModel = new SoccerModel(0, 0, background.getWidth(), background.getHeight());
+        soccerFacade = new SoccerFacade(this, soccerModel);
+        soccerModel.getBall().setFacade(soccerFacade);
 
         viewUpdater = new ViewUpdater(this);
         viewUpdater.start();
 
-        soccerModel.darkenInactive();
+        soccerFacade.darkenInactive();
 
         SwipeGestureListener gestureListener = new SwipeGestureListener();
         gestureListener.setActivity(this);
@@ -68,7 +62,7 @@ public class GameplayActivity extends AppCompatActivity {
     }
 
     public void respondOnSwipe(float x1, float y1, float x2, float y2) {
-        soccerModel.push(x1, y1, x2, y2);
+        soccerFacade.push(x1, y1, x2, y2);
     }
 
     @Override

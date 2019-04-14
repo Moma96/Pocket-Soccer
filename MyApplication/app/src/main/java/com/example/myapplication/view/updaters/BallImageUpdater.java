@@ -5,7 +5,7 @@ import android.support.annotation.RequiresApi;
 import android.util.Log;
 import android.widget.ImageView;
 
-import com.example.myapplication.model.soccer.Ball;
+import com.example.myapplication.model.soccer.models.Ball;
 
 public class BallImageUpdater extends Thread {
 

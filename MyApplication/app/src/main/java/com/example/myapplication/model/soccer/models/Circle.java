@@ -1,9 +1,10 @@
-package com.example.myapplication.model.collidables.active;
+package com.example.myapplication.model.soccer.models;
 
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import com.example.myapplication.model.Vector;
+import com.example.myapplication.model.collidables.active.ActiveObject;
 
 public class Circle extends ActiveObject {
 
