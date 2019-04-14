@@ -24,7 +24,7 @@ public class Ball extends Circle {
     }
 
     protected void work() {
-        if (soccer != null && soccer.scoreTracking()) {
+        if (soccer != null /*&& soccer.scoreTracking()*/) {
             Goal[] goals = soccer.getGoals();
             for (int i = 0; i < goals.length; i++) {
                 if (goals[i].inGoal(this)) {

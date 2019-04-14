@@ -35,7 +35,7 @@ public class SoccerModel {
     private Player[] player2 = new Player[3];
 
     private int[] scores = {0, 0};
-    private boolean score_tracking = true;
+    private boolean responsiveness = false;
 
     private double x;
     private double y;
@@ -103,22 +103,29 @@ public class SoccerModel {
             player2[i].start();
         }
 //*/
+        setResponsiveness();
+    }
+
+    private void disableResponsiveness(int wait) {
+        resetResponsiveness();
+        try {
+            sleep(wait * 1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        setResponsiveness();
     }
 
     public void goal(int player) {
+        if (!responsive()) return;
+
         scores[player]++;
         Log.d(GOAL_TAG, "PLayer " + player + " scored! result: " + scores[0] + ":" + scores[1]);
 
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground( final Void ... params ) {
-                score_tracking = false;
-                try {
-                    sleep(GOAL_WAIT * 1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                score_tracking = true;
+                disableResponsiveness(GOAL_WAIT);
 
                 ball.setCenter(new Vector(x + width*BALL_X, y + height*BALL_Y));
                 ball.clearSpeed();
@@ -134,8 +141,31 @@ public class SoccerModel {
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
-    public boolean scoreTracking() {
-        return score_tracking;
+    public void push(final float x1, final float y1, final float x2, final float y2) {
+        if (!responsive()) return;
+
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground( final Void ... params ) {
+                Player player = Player.getPlayer(new Vector(x1, y1));
+                if (player != null) {
+                    player.push(new Vector(x2 - x1, y2 - y1));
+                }
+                return null;
+            }
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    public synchronized boolean responsive() {
+        return responsiveness;
+    }
+
+    public synchronized void setResponsiveness() {
+        responsiveness = true;
+    }
+
+    public synchronized void resetResponsiveness() {
+        responsiveness = false;
     }
 
     public Ball getBall() {

@@ -20,6 +20,9 @@ public class Goal {
     }
 
     public boolean inGoal(Ball ball) {
+        if (posts[0].getDistance(ball) <= 0 || posts[0].getDistance(ball) <= 0)
+            return false;
+
         if (ball.getCenter().getX() > position.getX() && ball.getCenter().getX() < position.getX() + width) {
             switch(direction) {
                 case NORTH:

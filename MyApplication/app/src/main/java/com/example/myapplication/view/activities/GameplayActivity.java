@@ -54,17 +54,8 @@ public class GameplayActivity extends AppCompatActivity {
         return soccerModel;
     }
 
-    public void respondOnSwipe(final float x1, final float y1, final float x2, final float y2) {
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground( final Void ... params ) {
-                Player player = Player.getPlayer(new Vector(x1, y1));
-                if (player != null) {
-                    player.push(new Vector(x2 - x1, y2 - y1));
-                }
-                return null;
-            }
-        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    public void respondOnSwipe(float x1, float y1, float x2, float y2) {
+        soccerModel.push(x1, y1, x2, y2);
     }
 
     @Override
