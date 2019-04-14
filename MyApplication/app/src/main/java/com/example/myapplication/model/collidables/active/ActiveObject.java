@@ -164,6 +164,10 @@ public abstract class ActiveObject extends Thread implements Collidable {
         return getDistance(dot) <= 0;
     }
 
+    public void clearSpeed() {
+        setSpeed(new Vector(0, 0));
+    }
+
     public synchronized Collidable beforeCollision(ActiveObject active) {
         if (active == null) return this;
 

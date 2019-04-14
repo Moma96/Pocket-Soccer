@@ -64,7 +64,7 @@ public class GameplayActivity extends AppCompatActivity {
                 }
                 return null;
             }
-        }.execute();
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     @Override

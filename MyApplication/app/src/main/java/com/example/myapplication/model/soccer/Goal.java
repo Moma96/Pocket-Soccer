@@ -23,7 +23,7 @@ public class Goal {
         if (ball.getCenter().getX() > position.getX() && ball.getCenter().getX() < position.getX() + width) {
             switch(direction) {
                 case NORTH:
-                    if (ball.getCenter().getY() - ball.getRadius() < position.getY())
+                    if (ball.getCenter().getY() - ball.getRadius() < position.getY() + height)
                         return true;
                     break;
                 case SOUTH:
@@ -33,5 +33,9 @@ public class Goal {
             }
         }
         return false;
+    }
+
+    public String toString() {
+        return direction + " wall";
     }
 }
