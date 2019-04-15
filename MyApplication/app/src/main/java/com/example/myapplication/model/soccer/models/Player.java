@@ -9,14 +9,6 @@ public class Player extends Circle {
     private static final double RADIUS = 80; //80;
     public static final double IMG_RADIUS_COEFFICIENT = 1.05;
 
-    public static synchronized Player getPlayer(Vector dot) {
-        ActiveObject active = ActiveObject.getActive(dot);
-        if (active instanceof Player) {
-            return (Player)active;
-        }
-        return null;
-    }
-
     public Player(Vector center) {
         super(MASS, RADIUS, IMG_RADIUS_COEFFICIENT, center);
         addCollidable(this);

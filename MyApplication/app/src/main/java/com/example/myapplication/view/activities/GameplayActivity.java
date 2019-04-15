@@ -44,13 +44,10 @@ public class GameplayActivity extends AppCompatActivity {
     private void setup(FrameLayout background) {
 
         soccerModel = new SoccerModel(0, 0, background.getWidth(), background.getHeight());
-        soccerFacade = new SoccerFacade(this, soccerModel);
-        soccerModel.getBall().setFacade(soccerFacade);
+        viewUpdater = new ViewUpdater(this, soccerModel);
+        soccerFacade = new SoccerFacade(this, soccerModel, viewUpdater);
 
-        viewUpdater = new ViewUpdater(this);
         viewUpdater.start();
-
-        soccerFacade.darkenInactive();
 
         SwipeGestureListener gestureListener = new SwipeGestureListener();
         gestureListener.setActivity(this);

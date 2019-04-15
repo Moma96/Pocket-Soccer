@@ -7,17 +7,23 @@ import com.example.myapplication.model.collidables.active.ActiveObject;
 import com.example.myapplication.model.soccer.models.Player;
 import com.example.myapplication.model.soccer.models.SoccerModel;
 import com.example.myapplication.view.activities.GameplayActivity;
+import com.example.myapplication.view.updaters.ViewUpdater;
 
 import java.util.HashMap;
 
 public class SoccerFacade {
 
     private GameplayActivity gameplay;
+    private ViewUpdater updater;
     private SoccerModel model;
 
-    public SoccerFacade(GameplayActivity gameplay, SoccerModel model) {
+    public SoccerFacade(GameplayActivity gameplay, SoccerModel model, ViewUpdater updater) {
         this.gameplay = gameplay;
         this.model = model;
+        this.updater = updater;
+
+        model.getBall().setFacade(this);
+        darkenInactive();
     }
 
     public void darkenInactive() {
@@ -44,8 +50,10 @@ public class SoccerFacade {
             new AsyncTask<Void, Void, Void>() {
                 @Override
                 protected Void doInBackground( final Void ... params ) {
-                    if (model.score(player))
+                    if (model.score(player)) {
+                        updater.updateScore();
                         darkenInactive();
+                    }
                     return null;
                 }
             }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
