@@ -9,7 +9,7 @@ import android.widget.FrameLayout;
 import com.example.myapplication.R;
 import com.example.myapplication.model.soccer.SoccerFacade;
 import com.example.myapplication.model.soccer.models.SoccerModel;
-import com.example.myapplication.view.listeners.SwipeGestureListener;
+import com.example.myapplication.view.GestureListener;
 import com.example.myapplication.view.updaters.ViewUpdater;
 
 public class GameplayActivity extends AppCompatActivity {
@@ -49,7 +49,7 @@ public class GameplayActivity extends AppCompatActivity {
 
         viewUpdater.start();
 
-        SwipeGestureListener gestureListener = new SwipeGestureListener();
+        GestureListener gestureListener = new GestureListener();
         gestureListener.setActivity(this);
         gestureDetectorCompat = new GestureDetectorCompat(this, gestureListener);
     }
@@ -60,6 +60,10 @@ public class GameplayActivity extends AppCompatActivity {
 
     public void respondOnSwipe(float x1, float y1, float x2, float y2) {
         soccerFacade.push(x1, y1, x2, y2);
+    }
+
+    public void respondOnDown(float x, float y) {
+
     }
 
     @Override

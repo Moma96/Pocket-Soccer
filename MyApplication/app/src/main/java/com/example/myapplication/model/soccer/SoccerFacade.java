@@ -51,7 +51,7 @@ public class SoccerFacade {
                 @Override
                 protected Void doInBackground( final Void ... params ) {
                     if (model.score(player)) {
-                        updater.updateScore();
+                        updater.updateScores();
                         darkenInactive();
                     }
                     return null;

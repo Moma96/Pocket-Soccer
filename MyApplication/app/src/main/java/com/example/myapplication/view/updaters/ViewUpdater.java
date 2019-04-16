@@ -3,6 +3,7 @@ package com.example.myapplication.view.updaters;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.util.Log;
+import android.view.Gravity;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -27,29 +28,18 @@ public class ViewUpdater extends Thread {
     private SoccerModel soccer;
 
     private BallImageUpdater ballImageUpdater;
-    private HashMap<ActiveObject, ImageView> activeViews = new HashMap<>();
-    private ImageView goalposts;
-    private TextView[] score = new TextView[2];
+    private HashMap<ActiveObject, ImageView> imgActives = new HashMap<>();
+    private ImageView imgGoalposts;
+    //private TextView[] scores = new TextView[2];
+    private TextView imgScores;
 
     public ViewUpdater(GameplayActivity gameplay, SoccerModel soccer) {
         this.gameplay = gameplay;
         this.soccer = soccer;
 
-        FrameLayout background = gameplay.findViewById(R.id.background);
-
-        Ball ball = soccer.getBall();
-        ImageView ballImageView = drawCircle(background, ball, R.drawable.ball0);
-        ballImageUpdater = new BallImageUpdater(this, ballImageView);
-
         int[] teams = { 25, 5 };
 
-        for (int p = 0; p < 2; p++) {
-            for (Player player : soccer.getPlayers(p))
-                drawCircle(background, player, gameplay.getResources().getIdentifier("team" + teams[p], "drawable", gameplay.getPackageName()));//teamresid[p]);
-        }
-
-        drawScores(background);
-        drawGoals(background);
+        draw(teams);
     }
 
     public GameplayActivity getGameplay() {
@@ -57,21 +47,60 @@ public class ViewUpdater extends Thread {
     }
 
     public HashMap<ActiveObject, ImageView> getViews() {
-        return activeViews;
+        return imgActives;
+    }
+
+    private void draw(final int[] teams) {
+        gameplay.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                FrameLayout background = gameplay.findViewById(R.id.background);
+                drawBall(background);
+                drawPlayers(background, teams);
+                drawGoals(background);
+                drawScores(background);
+            }
+       });
+    }
+
+    private void drawBall(FrameLayout background) {
+        Ball ball = soccer.getBall();
+        ImageView ballImageView = drawCircle(background, ball, R.drawable.ball0);
+        ballImageUpdater = new BallImageUpdater(this, ballImageView);
+    }
+
+    private void drawPlayers(FrameLayout background, int[] teams) {
+        for (int p = 0; p < 2; p++) {
+            for (Player player : soccer.getPlayers(p))
+                drawCircle(background, player, gameplay.getResources().getIdentifier("team" + teams[p], "drawable", gameplay.getPackageName()));
+        }
     }
 
     private void drawScores(FrameLayout background) {
+        /*for (int p = 0; p < 2; p++) {
+            scores[p] = new TextView(gameplay);
+            scores[p].setText(soccer.getScores()[p]);
+        }*/
 
+        imgScores = new TextView(gameplay);
+        int[] scores = soccer.getScores();
+        imgScores.setText(scores[0] + ":" + scores[1]);
+
+        //FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(background.getWidth(), background.getHeight());
+        //params.leftMargin = 0;
+        //params.topMargin  = 0;
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(100, 100, Gravity.CENTER);
+        background.addView(imgScores, params);
     }
 
     private void drawGoals(FrameLayout background) {
-        goalposts = new ImageView(gameplay);
-        goalposts.setBackgroundResource(R.drawable.goals);
+        imgGoalposts = new ImageView(gameplay);
+        imgGoalposts.setBackgroundResource(R.drawable.goals);
 
         FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(background.getWidth(), background.getHeight());
         params.leftMargin = 0;
         params.topMargin  = 0;
-        background.addView(goalposts, params);
+        background.addView(imgGoalposts, params);
     }
 
     private ImageView drawCircle(FrameLayout background, Circle circle, int resid) {
@@ -83,7 +112,7 @@ public class ViewUpdater extends Thread {
         params.topMargin  = (int)(circle.getCenter().getY() - circle.getImgRadius());
         background.addView(img, params);
 
-        activeViews.put(circle, img);
+        imgActives.put(circle, img);
         return img;
     }
 
@@ -93,18 +122,19 @@ public class ViewUpdater extends Thread {
             public void run() {
                 ArrayList<ActiveObject> activeObjects = ActiveObject.getActiveCollidables();
                 for (ActiveObject active : activeObjects)
-                    active.draw(activeViews.get(active));
+                    active.draw(imgActives.get(active));
 
-                goalposts.setBackgroundResource(R.drawable.goals);
+                imgGoalposts.setBackgroundResource(R.drawable.goals);
             }
         });
     }
 
-    public void updateScore() {
+    public void updateScores() {
         gameplay.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-
+                int[] scores = soccer.getScores();
+                imgScores.setText(scores[0] + ":" + scores[1]);
             }
         });
     }

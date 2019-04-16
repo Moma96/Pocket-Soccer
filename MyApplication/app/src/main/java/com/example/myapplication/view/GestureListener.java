@@ -1,11 +1,12 @@
-package com.example.myapplication.view.listeners;
+package com.example.myapplication.view;
 
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 
 import com.example.myapplication.view.activities.GameplayActivity;
 
-public class SwipeGestureListener extends GestureDetector.SimpleOnGestureListener {
+public class GestureListener extends GestureDetector.SimpleOnGestureListener {
 
     private GameplayActivity activity;
 
@@ -18,4 +19,12 @@ public class SwipeGestureListener extends GestureDetector.SimpleOnGestureListene
         activity.respondOnSwipe(e1.getX(), e1.getY(), e2.getX(), e2.getY());
         return true;
     }
+
+    @Override
+    public boolean onDown(MotionEvent e) {
+        //Log.d("TOUCH","PUUUUUUUUUUUUUUUSH!!!!!");
+        activity.respondOnDown(e.getX(), e.getY());
+        return true;
+    }
+
 }

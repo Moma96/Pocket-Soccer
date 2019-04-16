@@ -193,5 +193,11 @@ public class SoccerModel {
         return player;
     }
 
-    public Goal[] getGoals() { return goals; }
+    public Goal[] getGoals() {
+        return goals;
+    }
+
+    public int[] getScores() {
+        return scores;
+    }
 }
