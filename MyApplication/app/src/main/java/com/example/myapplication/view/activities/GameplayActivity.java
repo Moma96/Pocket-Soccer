@@ -63,7 +63,7 @@ public class GameplayActivity extends AppCompatActivity {
     }
 
     public void respondOnDown(float x, float y) {
-
+        soccerFacade.select(x, y);
     }
 
     @Override

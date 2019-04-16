@@ -64,7 +64,20 @@ public class SoccerFacade {
             @Override
             protected Void doInBackground( final Void ... params ) {
                 if (model.push(x1, y1, x2, y2))
+                    updater.setOffSelection();
                     darkenInactive();
+                return null;
+            }
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    public void select(final float x, final float y) {
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground( final Void ... params ) {
+                if (model.select(x, y)) {
+
+                }
                 return null;
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);

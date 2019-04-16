@@ -6,7 +6,7 @@ import static java.lang.Thread.sleep;
 
 public class SoccerModel {
 
-    public static final int GOAL_WAIT = 3; //s
+    public static final int AFTER_GOAL_WAIT = 2; //s
 
     public static final double GOAL_WIDTH = 300;
     public static final double GOAL_HEIGHT = 100;
@@ -29,6 +29,7 @@ public class SoccerModel {
 
     private Player[][] players = new Player[2][3];
     private int active = 0;
+    private Player selected = null;
     private boolean responsiveness = false;
 
     private int[] scores = {0, 0};
@@ -107,7 +108,11 @@ public class SoccerModel {
         active = (active + 1) % 2;
     }
 
-    private void disableResponsiveness(int wait) {
+    public Player getSelected() {
+        return selected;
+    }
+
+    private void disableAndSleep(int wait) {
         resetResponsiveness();
         try {
             sleep(wait * 1000);
@@ -123,7 +128,7 @@ public class SoccerModel {
         scores[player]++;
         Log.d(GOAL_TAG, "PLayer " + player + " scored! result: " + scores[0] + ":" + scores[1]);
 
-        disableResponsiveness(GOAL_WAIT);
+        disableAndSleep(AFTER_GOAL_WAIT);
 
         ball.setCenter(new Vector(x + width*BALL_X, y + height*BALL_Y));
         ball.clearSpeed();
@@ -141,9 +146,19 @@ public class SoccerModel {
     public boolean push(final float x1, final float y1, final float x2, final float y2) {
         if (!responsive()) return false;
 
-        Player player = getActivePlayer(new Vector(x1, y1));
-        player.push(new Vector(x2 - x1, y2 - y1));
-        changeActive();
+        //Player player = getActivePlayer(new Vector(x1, y1));
+        if (selected != null) {
+            selected.push(new Vector(x2 - x1, y2 - y1));
+            selected = null;
+            changeActive();
+        }
+        return true;
+    }
+
+    public boolean select(final float x, final float y) {
+        if (!responsive()) return false;
+
+        selected = getActivePlayer(new Vector(x, y));
         return true;
     }
 

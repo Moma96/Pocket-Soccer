@@ -1,9 +1,12 @@
 package com.example.myapplication.view.updaters;
 
+import android.graphics.Color;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.View;
+import android.view.ViewManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -29,6 +32,7 @@ public class ViewUpdater extends Thread {
 
     private BallImageUpdater ballImageUpdater;
     private HashMap<ActiveObject, ImageView> imgActives = new HashMap<>();
+    private ImageView imgSelected;
     private ImageView imgGoalposts;
     //private TextView[] scores = new TextView[2];
     private TextView imgScores;
@@ -85,11 +89,14 @@ public class ViewUpdater extends Thread {
         imgScores = new TextView(gameplay);
         int[] scores = soccer.getScores();
         imgScores.setText(scores[0] + ":" + scores[1]);
+        imgScores.setTextSize(50);
+        imgScores.setRotation(-90);
+        imgScores.setTextColor(Color.WHITE);
 
         //FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(background.getWidth(), background.getHeight());
         //params.leftMargin = 0;
         //params.topMargin  = 0;
-        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(100, 100, Gravity.CENTER);
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(500, 500, Gravity.CENTER);
         background.addView(imgScores, params);
     }
 
@@ -124,6 +131,23 @@ public class ViewUpdater extends Thread {
                 for (ActiveObject active : activeObjects)
                     active.draw(imgActives.get(active));
 
+                Player selected = soccer.getSelected();
+
+                if (selected != null) {
+                    if (imgSelected != null) {
+                        selected.drawSelection(imgSelected);
+                    } else {
+                        FrameLayout background = gameplay.findViewById(R.id.background);
+                        imgSelected = new ImageView(gameplay);
+                        imgSelected.setBackgroundResource(R.drawable.selectplayer);
+
+                        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams((int)(selected.getSelectionRadius()*2), (int)(selected.getSelectionRadius()*2));
+                        params.leftMargin = (int) (selected.getCenter().getX() - selected.getImgRadius());
+                        params.topMargin = (int) (selected.getCenter().getY() - selected.getImgRadius());
+                        background.addView(imgSelected, params);
+                    }
+                }
+
                 imgGoalposts.setBackgroundResource(R.drawable.goals);
             }
         });
@@ -137,6 +161,20 @@ public class ViewUpdater extends Thread {
                 imgScores.setText(scores[0] + ":" + scores[1]);
             }
         });
+    }
+
+    public void setOffSelection() {
+        gameplay.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                removeView(imgSelected);
+                imgSelected = null;
+            }
+        });
+    }
+
+    private void removeView(View view) {
+        ((ViewManager)view.getParent()).removeView(view);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
