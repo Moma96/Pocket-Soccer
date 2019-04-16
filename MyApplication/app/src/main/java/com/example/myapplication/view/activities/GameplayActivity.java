@@ -59,11 +59,15 @@ public class GameplayActivity extends AppCompatActivity {
     }
 
     public void respondOnSwipe(float x1, float y1, float x2, float y2) {
-        soccerFacade.push(x1, y1, x2, y2);
+        soccerFacade.respondOnSwipe(x1, y1, x2, y2);
     }
 
     public void respondOnDown(float x, float y) {
-        soccerFacade.select(x, y);
+        soccerFacade.respondOnDown(x, y);
+    }
+
+    public void respondOnTap(float x, float y) {
+        soccerFacade.respondOnTap(x, y);
     }
 
     @Override

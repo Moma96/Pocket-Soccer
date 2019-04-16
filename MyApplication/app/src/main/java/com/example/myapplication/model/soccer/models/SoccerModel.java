@@ -146,7 +146,6 @@ public class SoccerModel {
     public boolean push(final float x1, final float y1, final float x2, final float y2) {
         if (!responsive()) return false;
 
-        //Player player = getActivePlayer(new Vector(x1, y1));
         if (selected != null) {
             selected.push(new Vector(x2 - x1, y2 - y1));
             selected = null;
@@ -160,6 +159,14 @@ public class SoccerModel {
 
         selected = getActivePlayer(new Vector(x, y));
         return true;
+    }
+
+    public boolean selectIfNothingSelected(final float x, final float y) {
+        if (!responsive()) return false;
+
+        if (selected != null) return false;
+
+        return select(x, y);
     }
 
     public synchronized boolean responsive() {

@@ -22,9 +22,13 @@ public class GestureListener extends GestureDetector.SimpleOnGestureListener {
 
     @Override
     public boolean onDown(MotionEvent e) {
-        //Log.d("TOUCH","PUUUUUUUUUUUUUUUSH!!!!!");
         activity.respondOnDown(e.getX(), e.getY());
         return true;
     }
 
+    @Override
+    public boolean onSingleTapConfirmed(MotionEvent e) {
+        activity.respondOnTap(e.getX(), e.getY());
+        return true;
+    }
 }

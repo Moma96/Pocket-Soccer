@@ -132,7 +132,6 @@ public class ViewUpdater extends Thread {
                     active.draw(imgActives.get(active));
 
                 Player selected = soccer.getSelected();
-
                 if (selected != null) {
                     if (imgSelected != null) {
                         selected.drawSelection(imgSelected);
@@ -142,10 +141,12 @@ public class ViewUpdater extends Thread {
                         imgSelected.setBackgroundResource(R.drawable.selectplayer);
 
                         FrameLayout.LayoutParams params = new FrameLayout.LayoutParams((int)(selected.getSelectionRadius()*2), (int)(selected.getSelectionRadius()*2));
-                        params.leftMargin = (int) (selected.getCenter().getX() - selected.getImgRadius());
-                        params.topMargin = (int) (selected.getCenter().getY() - selected.getImgRadius());
+                        params.leftMargin = (int) (selected.getCenter().getX() - selected.getSelectionRadius());
+                        params.topMargin = (int) (selected.getCenter().getY() - selected.getSelectionRadius());
                         background.addView(imgSelected, params);
                     }
+                } else {
+                    setOffSelection();
                 }
 
                 imgGoalposts.setBackgroundResource(R.drawable.goals);
@@ -164,13 +165,15 @@ public class ViewUpdater extends Thread {
     }
 
     public void setOffSelection() {
-        gameplay.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                removeView(imgSelected);
-                imgSelected = null;
-            }
-        });
+        //gameplay.runOnUiThread(new Runnable() {
+         //   @Override
+          //  public void run() {
+                if (imgSelected != null) {
+                    removeView(imgSelected);
+                    imgSelected = null;
+                }
+           // }
+        //});
     }
 
     private void removeView(View view) {

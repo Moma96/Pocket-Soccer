@@ -59,25 +59,32 @@ public class SoccerFacade {
             }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
-    public void push(final float x1, final float y1, final float x2, final float y2) {
+    public void respondOnSwipe(final float x1, final float y1, final float x2, final float y2) {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground( final Void ... params ) {
                 if (model.push(x1, y1, x2, y2))
-                    updater.setOffSelection();
                     darkenInactive();
                 return null;
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
-    public void select(final float x, final float y) {
+    public void respondOnTap(final float x, final float y) {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground( final Void ... params ) {
-                if (model.select(x, y)) {
+                model.select(x, y);
+                return null;
+            }
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
 
-                }
+    public void respondOnDown(final float x, final float y) {
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground( final Void ... params ) {
+                model.selectIfNothingSelected(x, y);
                 return null;
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
