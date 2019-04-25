@@ -123,7 +123,31 @@ public class ViewUpdater extends Thread {
         return img;
     }
 
-    private void refresh() {
+    public void refreshSelection() {
+        Player selected = soccer.getSelected();
+        if (selected != null) {
+            if (imgSelected != null) {
+                selected.drawSelection(imgSelected);
+            } else {
+                FrameLayout background = gameplay.findViewById(R.id.background);
+                imgSelected = new ImageView(gameplay);
+                imgSelected.setBackgroundResource(R.drawable.selectplayer);
+
+                FrameLayout.LayoutParams params = new FrameLayout.LayoutParams((int)(selected.getSelectionRadius()*2), (int)(selected.getSelectionRadius()*2));
+                params.leftMargin = (int) (selected.getCenter().getX() - selected.getSelectionRadius());
+                params.topMargin = (int) (selected.getCenter().getY() - selected.getSelectionRadius());
+                background.addView(imgSelected, params);
+            }
+        } else {
+            setOffSelection();
+        }
+    }
+
+    public void refreshGoals() {
+        imgGoalposts.setBackgroundResource(R.drawable.goals);
+    }
+
+    public void refresh() {
         gameplay.runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -131,25 +155,8 @@ public class ViewUpdater extends Thread {
                 for (ActiveObject active : activeObjects)
                     active.draw(imgActives.get(active));
 
-                Player selected = soccer.getSelected();
-                if (selected != null) {
-                    if (imgSelected != null) {
-                        selected.drawSelection(imgSelected);
-                    } else {
-                        FrameLayout background = gameplay.findViewById(R.id.background);
-                        imgSelected = new ImageView(gameplay);
-                        imgSelected.setBackgroundResource(R.drawable.selectplayer);
-
-                        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams((int)(selected.getSelectionRadius()*2), (int)(selected.getSelectionRadius()*2));
-                        params.leftMargin = (int) (selected.getCenter().getX() - selected.getSelectionRadius());
-                        params.topMargin = (int) (selected.getCenter().getY() - selected.getSelectionRadius());
-                        background.addView(imgSelected, params);
-                    }
-                } else {
-                    setOffSelection();
-                }
-
-                imgGoalposts.setBackgroundResource(R.drawable.goals);
+                refreshSelection();
+                refreshGoals();
             }
         });
     }
@@ -159,25 +166,21 @@ public class ViewUpdater extends Thread {
             @Override
             public void run() {
                 int[] scores = soccer.getScores();
-                imgScores.setText(scores[0] + ":" + scores[1]);
+                imgScores.setText(scores[1] + ":" + scores[0]);
             }
         });
     }
 
     public void setOffSelection() {
-        //gameplay.runOnUiThread(new Runnable() {
-         //   @Override
-          //  public void run() {
-                if (imgSelected != null) {
-                    removeView(imgSelected);
-                    imgSelected = null;
-                }
-           // }
-        //});
+        if (imgSelected != null) {
+            FrameLayout background = gameplay.findViewById(R.id.background);
+            removeView(background, imgSelected);
+            imgSelected = null;
+        }
     }
 
-    private void removeView(View view) {
-        ((ViewManager)view.getParent()).removeView(view);
+    private void removeView(FrameLayout background, View view) {
+        background.removeView(view);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)

@@ -114,6 +114,7 @@ public class SoccerModel {
 
     private void disableAndSleep(int wait) {
         resetResponsiveness();
+        resetSelection();
         try {
             sleep(wait * 1000);
         } catch (InterruptedException e) {
@@ -162,8 +163,6 @@ public class SoccerModel {
     }
 
     public boolean selectIfNothingSelected(final float x, final float y) {
-        if (!responsive()) return false;
-
         if (selected != null) return false;
 
         return select(x, y);
@@ -180,6 +179,8 @@ public class SoccerModel {
     public synchronized void resetResponsiveness() {
         responsiveness = false;
     }
+
+    public synchronized void resetSelection() { selected = null; }
 
     public Ball getBall() {
         return ball;
