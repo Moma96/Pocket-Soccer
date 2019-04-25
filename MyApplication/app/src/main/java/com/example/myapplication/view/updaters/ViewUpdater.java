@@ -6,6 +6,7 @@ import android.support.annotation.RequiresApi;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -93,10 +94,9 @@ public class ViewUpdater extends Thread {
         imgScores.setRotation(-90);
         imgScores.setTextColor(Color.WHITE);
 
-        //FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(background.getWidth(), background.getHeight());
-        //params.leftMargin = 0;
-        //params.topMargin  = 0;
-        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(500, 500, Gravity.CENTER);
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        params.leftMargin = 0;
+        params.topMargin = background.getHeight() / 2;
         background.addView(imgScores, params);
     }
 
@@ -166,7 +166,7 @@ public class ViewUpdater extends Thread {
             @Override
             public void run() {
                 int[] scores = soccer.getScores();
-                imgScores.setText(scores[1] + ":" + scores[0]);
+                imgScores.setText(scores[0] + ":" + scores[1]);
             }
         });
     }

@@ -51,7 +51,7 @@ public class Ball extends Circle {
             if (goals[i].inGoal(this)) {
                 if (goal_in_process == i) return;
                 else {
-                    facade.score((i + 1) % 2);
+                    facade.score(i);
                     goal_in_process = i;
                 }
             } else if (i == goal_in_process)

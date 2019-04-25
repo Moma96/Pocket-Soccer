@@ -17,8 +17,8 @@ public class SoccerModel {
     public static final double[][] PLAYER_X = {{ 1.0/2, 1.0/5, 4.0/5 },
                                                { 1.0/2, 1.0/5, 4.0/5 }};
 
-    public static final double[][] PLAYER_Y = {{ 1.0/4, 1.0/8, 1.0/8 },
-                                              { 3.0/4, 7.0/8, 7.0/8 }};
+    public static final double[][] PLAYER_Y = {{ 3.0/4, 7.0/8, 7.0/8 },
+                                               { 1.0/4, 1.0/8, 1.0/8 }};
 
     private static final String GOAL_TAG = "Goal";
 
