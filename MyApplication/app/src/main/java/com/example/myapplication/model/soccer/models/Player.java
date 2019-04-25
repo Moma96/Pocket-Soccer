@@ -15,10 +15,10 @@ public class Player extends Circle {
 
     private double selectionRadius;
 
-    public Player(Vector center) {
-        super(MASS, RADIUS, IMG_RADIUS_COEFFICIENT, center);
+    public Player(Vector center, SoccerModel soccer) {
+        super(MASS, RADIUS, IMG_RADIUS_COEFFICIENT, center, soccer.getField());
         selectionRadius = getRadius()*SELECTION_RADIUS_COEFFICIENT;
-        addCollidable(this);
+        soccer.getField().addCollidable(this);
     }
 
     public Player(Player player) {
@@ -34,7 +34,7 @@ public class Player extends Circle {
     }
 
     public String toString() {
-        return "Player " + id;
+        return "Player " + getActiveId();
     }
 
     public ActiveObject getCopy() {

@@ -1,6 +1,7 @@
 package com.example.myapplication.model.soccer.models;
 
 import com.example.myapplication.model.Vector;
+import com.example.myapplication.model.collidables.Field;
 
 public class Goal {
 
@@ -10,13 +11,13 @@ public class Goal {
     private double width;
     private double height;
 
-    public Goal(GoalPost.Direction direction, double x, double y, double width, double height) {
+    public Goal(GoalPost.Direction direction, double x, double y, double width, double height, Field field) {
         this.direction = direction;
         position = new Vector(x, y);
         this.width = width;
         this.height = height;
-        posts[0] = new GoalPost(direction, x, y, height);
-        posts[1] = new GoalPost(direction, x + width, y, height);
+        posts[0] = new GoalPost(direction, x, y, height, field);
+        posts[1] = new GoalPost(direction, x + width, y, height, field);
     }
 
     public boolean inGoal(Ball ball) {

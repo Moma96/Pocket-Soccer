@@ -5,7 +5,10 @@ import com.example.myapplication.model.collidables.inactive.Wall;
 
 public class SoccerField extends Field {
 
+    private static final double FRICTION_COEFFICIENT = 0.01;// 0.01;
+
     public SoccerField(double x, double y, double width, double height) {
+        friction = FRICTION_COEFFICIENT;
 
         walls = new Wall[4];
         walls[0] = new Wall(Wall.Direction.NORTH, y);
@@ -14,7 +17,7 @@ public class SoccerField extends Field {
         walls[3] = new Wall(Wall.Direction.EAST, x + width);
 
         for (Wall wall : walls) {
-            Circle.addCollidable(wall);
+            addCollidable(wall);
         }
     }
 }

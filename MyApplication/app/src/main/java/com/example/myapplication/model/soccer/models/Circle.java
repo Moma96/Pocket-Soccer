@@ -4,6 +4,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import com.example.myapplication.model.Vector;
+import com.example.myapplication.model.collidables.Field;
 import com.example.myapplication.model.collidables.active.ActiveObject;
 
 public class Circle extends ActiveObject {
@@ -12,8 +13,8 @@ public class Circle extends ActiveObject {
     private double radius;
     private double img_radius;
 
-    public Circle(double mass, double radius, double img_radius_coefficient, Vector center, Vector speed) {
-        super(mass, center, speed);
+    public Circle(double mass, double radius, double img_radius_coefficient, Vector center, Vector speed, Field field) {
+        super(mass, center, speed, field);
         this.img_radius_coefficient = img_radius_coefficient;
         setRadius(radius);
     }
@@ -25,8 +26,8 @@ public class Circle extends ActiveObject {
         setRadius(circle.radius);
     }
 
-    public Circle(double mass, double radius, double img_radius_coefficient, Vector center) {
-        super(mass, center);
+    public Circle(double mass, double radius, double img_radius_coefficient, Vector center, Field field) {
+        super(mass, center, field);
         this.img_radius_coefficient = img_radius_coefficient;
         setRadius(radius);
     }
@@ -41,7 +42,7 @@ public class Circle extends ActiveObject {
     }
 
     public String toString() {
-        return "Circle " + id;
+        return "Circle " + getActiveId();
     }
 
     public void draw(ImageView view) {

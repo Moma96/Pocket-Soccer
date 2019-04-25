@@ -15,9 +15,9 @@ public class Ball extends Circle {
     private int goal_in_process = -1;
 
     public Ball(Vector center, SoccerModel soccer) {
-        super(MASS, RADIUS, IMG_RADIUS_COEFFICIENT, center);
+        super(MASS, RADIUS, IMG_RADIUS_COEFFICIENT, center, soccer.getField());
         this.soccer = soccer;
-        addCollidable(this);
+        soccer.getField().addCollidable(this);
     }
 
     public Ball(Ball ball) {
@@ -30,7 +30,7 @@ public class Ball extends Circle {
     }
 
     public String toString() {
-        return "Ball " + id;
+        return "Ball " + getActiveId();
     }
 
     public ActiveObject getCopy() {

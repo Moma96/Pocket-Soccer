@@ -1,10 +1,10 @@
 package com.example.myapplication.model.soccer.models;
 
+import com.example.myapplication.model.collidables.Field;
 import com.example.myapplication.model.collidables.active.ActiveObject;
 import com.example.myapplication.model.collidables.inactive.Dot;
 import com.example.myapplication.model.collidables.inactive.InactiveObject;
 import com.example.myapplication.model.collidables.inactive.Line;
-import com.example.myapplication.model.Vector;
 
 public class GoalPost extends InactiveObject {
 
@@ -14,7 +14,7 @@ public class GoalPost extends InactiveObject {
     Line line;
     Dot dot;
 
-    public GoalPost(Direction direction, double x, double y, double length) {
+    public GoalPost(Direction direction, double x, double y, double length, Field field) {
         this.direction = direction;
         this.line = new Line(Line.Orientation.VERTICAL, x, y, length);
         switch (direction) {
@@ -25,7 +25,7 @@ public class GoalPost extends InactiveObject {
                 dot = new Dot(x, y);
                 break;
         }
-        ActiveObject.addCollidable(this);
+        field.addCollidable(this);
     }
 
     @Override

@@ -151,7 +151,7 @@ public class ViewUpdater extends Thread {
         gameplay.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                ArrayList<ActiveObject> activeObjects = ActiveObject.getActiveCollidables();
+                ArrayList<ActiveObject> activeObjects = soccer.getField().getActiveCollidables();
                 for (ActiveObject active : activeObjects)
                     active.draw(imgActives.get(active));
 
