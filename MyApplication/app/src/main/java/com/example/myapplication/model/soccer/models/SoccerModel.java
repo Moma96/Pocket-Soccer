@@ -8,17 +8,17 @@ public class SoccerModel {
 
     public static final int AFTER_GOAL_WAIT = 2; //s
 
-    public static final double GOAL_WIDTH = 300;
-    public static final double GOAL_HEIGHT = 100;
+    public static final double GOAL_WIDTH = 100;
+    public static final double GOAL_HEIGHT = 300;
 
     public static final double BALL_X = 1.0/2;
     public static final double BALL_Y = 1.0/2;
 
-    public static final double[][] PLAYER_X = {{ 1.0/2, 1.0/5, 4.0/5 },
-                                               { 1.0/2, 1.0/5, 4.0/5 }};
-
-    public static final double[][] PLAYER_Y = {{ 3.0/4, 7.0/8, 7.0/8 },
+    public static final double[][] PLAYER_X = {{ 3.0/4, 7.0/8, 7.0/8 },
                                                { 1.0/4, 1.0/8, 1.0/8 }};
+
+    public static final double[][] PLAYER_Y = {{ 1.0/2, 1.0/5, 4.0/5 },
+                                               { 1.0/2, 1.0/5, 4.0/5 }};
 
     private static final String GOAL_TAG = "Goal";
 
@@ -47,8 +47,8 @@ public class SoccerModel {
 
         field = new SoccerField(x, y, width, height);
 
-        goals[0] = new Goal(GoalPost.Direction.NORTH, x + width/2 - GOAL_WIDTH/2, y, GOAL_WIDTH, GOAL_HEIGHT, field);
-        goals[1] = new Goal(GoalPost.Direction.SOUTH, x + width/2 - GOAL_WIDTH/2, y + height - GOAL_HEIGHT, GOAL_WIDTH, GOAL_HEIGHT, field);
+        goals[0] = new Goal(GoalPost.Direction.EAST, x + width - GOAL_WIDTH, y + height/2 - GOAL_HEIGHT/2, GOAL_WIDTH, GOAL_HEIGHT, field);
+        goals[1] = new Goal(GoalPost.Direction.WEST, x, y + height/2 - GOAL_HEIGHT/2, GOAL_WIDTH, GOAL_HEIGHT, field);
 
         ball = new Ball(new Vector(x + width*BALL_X, y + height*BALL_Y), this);
 

@@ -8,7 +8,7 @@ import com.example.myapplication.model.collidables.inactive.Line;
 
 public class GoalPost extends InactiveObject {
 
-    public enum Direction { NORTH, SOUTH };
+    public enum Direction { EAST, WEST };
 
     Direction direction;
     Line line;
@@ -16,13 +16,13 @@ public class GoalPost extends InactiveObject {
 
     public GoalPost(Direction direction, double x, double y, double length, Field field) {
         this.direction = direction;
-        this.line = new Line(Line.Orientation.VERTICAL, x, y, length);
+        this.line = new Line(Line.Orientation.HORIZONTAL, x, y, length);
         switch (direction) {
-            case NORTH:
-                dot = new Dot(x, y + length);
-                break;
-            case SOUTH:
+            case EAST:
                 dot = new Dot(x, y);
+                break;
+            case WEST:
+                dot = new Dot(x + length, y);
                 break;
         }
         field.addCollidable(this);

@@ -16,19 +16,19 @@ public class Goal {
         position = new Vector(x, y);
         this.width = width;
         this.height = height;
-        posts[0] = new GoalPost(direction, x, y, height, field);
-        posts[1] = new GoalPost(direction, x + width, y, height, field);
+        posts[1] = new GoalPost(direction, x, y, width, field);
+        posts[0] = new GoalPost(direction, x, y + height, width, field);
     }
 
     public boolean inGoal(Ball ball) {
-        if (ball.getCenter().getX() > position.getX() && ball.getCenter().getX() < position.getX() + width) {
+        if (ball.getCenter().getY() > position.getY() && ball.getCenter().getY() < position.getY() + height) {
             switch(direction) {
-                case NORTH:
-                    if (ball.getCenter().getY() < position.getY() + height)
+                case EAST:
+                    if (ball.getCenter().getX() > position.getX())
                         return true;
                     break;
-                case SOUTH:
-                    if (ball.getCenter().getY() > position.getY())
+                case WEST:
+                    if (ball.getCenter().getX() < position.getX() + width)
                         return true;
                     break;
             }
@@ -36,7 +36,19 @@ public class Goal {
         return false;
     }
 
+    public Vector getPosition() {
+        return position;
+    }
+
+    public double getWidth() {
+        return width;
+    }
+
+    public double getHeight() {
+        return height;
+    }
+
     public String toString() {
-        return direction + " wall";
+        return direction + " goal";
     }
 }

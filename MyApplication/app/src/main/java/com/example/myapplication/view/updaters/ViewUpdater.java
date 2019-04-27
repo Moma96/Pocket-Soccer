@@ -76,8 +76,11 @@ public class ViewUpdater extends Thread {
 
     private void drawPlayers(FrameLayout background, int[] teams) {
         for (int p = 0; p < 2; p++) {
-            for (Player player : soccer.getPlayers(p))
-                drawCircle(background, player, gameplay.getResources().getIdentifier("team" + teams[p], "drawable", gameplay.getPackageName()));
+            int rotation = -90;
+            if (p == 1) rotation = 90;
+            for (Player player : soccer.getPlayers(p)) {
+                drawCircle(background, player, gameplay.getResources().getIdentifier("team" + teams[p], "drawable", gameplay.getPackageName())).setRotation(rotation);
+            }
         }
     }
 
@@ -90,13 +93,12 @@ public class ViewUpdater extends Thread {
         imgScores = new TextView(gameplay);
         int[] scores = soccer.getScores();
         imgScores.setText(scores[0] + ":" + scores[1]);
-        imgScores.setTextSize(50);
-        imgScores.setRotation(-90);
+        imgScores.setTextSize(40);
         imgScores.setTextColor(Color.WHITE);
 
         FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        params.leftMargin = 0;
-        params.topMargin = background.getHeight() / 2;
+        params.topMargin = 0;
+        params.leftMargin = background.getHeight() / 2;
         background.addView(imgScores, params);
     }
 
@@ -113,7 +115,6 @@ public class ViewUpdater extends Thread {
     private ImageView drawCircle(FrameLayout background, Circle circle, int resid) {
         ImageView img = new ImageView(gameplay);
         img.setBackgroundResource(resid);
-
         FrameLayout.LayoutParams params = new FrameLayout.LayoutParams((int)(circle.getImgRadius()*2), (int)(circle.getImgRadius()*2));
         params.leftMargin = (int)(circle.getCenter().getX() - circle.getImgRadius());
         params.topMargin  = (int)(circle.getCenter().getY() - circle.getImgRadius());
