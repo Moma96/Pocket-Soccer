@@ -46,7 +46,7 @@ public class SoccerModel {
         this.height = height;
 
         field = new SoccerField(x, y, width, height);
-        //Circle.setField(field);
+
         goals[0] = new Goal(GoalPost.Direction.NORTH, x + width/2 - GOAL_WIDTH/2, y, GOAL_WIDTH, GOAL_HEIGHT, field);
         goals[1] = new Goal(GoalPost.Direction.SOUTH, x + width/2 - GOAL_WIDTH/2, y + height - GOAL_HEIGHT, GOAL_WIDTH, GOAL_HEIGHT, field);
 

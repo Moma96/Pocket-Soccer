@@ -24,8 +24,10 @@ public abstract class ActiveObject extends Thread implements Collidable {
     private static final double SPEED_ROUND_LIMIT = 0.05;
 
     protected double mass;
+    private double radius;
     protected Vector center;
     protected Vector speed;
+
     private boolean active;
     private Field field;
 
@@ -103,6 +105,14 @@ public abstract class ActiveObject extends Thread implements Collidable {
         if (speed.intensity() < SPEED_ROUND_LIMIT)
             speed.clear();
         notifyAll();
+    }
+
+    public void setRadius(double radius) {
+        this.radius = radius;
+    }
+
+    public double getRadius() {
+        return radius;
     }
 
     public synchronized double getDistance(ActiveObject active) {
@@ -243,8 +253,6 @@ public abstract class ActiveObject extends Thread implements Collidable {
     }
 
     public abstract void draw(ImageView view);
-
-    public abstract double getRadius();
 
     public abstract ActiveObject getCopy();
 }

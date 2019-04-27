@@ -10,7 +10,6 @@ import com.example.myapplication.model.collidables.active.ActiveObject;
 public class Circle extends ActiveObject {
 
     private double img_radius_coefficient;
-    private double radius;
     private double img_radius;
 
     public Circle(double mass, double radius, double img_radius_coefficient, Vector center, Vector speed, Field field) {
@@ -23,7 +22,7 @@ public class Circle extends ActiveObject {
         super(circle);
         if (circle == null) return;
         this.img_radius_coefficient = circle.img_radius_coefficient;
-        setRadius(circle.radius);
+        setRadius(circle.getRadius());
     }
 
     public Circle(double mass, double radius, double img_radius_coefficient, Vector center, Field field) {
@@ -32,8 +31,9 @@ public class Circle extends ActiveObject {
         setRadius(radius);
     }
 
+    @Override
     public void setRadius(double radius) {
-        this.radius = radius;
+        super.setRadius(radius);
         img_radius = radius*img_radius_coefficient;
     }
 
@@ -56,9 +56,4 @@ public class Circle extends ActiveObject {
     public ActiveObject getCopy() {
         return new Circle(this);
     }
-
-    public double getRadius() {
-        return radius;
-    }
-
 }
