@@ -14,8 +14,8 @@ public class SoccerModel {
     public static final double BALL_X = 1.0/2;
     public static final double BALL_Y = 1.0/2;
 
-    public static final double[][] PLAYER_X = {{ 3.0/4, 7.0/8, 7.0/8 },
-                                               { 1.0/4, 1.0/8, 1.0/8 }};
+    public static final double[][] PLAYER_X = {{ 1.0/4, 1.0/8, 1.0/8 },
+                                               { 3.0/4, 7.0/8, 7.0/8 }};
 
     public static final double[][] PLAYER_Y = {{ 1.0/2, 1.0/5, 4.0/5 },
                                                { 1.0/2, 1.0/5, 4.0/5 }};
@@ -47,8 +47,8 @@ public class SoccerModel {
 
         field = new SoccerField(x, y, width, height);
 
-        goals[0] = new Goal(GoalPost.Direction.EAST, x + width - GOAL_WIDTH, y + height/2 - GOAL_HEIGHT/2, GOAL_WIDTH, GOAL_HEIGHT, field);
-        goals[1] = new Goal(GoalPost.Direction.WEST, x, y + height/2 - GOAL_HEIGHT/2, GOAL_WIDTH, GOAL_HEIGHT, field);
+        goals[0] = new Goal(GoalPost.Direction.WEST, x, y + height/2 - GOAL_HEIGHT/2, GOAL_WIDTH, GOAL_HEIGHT, field);
+        goals[1] = new Goal(GoalPost.Direction.EAST, x + width - GOAL_WIDTH, y + height/2 - GOAL_HEIGHT/2, GOAL_WIDTH, GOAL_HEIGHT, field);
 
         ball = new Ball(new Vector(x + width*BALL_X, y + height*BALL_Y), this);
 
