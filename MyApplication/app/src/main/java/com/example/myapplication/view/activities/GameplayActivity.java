@@ -47,6 +47,7 @@ public class GameplayActivity extends AppCompatActivity {
         viewUpdater = new ViewUpdater(this, soccerModel);
         soccerFacade = new SoccerFacade(this, soccerModel, viewUpdater);
 
+        soccerModel.start();
         viewUpdater.start();
 
         GestureListener gestureListener = new GestureListener(soccerFacade);

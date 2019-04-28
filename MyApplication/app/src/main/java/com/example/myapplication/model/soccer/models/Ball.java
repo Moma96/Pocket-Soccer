@@ -26,7 +26,7 @@ public class Ball extends Circle {
 
     public synchronized void setFacade(SoccerFacade facade) {
         this.facade = facade;
-        notifyAll();
+        notify();
     }
 
     public String toString() {
@@ -51,11 +51,15 @@ public class Ball extends Circle {
             if (goals[i].inGoal(this)) {
                 if (goal_in_process == i) return;
                 else {
-                    facade.score((i + 1) % 2);
+                    goal(i);
                     goal_in_process = i;
                 }
             } else if (i == goal_in_process)
                 goal_in_process = -1;
         }
+    }
+
+    protected void goal(int goal) {
+        facade.score((goal + 1) % 2);
     }
 }

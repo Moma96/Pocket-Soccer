@@ -227,7 +227,7 @@ public abstract class ActiveObject extends Thread implements Collidable {
         setSpeed(speed.mul(1 - field.getFrictionCoefficient()));
     }
 
-    public synchronized void finish() {
+    public synchronized void terminate() {
         active = false;
     }
 

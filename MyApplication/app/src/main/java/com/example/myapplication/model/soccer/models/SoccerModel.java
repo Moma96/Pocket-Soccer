@@ -39,6 +39,8 @@ public class SoccerModel {
     private double width;
     private double height;
 
+    public SoccerModel() {}
+
     public SoccerModel(double x, double y, double width, double height) {
         this.x = x;
         this.y = y;
@@ -56,12 +58,6 @@ public class SoccerModel {
             for (int i = 0; i < 3; i++)
                 players[p][i] = new Player(new Vector(x + width * PLAYER_X[p][i], y + height * PLAYER_Y[p][i]), this);
         }
-
-        ball.start();
-        for (int p = 0; p < 2; p++) {
-            for (int i = 0; i < 3; i++)
-                players[p][i].start();
-        }
 //*/
         //////TEST 1
 /*
@@ -74,11 +70,9 @@ public class SoccerModel {
         player[0][0].setSpeed(new Vector(10, 0));
         player[1][0].setSpeed(new Vector(-10, 0));
 
-        ball.start();
         for (int p = 0; p <2; p++) {
             player[p][0].setRadius(200);
             player[p][0].setMass(200);
-            player[p][0].start();
         }
 //*/
         ///////TEST 2
@@ -92,16 +86,30 @@ public class SoccerModel {
         player[1][1] = new Player(new Vector(x + width/2, y + 2*(height/3)));
         player[1][2] = new Player(new Vector(x + width/2, y + 4*(height/5)));
 
-        ball.start();
         for (int p = 0; p < 2; p++) {
             for (int i = 0; i < 3; i++) {
                 player[p][i].setRadius(200);
-                player[p][i].start();
             }
         }
 //*/
+    }
 
+    public void start() {
+        ball.start();
+        for (int p = 0; p < 2; p++) {
+            for (int i = 0; i < 3; i++)
+                players[p][i].start();
+        }
         setResponsiveness();
+    }
+
+    public void terminate() {
+        resetResponsiveness();
+        ball.terminate();
+        for (int p = 0; p < 2; p++) {
+            for (int i = 0; i < 3; i++)
+                players[p][i].terminate();
+        }
     }
 
     public void changeActive() {
@@ -184,6 +192,10 @@ public class SoccerModel {
 
     public Ball getBall() {
         return ball;
+    }
+
+    protected void setBall(Ball ball) {
+        this.ball = ball;
     }
 
     public Player[][] getPlayers() {
