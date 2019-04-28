@@ -66,4 +66,10 @@ public class Vector {
     public boolean isEqual(Vector v) {
         return (x == v.x && y == v.y);
     }
+
+    public void scaleIntensity(double scaled) {
+        double coefficient = scaled / intensity();
+        x *= coefficient;
+        y *= coefficient;
+    }
 }

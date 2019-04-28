@@ -14,6 +14,7 @@ public abstract class Field {
     public static final String BARRIER_TAG = "Barrier";
 
     private int nextActiveId = 0;
+    private int time = 0;
 
     protected Wall walls[];
     protected double friction;
@@ -90,6 +91,7 @@ public abstract class Field {
                 if (barrier.size() == moving.size()) {
                     barrier.notifyAll();
                     barrier.clear();
+                    time++;
                 } else
                     barrier.wait();
             } else {
@@ -116,5 +118,9 @@ public abstract class Field {
             }
         }
         return false;
+    }
+
+    public int getTime() {
+        return time;
     }
 }

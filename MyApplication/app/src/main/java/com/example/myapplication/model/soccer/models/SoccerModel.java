@@ -22,12 +22,12 @@ public class SoccerModel {
 
     private static final String GOAL_TAG = "Goal";
 
-    private SoccerField field;
+    protected SoccerField field;
     private Goal[] goals = new Goal[2];
 
-    private Ball ball;
+    protected Ball ball;
 
-    private Player[][] players = new Player[2][3];
+    protected Player[][] players = new Player[2][3];
     private int active = 0;
     private Player selected = null;
     private boolean responsiveness = false;
@@ -39,18 +39,13 @@ public class SoccerModel {
     private double width;
     private double height;
 
-    public SoccerModel() {}
+    public SoccerModel() {
+        setGoals();
+    }
 
     public SoccerModel(double x, double y, double width, double height) {
-        this.x = x;
-        this.y = y;
-        this.width = width;
-        this.height = height;
-
-        field = new SoccerField(x, y, width, height);
-
-        goals[0] = new Goal(GoalPost.Direction.WEST, x, y + height/2 - GOAL_HEIGHT/2, GOAL_WIDTH, GOAL_HEIGHT, field);
-        goals[1] = new Goal(GoalPost.Direction.EAST, x + width - GOAL_WIDTH, y + height/2 - GOAL_HEIGHT/2, GOAL_WIDTH, GOAL_HEIGHT, field);
+        super();
+        setField(x, y, width, height);
 
         ball = new Ball(new Vector(x + width*BALL_X, y + height*BALL_Y), this);
 
@@ -92,6 +87,36 @@ public class SoccerModel {
             }
         }
 //*/
+    }
+
+    public double getX() {
+        return x;
+    }
+
+    public double getY() {
+        return y;
+    }
+
+    public double getWidth() {
+        return width;
+    }
+
+    public double getHeight() {
+        return height;
+    }
+
+    public void setGoals() {
+        goals[0] = new Goal(GoalPost.Direction.WEST, x, y + height/2 - GOAL_HEIGHT/2, GOAL_WIDTH, GOAL_HEIGHT, field);
+        goals[1] = new Goal(GoalPost.Direction.EAST, x + width - GOAL_WIDTH, y + height/2 - GOAL_HEIGHT/2, GOAL_WIDTH, GOAL_HEIGHT, field);
+    }
+
+    public void setField(double x, double y, double width, double height) {
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+
+        field = new SoccerField(x, y, width, height);
     }
 
     public void start() {
@@ -139,6 +164,13 @@ public class SoccerModel {
 
         disableAndSleep(AFTER_GOAL_WAIT);
 
+        reset();
+
+        active = (player + 1) % 2;
+        return true;
+    }
+
+    public void reset() {
         ball.setCenter(new Vector(x + width*BALL_X, y + height*BALL_Y));
         ball.clearSpeed();
         for (int p = 0; p < 2; p++) {
@@ -147,9 +179,6 @@ public class SoccerModel {
                 players[p][i].setCenter(new Vector(x + width * PLAYER_X[p][i], y + height * PLAYER_Y[p][i]));
             }
         }
-
-        active = (player + 1) % 2;
-        return true;
     }
 
     public boolean push(final float x1, final float y1, final float x2, final float y2) {

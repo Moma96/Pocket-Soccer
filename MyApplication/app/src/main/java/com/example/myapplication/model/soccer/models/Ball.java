@@ -10,23 +10,30 @@ public class Ball extends Circle {
     private static final double RADIUS = 30;
     private static final double IMG_RADIUS_COEFFICIENT = 2.5;
 
-    private SoccerFacade facade;
-    private SoccerModel soccer;
+    protected SoccerFacade facade;
+    protected SoccerModel soccer;
     private int goal_in_process = -1;
 
     public Ball(Vector center, SoccerModel soccer) {
         super(MASS, RADIUS, IMG_RADIUS_COEFFICIENT, center, soccer.getField());
         this.soccer = soccer;
-        soccer.getField().addCollidable(this);
+        getField().addCollidable(this);
     }
 
     public Ball(Ball ball) {
         super(ball);
+        getField().addCollidable(this);
+    }
+
+    public Ball(Ball ball, SoccerField field) {
+        super(ball);
+        setField(field);
+        getField().addCollidable(this);
     }
 
     public synchronized void setFacade(SoccerFacade facade) {
         this.facade = facade;
-        notify();
+        notifyAll();
     }
 
     public String toString() {
@@ -51,7 +58,7 @@ public class Ball extends Circle {
             if (goals[i].inGoal(this)) {
                 if (goal_in_process == i) return;
                 else {
-                    goal(i);
+                    goal((i + 1) % 2);
                     goal_in_process = i;
                 }
             } else if (i == goal_in_process)
@@ -59,7 +66,7 @@ public class Ball extends Circle {
         }
     }
 
-    protected void goal(int goal) {
-        facade.score((goal + 1) % 2);
+    protected void goal(int player) {
+        facade.score(player);
     }
 }

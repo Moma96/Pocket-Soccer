@@ -18,11 +18,18 @@ public class Player extends Circle {
     public Player(Vector center, SoccerModel soccer) {
         super(MASS, RADIUS, IMG_RADIUS_COEFFICIENT, center, soccer.getField());
         selectionRadius = getRadius()*SELECTION_RADIUS_COEFFICIENT;
-        soccer.getField().addCollidable(this);
+        getField().addCollidable(this);
     }
 
     public Player(Player player) {
         super(player);
+        getField().addCollidable(this);
+    }
+
+    public Player(Player player, SoccerField field) {
+        super(player);
+        setField(field);
+        getField().addCollidable(this);
     }
 
     public double getSelectionRadius() {
