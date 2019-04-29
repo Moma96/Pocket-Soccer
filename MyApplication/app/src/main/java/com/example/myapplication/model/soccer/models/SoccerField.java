@@ -7,8 +7,8 @@ public class SoccerField extends Field {
 
     private static final double FRICTION_COEFFICIENT = 0.01;// 0.01;
 
-    public SoccerField(double x, double y, double width, double height) {
-        friction = FRICTION_COEFFICIENT;
+    public SoccerField(double x, double y, double width, double height, double friction) {
+        setFriction(friction);
 
         walls = new Wall[4];
         walls[0] = new Wall(Wall.Direction.NORTH, y);
@@ -19,5 +19,9 @@ public class SoccerField extends Field {
         for (Wall wall : walls) {
             addCollidable(wall);
         }
+    }
+
+    public SoccerField(double x, double y, double width, double height) {
+        this(x, y, width, height, FRICTION_COEFFICIENT);
     }
 }

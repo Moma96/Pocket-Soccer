@@ -14,13 +14,14 @@ public class TestingSoccerModel extends SoccerModel {
 
     public TestingSoccerModel(SoccerModel soccer) {
         super();
-        setField(soccer.getX(), soccer.getY(), soccer.getWidth(), soccer.getHeight());
+        setParameters(soccer.getX(), soccer.getY(), soccer.getWidth(), soccer.getHeight());
+
+        field = new TestingField(soccer.getX(), soccer.getY(), soccer.getWidth(), soccer.getHeight());
 
         ball = new TestingBall(soccer.getBall(), field);
-
         for (int p = 0; p < 2; p++) {
             for (int i = 0; i < 3; i++)
-                players[p][i] = new Player(soccer.getPlayers()[p][i], field);
+                players[p][i] = new TestingPlayer(soccer.getPlayers()[p][i], field);
         }
     }
 
@@ -36,9 +37,10 @@ public class TestingSoccerModel extends SoccerModel {
 
         if (this.player == scored) {
             return getField().getTime();
-        } else return -1;
+        } else return Integer.MAX_VALUE;
     }
 
+    @Override
     public boolean score(int player) {
         terminate();
         scored = player;
@@ -46,9 +48,16 @@ public class TestingSoccerModel extends SoccerModel {
         notifyAll();
         return true;
     }
+/*
+    @Override
+    public void allStopped() {
+        terminate();
+        time = field.getTime();
+        notifyAll();
+    }*/
 
     public synchronized void waitData() {
-        while (player < 0 || scored < 0 || time < 0) {
+        while (player < 0 || time < 0) {
             try {
                 wait();
             } catch (InterruptedException e) {

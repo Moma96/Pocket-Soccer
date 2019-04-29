@@ -209,7 +209,7 @@ public abstract class ActiveObject extends Thread implements Collidable {
 
     private synchronized void checkSpeed() throws InterruptedException {
 
-        if (field.barrierStopped(this)) {
+        if (field.checkStopped(this)) {
             Log.d(STATE_TAG, this + " stopped");
         }
 
@@ -217,7 +217,7 @@ public abstract class ActiveObject extends Thread implements Collidable {
             wait();
         }
 
-        if (field.barrierStarted(this)) {
+        if (field.checkStarted(this)) {
             Log.d(STATE_TAG, this + " is moving");
         }
     }
@@ -233,6 +233,10 @@ public abstract class ActiveObject extends Thread implements Collidable {
 
     protected void work() {}
 
+    protected void delay() throws InterruptedException {
+        sleep(MOVING_DELAY);
+    }
+
     @Override
     public void run() {
         try {
@@ -243,7 +247,7 @@ public abstract class ActiveObject extends Thread implements Collidable {
                 if (!speed.isZeroVector()) {
                     move();
                     work();
-                    sleep(MOVING_DELAY);
+                    delay();
                     field.barrier(this);
                 }
             }

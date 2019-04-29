@@ -25,6 +25,13 @@ public abstract class Field {
     private HashSet<ActiveObject> moving = new HashSet<>();
     private HashSet<ActiveObject> barrier = new HashSet<>();
 
+    public double getFriction() {
+        return friction;
+    }
+
+    public void setFriction(double friction) {
+        this.friction = friction;
+    }
 
     public ArrayList<Collidable> getCollidables() {
         return collidables;
@@ -100,7 +107,7 @@ public abstract class Field {
         }
     }
 
-    public boolean barrierStopped(ActiveObject active) {
+    public boolean checkStopped(ActiveObject active) {
         synchronized (barrier) {
             if (active.getSpeed().isZeroVector() && moving.contains(active)) {
                 moving.remove(active);
@@ -110,7 +117,7 @@ public abstract class Field {
         return false;
     }
 
-    public boolean barrierStarted(ActiveObject active) {
+    public boolean checkStarted(ActiveObject active) {
         synchronized (barrier) {
             if (!moving.contains(active)) {
                 moving.add(active);

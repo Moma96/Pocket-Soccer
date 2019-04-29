@@ -9,7 +9,11 @@ public class TestingBall extends Ball {
         super(ball, field);
     }
 
+    @Override
     protected void goal(int player) {
         soccer.score(player);
     }
+
+    @Override
+    protected void delay() { /* do nothing */ }
 }
