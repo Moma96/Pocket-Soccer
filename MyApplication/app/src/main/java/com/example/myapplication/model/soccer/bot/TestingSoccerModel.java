@@ -13,9 +13,8 @@ public class TestingSoccerModel extends SoccerModel {
     int time = -1;
 
     public TestingSoccerModel(SoccerModel soccer) {
-        super();
-        setParameters(soccer.getX(), soccer.getY(), soccer.getWidth(), soccer.getHeight());
-
+        setField(soccer.getX(), soccer.getY(), soccer.getWidth(), soccer.getHeight());
+        setGoals();
         field = new TestingField(soccer.getX(), soccer.getY(), soccer.getWidth(), soccer.getHeight());
 
         ball = new TestingBall(soccer.getBall(), field);

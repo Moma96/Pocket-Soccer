@@ -22,7 +22,7 @@ public class Ball extends Circle {
 
     public Ball(Ball ball) {
         super(ball);
-        getField().addCollidable(this);
+        //getField().addCollidable(this);
     }
 
     public Ball(Ball ball, SoccerField field) {

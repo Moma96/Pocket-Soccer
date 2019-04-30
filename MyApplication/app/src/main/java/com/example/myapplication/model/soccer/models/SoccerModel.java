@@ -40,14 +40,12 @@ public class SoccerModel {
     private double height;
 
     public SoccerModel() {
-        setGoals();
+
     }
 
     public SoccerModel(double x, double y, double width, double height) {
-        super();
-        setParameters(x, y, width, height);
-
-        field = new SoccerField(x, y, width, height);
+        setField(x, y, width, height);
+        setGoals();
 
         ball = new Ball(new Vector(x + width*BALL_X, y + height*BALL_Y), this);
 
@@ -107,16 +105,18 @@ public class SoccerModel {
         return height;
     }
 
-    public void setGoals() {
-        goals[0] = new Goal(GoalPost.Direction.WEST, x, y + height/2 - GOAL_HEIGHT/2, GOAL_WIDTH, GOAL_HEIGHT, field);
-        goals[1] = new Goal(GoalPost.Direction.EAST, x + width - GOAL_WIDTH, y + height/2 - GOAL_HEIGHT/2, GOAL_WIDTH, GOAL_HEIGHT, field);
-    }
-
-    public void setParameters(double x, double y, double width, double height) {
+    public void setField(double x, double y, double width, double height) {
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
+
+        field = new SoccerField(x, y, width, height);
+    }
+
+    public void setGoals() {
+        goals[0] = new Goal(GoalPost.Direction.WEST, x, y + height/2 - GOAL_HEIGHT/2, GOAL_WIDTH, GOAL_HEIGHT, field);
+        goals[1] = new Goal(GoalPost.Direction.EAST, x + width - GOAL_WIDTH, y + height/2 - GOAL_HEIGHT/2, GOAL_WIDTH, GOAL_HEIGHT, field);
     }
 
     public void start() {
