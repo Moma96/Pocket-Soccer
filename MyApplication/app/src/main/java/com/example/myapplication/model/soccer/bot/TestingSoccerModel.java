@@ -17,7 +17,7 @@ public class TestingSoccerModel extends SoccerModel {
         setGoals();
         field = new TestingField(soccer.getX(), soccer.getY(), soccer.getWidth(), soccer.getHeight());
 
-        ball = new TestingBall(soccer.getBall(), field);
+        ball = new TestingBall(soccer.getBall(), field, this);
         for (int p = 0; p < 2; p++) {
             for (int i = 0; i < 3; i++)
                 players[p][i] = new TestingPlayer(soccer.getPlayers()[p][i], field);

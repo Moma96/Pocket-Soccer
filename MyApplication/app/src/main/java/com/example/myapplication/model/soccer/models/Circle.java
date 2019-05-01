@@ -7,6 +7,8 @@ import com.example.myapplication.model.Vector;
 import com.example.myapplication.model.collidables.Field;
 import com.example.myapplication.model.collidables.active.ActiveObject;
 
+import org.jetbrains.annotations.NotNull;
+
 public class Circle extends ActiveObject {
 
     private double img_radius_coefficient;
@@ -18,9 +20,8 @@ public class Circle extends ActiveObject {
         setRadius(radius);
     }
 
-    public Circle(Circle circle) {
+    public Circle(@NotNull Circle circle) {
         super(circle);
-        if (circle == null) return;
         this.img_radius_coefficient = circle.img_radius_coefficient;
         setRadius(circle.getRadius());
     }
@@ -29,6 +30,18 @@ public class Circle extends ActiveObject {
         super(mass, center, field);
         this.img_radius_coefficient = img_radius_coefficient;
         setRadius(radius);
+    }
+
+    public Circle(@NotNull Circle circle, Field field) {
+        super(circle, field);
+        this.img_radius_coefficient = circle.img_radius_coefficient;
+        setRadius(circle.getRadius());
+    }
+
+    protected Circle(@NotNull Circle circle, boolean include) {
+        super(circle, include);
+        this.img_radius_coefficient = circle.img_radius_coefficient;
+        setRadius(circle.getRadius());
     }
 
     @Override
@@ -41,6 +54,7 @@ public class Circle extends ActiveObject {
         return img_radius;
     }
 
+    @Override
     public String toString() {
         return "Circle " + getActiveId();
     }
@@ -53,7 +67,8 @@ public class Circle extends ActiveObject {
         view.setLayoutParams(params);
     }
 
-    public ActiveObject getCopy() {
-        return new Circle(this);
+    @Override
+    protected Circle getNonInclusiveCopy() {
+        return new Circle(this, false);
     }
 }

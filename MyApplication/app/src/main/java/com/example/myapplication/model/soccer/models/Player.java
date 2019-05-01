@@ -3,8 +3,13 @@ package com.example.myapplication.model.soccer.models;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
+import com.example.myapplication.model.collidables.Field;
 import com.example.myapplication.model.collidables.active.ActiveObject;
 import com.example.myapplication.model.Vector;
+
+import org.jetbrains.annotations.NotNull;
+
+import androidx.versionedparcelable.NonParcelField;
 
 public class Player extends Circle {
 
@@ -15,21 +20,24 @@ public class Player extends Circle {
 
     private double selectionRadius;
 
-    public Player(Vector center, SoccerModel soccer) {
-        super(MASS, RADIUS, IMG_RADIUS_COEFFICIENT, center, soccer.getField());
+    public Player(@NotNull Vector center, SoccerField field) {
+        super(MASS, RADIUS, IMG_RADIUS_COEFFICIENT, center, field);
         selectionRadius = getRadius()*SELECTION_RADIUS_COEFFICIENT;
-        getField().addCollidable(this);
     }
 
-    public Player(Player player) {
+    public Player(@NotNull Player player) {
         super(player);
-        //getField().addCollidable(this);
+        selectionRadius = getRadius()*SELECTION_RADIUS_COEFFICIENT;
     }
 
-    public Player(Player player, SoccerField field) {
-        super(player);
-        setField(field);
-        getField().addCollidable(this);
+    public Player(@NotNull Player player, @NotNull SoccerField field) {
+        super(player, field);
+        selectionRadius = getRadius()*SELECTION_RADIUS_COEFFICIENT;
+    }
+
+    protected Player(Player player, boolean include) {
+        super(player, include);
+        selectionRadius = getRadius()*SELECTION_RADIUS_COEFFICIENT;
     }
 
     public double getSelectionRadius() {
@@ -40,14 +48,6 @@ public class Player extends Circle {
         setSpeed(force.mul(MOVING_INCREMENT));
     }
 
-    public String toString() {
-        return "Player " + getActiveId();
-    }
-
-    public ActiveObject getCopy() {
-        return new Player(this);
-    }
-
     public void drawSelection(ImageView view) {
         if (view == null) return;
 
@@ -55,5 +55,15 @@ public class Player extends Circle {
         params.leftMargin = (int) (getCenter().getX() - getSelectionRadius());
         params.topMargin = (int) (getCenter().getY() - getSelectionRadius());
         view.setLayoutParams(params);
+    }
+
+    @Override
+    protected Player getNonInclusiveCopy() {
+        return new Player(this, false);
+    }
+
+    @Override
+    public String toString() {
+        return "Player " + getActiveId();
     }
 }

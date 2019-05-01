@@ -39,9 +39,7 @@ public class SoccerModel {
     private double width;
     private double height;
 
-    public SoccerModel() {
-
-    }
+    public SoccerModel() {}
 
     public SoccerModel(double x, double y, double width, double height) {
         setField(x, y, width, height);
@@ -51,7 +49,7 @@ public class SoccerModel {
 
         for (int p = 0; p < 2; p++) {
             for (int i = 0; i < 3; i++)
-                players[p][i] = new Player(new Vector(x + width * PLAYER_X[p][i], y + height * PLAYER_Y[p][i]), this);
+                players[p][i] = new Player(new Vector(x + width * PLAYER_X[p][i], y + height * PLAYER_Y[p][i]), field);
         }
 //*/
         //////TEST 1

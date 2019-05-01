@@ -1,7 +1,6 @@
 package com.example.myapplication.model.collidables.active;
 
 import android.util.Log;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import com.example.myapplication.model.Vector;
@@ -10,9 +9,7 @@ import com.example.myapplication.model.collidables.Field;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 
 public abstract class ActiveObject extends Thread implements Collidable {
 
@@ -37,32 +34,41 @@ public abstract class ActiveObject extends Thread implements Collidable {
     private int id;
 
     public ActiveObject(double mass, Vector center, Vector speed, @NotNull Field field) {
+        this(mass, center, speed, field, true, null, null);
+    }
+
+    public ActiveObject(@NotNull ActiveObject active) {
+        this(active, true);
+    }
+
+    public ActiveObject(double mass, @NotNull Vector center, @NotNull Field field) {
+        this(mass, center, new Vector(0, 0), field);
+    }
+
+    public ActiveObject(@NotNull ActiveObject active, @NotNull Field field) {
+        this(active.mass, active.center, active.speed, field);
+    }
+
+    protected ActiveObject(@NotNull ActiveObject active, boolean include) {
+        this(active.mass, active.center, active.speed, active.field, include, active.collision_in_process, active.old);
+    }
+
+    protected ActiveObject(double mass, @NotNull Vector center, Vector speed, @NotNull Field field, boolean include,
+                           HashMap<String, Double> collision_in_process, HashMap<Integer, ActiveObject> old) {
         setMass(mass);
         setCenter(center);
         setSpeed(speed);
         setField(field);
-        collision_in_process = new HashMap<>();
-        old = new HashMap<>();
         id = field.getNextId();
+        if (include) {
+            field.addCollidable(this);
+        }
+        this.collision_in_process = (collision_in_process != null) ? new HashMap<>(collision_in_process) : new HashMap<String, Double>();
+        this.old = (old != null) ? new HashMap<>(old) : new HashMap<Integer, ActiveObject>();
     }
 
-    public ActiveObject(ActiveObject active) {
-        if (active == null) return;
-        setMass(active.mass);
-        setCenter(new Vector(active.center));
-        setSpeed(new Vector(active.speed));
-        setField(active.getField());
-        collision_in_process = new HashMap<>(active.collision_in_process);
-        old = new HashMap<>(active.old);
-        id = field.getNextId();
-    }
-
-    public ActiveObject(double mass, Vector center, Field field) {
-        this(mass, center, new Vector(0, 0), field);
-    }
-
-    public synchronized ActiveObject getIdenticalCopy() {
-        ActiveObject copy = getCopy();
+    private synchronized ActiveObject getIdenticalNonInclusiveCopy() {
+        ActiveObject copy = getNonInclusiveCopy();
         copy.id = id;
         field.decrementId();
         return copy;
@@ -151,7 +157,7 @@ public abstract class ActiveObject extends Thread implements Collidable {
         ActiveObject old_collided = active.old.get(id);
         if (old_collided == null) {
 
-            ActiveObject copy = active.getIdenticalCopy();
+            ActiveObject copy = active.getIdenticalNonInclusiveCopy();
             old.put(active.id, copy);
             notifyAll();
 
@@ -258,5 +264,5 @@ public abstract class ActiveObject extends Thread implements Collidable {
 
     public abstract void draw(ImageView view);
 
-    public abstract ActiveObject getCopy();
+    protected abstract ActiveObject getNonInclusiveCopy();
 }

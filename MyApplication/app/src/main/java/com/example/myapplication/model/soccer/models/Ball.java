@@ -1,8 +1,11 @@
 package com.example.myapplication.model.soccer.models;
 
+import com.example.myapplication.model.collidables.Field;
 import com.example.myapplication.model.collidables.active.ActiveObject;
 import com.example.myapplication.model.Vector;
 import com.example.myapplication.model.soccer.SoccerFacade;
+
+import org.jetbrains.annotations.NotNull;
 
 public class Ball extends Circle {
 
@@ -17,33 +20,43 @@ public class Ball extends Circle {
     public Ball(Vector center, SoccerModel soccer) {
         super(MASS, RADIUS, IMG_RADIUS_COEFFICIENT, center, soccer.getField());
         this.soccer = soccer;
-        getField().addCollidable(this);
     }
 
-    public Ball(Ball ball) {
+    public Ball(@NotNull Ball ball, SoccerModel soccer) {
         super(ball);
-        //getField().addCollidable(this);
+        this.soccer = soccer;
     }
 
-    public Ball(Ball ball, SoccerField field) {
-        super(ball);
-        setField(field);
-        getField().addCollidable(this);
+    public Ball(@NotNull Ball ball, boolean include, SoccerModel soccer) {
+        super(ball, include);
+        this.soccer = soccer;
     }
 
-    public synchronized void setFacade(SoccerFacade facade) {
+    public Ball(@NotNull Ball ball, @NotNull Field field, SoccerModel soccer) {
+        super(ball, field);
+        this.soccer = soccer;
+    }
+
+    public synchronized void setFacade(@NotNull SoccerFacade facade) {
         this.facade = facade;
         notifyAll();
     }
 
+    protected void goal(int player) {
+        facade.score(player);
+    }
+
+    @Override
     public String toString() {
         return "Ball " + getActiveId();
     }
 
-    public ActiveObject getCopy() {
-        return new Ball(this);
+    @Override
+    protected Ball getNonInclusiveCopy() {
+        return new Ball(this, false, null);
     }
 
+    @Override
     protected synchronized void work() {
         while (facade == null) {
             try {
@@ -64,9 +77,5 @@ public class Ball extends Circle {
             } else if (i == goal_in_process)
                 goal_in_process = -1;
         }
-    }
-
-    protected void goal(int player) {
-        facade.score(player);
     }
 }
