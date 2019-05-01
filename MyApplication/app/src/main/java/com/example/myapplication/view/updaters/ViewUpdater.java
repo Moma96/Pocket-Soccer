@@ -76,8 +76,8 @@ public class ViewUpdater extends Thread {
 
     private void drawPlayers(FrameLayout background, int[] teams) {
         for (int p = 0; p < 2; p++) {
-            int rotation = -90;
-            if (p == 1) rotation = 90;
+            int rotation = 90;
+            if (p == 1) rotation = -90;
             for (Player player : soccer.getPlayers(p)) {
                 drawCircle(background, player, gameplay.getResources().getIdentifier("team" + teams[p], "drawable", gameplay.getPackageName())).setRotation(rotation);
             }

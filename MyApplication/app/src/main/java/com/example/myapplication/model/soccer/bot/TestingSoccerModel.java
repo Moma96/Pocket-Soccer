@@ -47,13 +47,12 @@ public class TestingSoccerModel extends SoccerModel {
         notifyAll();
         return true;
     }
-/*
-    @Override
-    public void allStopped() {
+
+    public void stop() {
         terminate();
-        time = field.getTime();
+        //time = field.getTime();
         notifyAll();
-    }*/
+    }
 
     public synchronized void waitData() {
         while (player < 0 || time < 0) {

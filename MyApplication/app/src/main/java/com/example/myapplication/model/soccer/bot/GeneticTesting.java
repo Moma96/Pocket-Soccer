@@ -12,8 +12,8 @@ public class GeneticTesting {
         private int fitness;
 
         public Unit() {
-            this(new Vector(Math.random(), Math.random()), 0);
-            genes.scaleIntensity(1);
+            this(new Vector(Math.random(), Math.random()), Integer.MAX_VALUE);
+            genes.scaleIntensity(SCALED_INTENSITY);
         }
 
         public Unit(Unit unit) {
@@ -26,10 +26,16 @@ public class GeneticTesting {
             this.fitness = fitness;
         }
 
-        public void crossBreed(Unit unit) {
-            genes.setX((genes.getX() + unit.genes.getX()) / 2);
-            genes.setY((genes.getY() + unit.genes.getY()) / 2);
-            genes.scaleIntensity(1);
+        public Unit crossBreed(Unit unit) {
+            Unit result = new Unit(this);
+            result.genes.setX((result.genes.getX() + unit.genes.getX()) / 2);
+            result.genes.setY((result.genes.getY() + unit.genes.getY()) / 2);
+            result.genes.scaleIntensity(SCALED_INTENSITY);
+            return result;
+        }
+
+        public int getFitness() {
+            return fitness;
         }
 
         public void run() {
@@ -39,6 +45,8 @@ public class GeneticTesting {
 
     private static final int POPULATION = 10;
     private static final int GENERATIONS = 10;
+    private static final int TOP = POPULATION / 2;
+    private static final double SCALED_INTENSITY = 100;
 
     private SoccerModel soccer;
     private int player;
@@ -50,57 +58,62 @@ public class GeneticTesting {
         this.player_id = player_id;
     }
 
-    /*public Vector test() {
-        Unit[] generation = null;
-        int[] fitness = null;
-        for (int g = 0; g < GENERATIONS; g++) {
-            if (g == 0)
-                generation = initialize();
-            else
-                generation = crossBreed(generation);
-            calculateFitness(generation);
-            generation = select(generation);
-        }
-        return fittest(generation, fitness);
-    }
+    private static Unit fittest(Unit[] generation) {
+        if (generation == null) return null;
 
-    private void initialize() {
-        Vector[] generation = new Vector[POPULATION];
-        for (int i = 0; i < POPULATION; i++) {
-            generation[i] = new Vector(Math.random(), Math.random());
-            generation[i].scaleIntensity(1);
-        }
-        return generation;
-    }
-
-    private Vector[] crossBreed(Vector[] generation) {
-
-        return generation;
-    }
-
-    private void calculateFitness(Unit[] generation) throws InterruptedException {
-        int[] fitness = new int[POPULATION];
-        for (int i = 0; i < POPULATION; i++) {
-            generation[i].start();
-        }
-        for (int i = 0; i < POPULATION; i++) {
-            generation[i].join();
-        }
-    }
-
-    private void select(Unit[] generation) {
-
-    }
-
-    private Unit fittest(Unit[] generation) {
-        int min_time = fitness[0];
-        Vector best = generation[0];
+        Unit best = generation[0];
         for (int i = 1; i < POPULATION; i++) {
-            if (fitness[i] < min_time) {
-                min_time = fitness[i];
+            if (generation[i].getFitness() < best.getFitness())
                 best = generation[i];
-            }
         }
         return best;
-    }*/
+    }
+
+    public Unit test() {
+        Unit[] generation = initialize();
+        Unit[] selected = null;
+        for (int g = 0; g < GENERATIONS; g++) {
+            selected = calculateFitness(generation, selected);
+            generation = crossBreed(selected);
+        }
+        return fittest(selected);
+    }
+
+    private Unit[] initialize() {
+        Unit[] generation = new Unit[POPULATION];
+        for (int i = 0; i < POPULATION; i++) {
+            generation[i] = new Unit();
+        }
+        return generation;
+    }
+
+    private Unit[] crossBreed(Unit[] selected) {
+        Unit[] generation = new Unit[POPULATION];
+        int p = 0;
+        for (int i = 0; i < POPULATION - 1; i++) {
+            for (int j = i + 1; j < POPULATION; j++) {
+                generation[p] = selected[i].crossBreed(selected[j]);
+                p++;
+            }
+        }
+        return generation;
+    }
+
+    private Unit[] calculateFitness(Unit[] generation, Unit[] selected) {
+        try {
+            Unit[] result = null;
+
+            for (int i = 0; i < POPULATION; i++)
+            generation[i].start();
+
+            for (int i = 0; i < POPULATION; i++) {
+                generation[i].join();
+            }
+
+            return generation;
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }
