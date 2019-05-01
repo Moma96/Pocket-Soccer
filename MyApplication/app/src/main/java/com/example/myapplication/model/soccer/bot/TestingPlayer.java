@@ -14,20 +14,20 @@ public class TestingPlayer extends Player {
     }
 
 
-    protected TestingPlayer(@NotNull Player player, boolean include) {
+    /*protected TestingPlayer(@NotNull Player player, boolean include) {
         super(player, include);
     }
 
     @Override
     protected TestingPlayer getNonInclusiveCopy() {
         return new TestingPlayer(this, false);
-    }
+    }*/
 
     @Override
     protected void delay() { /* do nothing */ }
 
-    @Override
+    /*@Override
     public String toString() {
         return "Testplayer " + getActiveId();
-    }
+    }*/
 }

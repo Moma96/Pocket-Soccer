@@ -169,8 +169,8 @@ public class SoccerModel {
     }
 
     public void reset() {
-        ball.setCenter(new Vector(x + width*BALL_X, y + height*BALL_Y));
         ball.clearSpeed();
+        ball.setCenter(new Vector(x + width*BALL_X, y + height*BALL_Y));
         for (int p = 0; p < 2; p++) {
             for (int i = 0; i < 3; i++) {
                 players[p][i].clearSpeed();

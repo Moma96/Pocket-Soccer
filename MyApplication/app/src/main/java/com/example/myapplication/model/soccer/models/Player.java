@@ -22,17 +22,17 @@ public class Player extends Circle {
 
     public Player(@NotNull Vector center, SoccerField field) {
         super(MASS, RADIUS, IMG_RADIUS_COEFFICIENT, center, field);
-        selectionRadius = getRadius()*SELECTION_RADIUS_COEFFICIENT;
+        setSelectionRadius();
     }
 
     public Player(@NotNull Player player) {
         super(player);
-        selectionRadius = getRadius()*SELECTION_RADIUS_COEFFICIENT;
+        setSelectionRadius();
     }
 
     public Player(@NotNull Player player, @NotNull SoccerField field) {
         super(player, field);
-        selectionRadius = getRadius()*SELECTION_RADIUS_COEFFICIENT;
+        setSelectionRadius();
     }
 
     protected Player(Player player, boolean include) {
@@ -42,6 +42,10 @@ public class Player extends Circle {
 
     public double getSelectionRadius() {
         return selectionRadius;
+    }
+
+    public void setSelectionRadius() {
+        selectionRadius = getRadius()*SELECTION_RADIUS_COEFFICIENT;
     }
 
     public void push(Vector force) {

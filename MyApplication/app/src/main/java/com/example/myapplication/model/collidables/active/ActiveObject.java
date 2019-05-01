@@ -56,8 +56,8 @@ public abstract class ActiveObject extends Thread implements Collidable {
     protected ActiveObject(double mass, @NotNull Vector center, Vector speed, @NotNull Field field, boolean include,
                            HashMap<String, Double> collision_in_process, HashMap<Integer, ActiveObject> old) {
         setMass(mass);
-        setCenter(center);
-        setSpeed(speed);
+        setCenter(new Vector(center));
+        setSpeed(new Vector(speed));
         setField(field);
         id = field.getNextId();
         if (include) {
@@ -109,8 +109,9 @@ public abstract class ActiveObject extends Thread implements Collidable {
     public synchronized void setSpeed(Vector speed) {
         this.speed = speed;
         if (speed.intensity() < SPEED_ROUND_LIMIT)
-            speed.clear();
-        notifyAll();
+            clearSpeed();
+        else
+            notifyAll();
     }
 
     public void setRadius(double radius) {
@@ -137,8 +138,8 @@ public abstract class ActiveObject extends Thread implements Collidable {
         return getDistance(dot) <= 0;
     }
 
-    public void clearSpeed() {
-        setSpeed(new Vector(0, 0));
+    public synchronized void clearSpeed() {
+        speed.clear();
     }
 
     public synchronized Collidable beforeCollision(ActiveObject active) {
