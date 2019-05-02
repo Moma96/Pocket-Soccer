@@ -23,7 +23,7 @@ public class TestingSoccerModel extends SoccerModel {
                 players[p][i] = new TestingPlayer(soccer.getPlayers()[p][i], field);
         }
     }
-
+/*
     public int test(int p, int i, Vector force) {
         if (p >= 2 || i >= getPlayers(p).length)
             return -1; /////////////////throw exception
@@ -37,7 +37,7 @@ public class TestingSoccerModel extends SoccerModel {
         if (this.player == scored) {
             return getField().getTime();
         } else return Integer.MAX_VALUE;
-    }
+    }*/
 
     @Override
     public boolean score(int player) {
@@ -48,11 +48,15 @@ public class TestingSoccerModel extends SoccerModel {
         return true;
     }
 
-    public void stop() {
+    public int getScored() {
+        return scored;
+    }
+
+    /*public void stop() {
         terminate();
         //time = field.getTime();
-        notifyAll();
-    }
+        //notifyAll();
+    }*/
 
     public synchronized void waitData() {
         while (player < 0 || time < 0) {

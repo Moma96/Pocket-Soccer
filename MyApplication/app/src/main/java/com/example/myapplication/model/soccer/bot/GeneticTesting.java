@@ -1,5 +1,6 @@
 package com.example.myapplication.model.soccer.bot;
 
+import com.example.myapplication.model.soccer.models.Player;
 import com.example.myapplication.model.soccer.models.SoccerModel;
 import com.example.myapplication.model.Vector;
 
@@ -10,6 +11,7 @@ public class GeneticTesting {
         private TestingSoccerModel testingModel;
         private Vector genes;
         private int fitness;
+        private Unit[] resultArray;
 
         public Unit() {
             this(new Vector(Math.random(), Math.random()), Integer.MAX_VALUE);
@@ -34,12 +36,52 @@ public class GeneticTesting {
             return result;
         }
 
+        public void abort() {
+            testingModel.terminate();
+        }
+
         public int getFitness() {
             return fitness;
         }
 
+        public void setResultArray(Unit[] result) {
+            synchronized (resultArray) {
+                resultArray = result;
+                notify();
+            }
+        }
+
+        private synchronized void waitResultArray() {
+            while (resultArray == null) {
+                try {
+                    wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        private void checkResult() {
+
+        }
+
+        @Override
         public void run() {
-            fitness = testingModel.test(player, player_id, genes);
+            waitResultArray();
+            /*if (player >= 2 || player_id >= testingModel.getPlayers(player).length)
+                return -1; /////////////////throw exception*/
+            notifyAll();
+            testingModel.getPlayers()[player][player_id].push(genes);
+
+            testingModel.waitData();
+
+            synchronized(resultArray) {
+                if (player == testingModel.getScored()) {
+                    fitness = testingModel.getField().getTime();
+                    checkResult();
+                } else
+                    fitness = Integer.MAX_VALUE;
+            }
         }
     }
 
@@ -103,14 +145,16 @@ public class GeneticTesting {
         try {
             Unit[] result = null;
 
-            for (int i = 0; i < POPULATION; i++)
-            generation[i].start();
 
             for (int i = 0; i < POPULATION; i++) {
-                generation[i].join();
+                generation[i].setResultArray(result);
+                generation[i].start();
             }
 
-            return generation;
+            for (int i = 0; i < POPULATION; i++)
+                generation[i].join();
+
+            return result;
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

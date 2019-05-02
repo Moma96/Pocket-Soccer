@@ -33,6 +33,10 @@ public abstract class Field {
         this.friction = friction;
     }
 
+    public HashSet<ActiveObject> getBarrier() {
+        return barrier;
+    }
+
     public ArrayList<Collidable> getCollidables() {
         return collidables;
     }
