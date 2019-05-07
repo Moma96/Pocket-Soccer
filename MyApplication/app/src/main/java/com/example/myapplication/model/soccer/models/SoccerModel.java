@@ -109,7 +109,7 @@ public class SoccerModel {
         this.width = width;
         this.height = height;
 
-        field = new SoccerField(x, y, width, height);
+        field = new SoccerField(x, y, width, height, this);
     }
 
     public void setGoals() {

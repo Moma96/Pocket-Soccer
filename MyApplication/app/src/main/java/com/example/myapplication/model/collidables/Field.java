@@ -103,6 +103,7 @@ public abstract class Field {
                     barrier.notifyAll();
                     barrier.clear();
                     time++;
+                    checkTime();
                 } else
                     barrier.wait();
             } else {
@@ -134,4 +135,6 @@ public abstract class Field {
     public int getTime() {
         return time;
     }
+
+    protected void checkTime() {}
 }

@@ -3,11 +3,15 @@ package com.example.myapplication.model.soccer.models;
 import com.example.myapplication.model.collidables.Field;
 import com.example.myapplication.model.collidables.inactive.Wall;
 
+import org.jetbrains.annotations.NotNull;
+
 public class SoccerField extends Field {
 
     private static final double FRICTION_COEFFICIENT = 0.01;// 0.01;
 
-    public SoccerField(double x, double y, double width, double height, double friction) {
+    private SoccerModel soccer;
+
+    public SoccerField(double x, double y, double width, double height, double friction, @NotNull SoccerModel soccer) {
         setFriction(friction);
 
         walls = new Wall[4];
@@ -19,9 +23,14 @@ public class SoccerField extends Field {
         for (Wall wall : walls) {
             addCollidable(wall);
         }
+        this.soccer = soccer;
     }
 
-    public SoccerField(double x, double y, double width, double height) {
-        this(x, y, width, height, FRICTION_COEFFICIENT);
+    public SoccerField(double x, double y, double width, double height, @NotNull SoccerModel soccer) {
+        this(x, y, width, height, FRICTION_COEFFICIENT, soccer);
+    }
+
+    public SoccerModel getSoccer() {
+        return soccer;
     }
 }

@@ -1,29 +1,97 @@
 package com.example.myapplication.model.soccer.bot;
 
-import com.example.myapplication.model.soccer.models.Player;
 import com.example.myapplication.model.soccer.models.SoccerModel;
 import com.example.myapplication.model.Vector;
 
+import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
+
 public class GeneticTesting {
 
-    private class Unit extends Thread {
+    public class Selected extends ArrayList<Unit> {
+        private int capacity;
+        private int maximum = 0;
+
+        public Selected(int capacity) {
+            super();
+            this.capacity = capacity;
+        }
+
+        @Override
+        public synchronized boolean add(Unit unit) {
+            if (full()) {
+                if (unit.getFitness() >= maximum)
+                    return false;
+                else {
+                    removeMax();
+                    resetMax();
+                }
+            }
+
+            Boolean result = super.add(unit);
+            if (result) {
+                if (unit.getFitness() > maximum) {
+                    maximum = unit.getFitness();
+                }
+            }
+            return result;
+        }
+
+        public synchronized boolean surpassed(int fitness) {
+            if (full() && fitness > maximum) {
+                return true;
+            }
+            return false;
+        }
+
+        public synchronized boolean full() {
+            return size() == capacity;
+        }
+
+        public int getMaximum() {
+            return maximum;
+        }
+
+        private synchronized void removeMax() {
+            Unit max = get(0);
+            for (Unit unit : this) {
+                if (unit.getFitness() > max.getFitness()) {
+                    max = unit;
+                }
+            }
+            remove(max);
+        }
+
+        private synchronized void resetMax() {
+            Unit max = get(0);
+            for (Unit unit : this) {
+                if (unit.getFitness() > max.getFitness()) {
+                    max = unit;
+                }
+            }
+            remove(max);
+        }
+    }
+
+    public class Unit extends Thread {
 
         private TestingSoccerModel testingModel;
         private Vector genes;
         private int fitness;
-        private Unit[] resultArray;
+        private boolean over = false;
 
         public Unit() {
             this(new Vector(Math.random(), Math.random()), Integer.MAX_VALUE);
             genes.scaleIntensity(SCALED_INTENSITY);
         }
 
-        public Unit(Unit unit) {
+        public Unit(@NotNull Unit unit) {
             this(unit.genes, unit.fitness);
         }
 
         public Unit(Vector genes, int fitness) {
-            testingModel = new TestingSoccerModel(soccer);
+            testingModel = new TestingSoccerModel(this);
             this.genes = new Vector(genes);
             this.fitness = fitness;
         }
@@ -36,51 +104,46 @@ public class GeneticTesting {
             return result;
         }
 
-        public void abort() {
-            testingModel.terminate();
-        }
-
         public int getFitness() {
             return fitness;
         }
 
-        public void setResultArray(Unit[] result) {
-            synchronized (resultArray) {
-                resultArray = result;
-                notify();
-            }
+        public TestingSoccerModel getTestingModel() {
+            return testingModel;
         }
 
-        private synchronized void waitResultArray() {
-            while (resultArray == null) {
-                try {
-                    wait();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
+        public GeneticTesting getGen() {
+            return GeneticTesting.this;
         }
 
-        private void checkResult() {
+        public synchronized void finished(int scored, int time) {
+            if (player == scored) {
+                fitness = time;
+            } else {
+                fitness = Integer.MAX_VALUE;
+            }
+            selected.add(this);
 
+            over = true;
+            notify();
+        }
+
+        public synchronized void terminated() {
+            over = true;
+            notify();
         }
 
         @Override
         public void run() {
-            waitResultArray();
-            /*if (player >= 2 || player_id >= testingModel.getPlayers(player).length)
-                return -1; /////////////////throw exception*/
-            notifyAll();
             testingModel.getPlayers()[player][player_id].push(genes);
-
-            testingModel.waitData();
-
-            synchronized(resultArray) {
-                if (player == testingModel.getScored()) {
-                    fitness = testingModel.getField().getTime();
-                    checkResult();
-                } else
-                    fitness = Integer.MAX_VALUE;
+            synchronized (this) {
+                while (!over) {
+                    try {
+                        wait();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         }
     }
@@ -94,70 +157,94 @@ public class GeneticTesting {
     private int player;
     private int player_id;
 
+    private int population;
+    private int generations;
+    private int top;
+
+    private Unit[] generation;
+    private Selected selected;
+
     public GeneticTesting(SoccerModel soccer, int player, int player_id) {
+        this(soccer, player, player_id, POPULATION, GENERATIONS, TOP);
+    }
+
+    public GeneticTesting(@NotNull SoccerModel soccer, int player, int player_id, int population, int generations, int top) {
         this.soccer = soccer;
         this.player = player;
         this.player_id = player_id;
+
+        this.population = population;
+        this.generations = generations;
+        this.top = top;
+
+        generation = new Unit[population];
+        for (int i = 0; i < population; i++) {
+            generation[i] = new Unit();
+        }
+        selected = new Selected(top);
     }
 
-    private static Unit fittest(Unit[] generation) {
-        if (generation == null) return null;
+    public Unit test() {
+        for (int g = 0; g < generations; g++) {
+            calculateFitness();
+            crossBreed();
+        }
+        return fittest();
+    }
 
-        Unit best = generation[0];
-        for (int i = 1; i < POPULATION; i++) {
-            if (generation[i].getFitness() < best.getFitness())
-                best = generation[i];
+    public int getPopulation() {
+        return population;
+    }
+
+    public int getGenerations() {
+        return generations;
+    }
+
+    public int getTop() {
+        return top;
+    }
+
+    public Selected getSelected() {
+        return selected;
+    }
+
+    public SoccerModel getSoccer() {
+        return soccer;
+    }
+
+    private Unit fittest() {
+        if (selected == null) return null;
+
+        Unit best = selected.get(0);
+        for (Unit unit : selected) {
+            if (unit.getFitness() < best.getFitness())
+                best = unit;
         }
         return best;
     }
 
-    public Unit test() {
-        Unit[] generation = initialize();
-        Unit[] selected = null;
-        for (int g = 0; g < GENERATIONS; g++) {
-            selected = calculateFitness(generation, selected);
-            generation = crossBreed(selected);
-        }
-        return fittest(selected);
-    }
-
-    private Unit[] initialize() {
-        Unit[] generation = new Unit[POPULATION];
-        for (int i = 0; i < POPULATION; i++) {
-            generation[i] = new Unit();
-        }
-        return generation;
-    }
-
-    private Unit[] crossBreed(Unit[] selected) {
-        Unit[] generation = new Unit[POPULATION];
+    private void crossBreed() {
+        Unit[] new_gen = new Unit[population];
         int p = 0;
-        for (int i = 0; i < POPULATION - 1; i++) {
-            for (int j = i + 1; j < POPULATION; j++) {
-                generation[p] = selected[i].crossBreed(selected[j]);
+        for (int i = 0; i < population - 1; i++) {
+            for (int j = i + 1; j < population; j++) {
+                new_gen[p] = selected.get(i).crossBreed(selected.get(j));
                 p++;
             }
         }
-        return generation;
+        generation = new_gen;
     }
 
-    private Unit[] calculateFitness(Unit[] generation, Unit[] selected) {
+    private void calculateFitness() {
         try {
-            Unit[] result = null;
-
-
             for (int i = 0; i < POPULATION; i++) {
-                generation[i].setResultArray(result);
                 generation[i].start();
             }
 
             for (int i = 0; i < POPULATION; i++)
                 generation[i].join();
-
-            return result;
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        return null;
     }
 }
