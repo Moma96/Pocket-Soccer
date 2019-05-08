@@ -1,7 +1,5 @@
 package com.example.myapplication.model.soccer.bot;
 
-import com.example.myapplication.model.collidables.active.ActiveObject;
-import com.example.myapplication.model.soccer.models.Ball;
 import com.example.myapplication.model.soccer.models.Player;
 import com.example.myapplication.model.soccer.models.SoccerField;
 

@@ -3,9 +3,8 @@ package com.example.myapplication.model.soccer;
 import android.os.AsyncTask;
 import android.widget.ImageView;
 
-import com.example.myapplication.model.collidables.active.ActiveObject;
+import com.example.myapplication.model.collidables.active.Circle;
 import com.example.myapplication.model.soccer.models.Player;
-import com.example.myapplication.model.soccer.models.SoccerModel;
 import com.example.myapplication.view.activities.GameplayActivity;
 import com.example.myapplication.view.updaters.ViewUpdater;
 
@@ -32,7 +31,7 @@ public class SoccerFacade {
             public void run() {
                 Player[] active = soccer.getActivePlayers();
                 Player[] non_active = soccer.getNonActivePlayers();
-                HashMap<ActiveObject, ImageView> views = gameplay.getViewUpdater().getViews();
+                HashMap<Circle, ImageView> views = gameplay.getViewUpdater().getViews();
 
                 for (Player player : active) {
                     ImageView view = views.get(player);

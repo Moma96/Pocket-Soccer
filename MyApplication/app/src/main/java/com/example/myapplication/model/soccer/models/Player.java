@@ -3,13 +3,10 @@ package com.example.myapplication.model.soccer.models;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
-import com.example.myapplication.model.collidables.Field;
-import com.example.myapplication.model.collidables.active.ActiveObject;
+import com.example.myapplication.model.collidables.active.Circle;
 import com.example.myapplication.model.Vector;
 
 import org.jetbrains.annotations.NotNull;
-
-import androidx.versionedparcelable.NonParcelField;
 
 public class Player extends Circle {
 
@@ -68,6 +65,6 @@ public class Player extends Circle {
 
     @Override
     public String toString() {
-        return "Player " + getActiveId();
+        return "Player " + getCircleId();
     }
 }

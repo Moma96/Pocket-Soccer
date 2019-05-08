@@ -3,7 +3,7 @@ package com.example.myapplication.model.collidables;
 import android.util.Log;
 
 import com.example.myapplication.model.Vector;
-import com.example.myapplication.model.collidables.active.ActiveObject;
+import com.example.myapplication.model.collidables.active.Circle;
 import com.example.myapplication.model.collidables.inactive.Wall;
 
 import java.util.ArrayList;
@@ -13,17 +13,17 @@ public abstract class Field {
 
     public static final String BARRIER_TAG = "Barrier";
 
-    private int nextActiveId = 0;
+    private int nextCircleId = 0;
     private int time = 0;
 
     protected Wall walls[];
     protected double friction;
 
     private ArrayList<Collidable> collidables = new ArrayList<>();
-    private ArrayList<ActiveObject> activeCollidables = new ArrayList<>();
+    private ArrayList<Circle> circles = new ArrayList<>();
 
-    private HashSet<ActiveObject> moving = new HashSet<>();
-    private HashSet<ActiveObject> barrier = new HashSet<>();
+    private HashSet<Circle> moving = new HashSet<>();
+    private HashSet<Circle> barrier = new HashSet<>();
 
     public double getFriction() {
         return friction;
@@ -33,7 +33,7 @@ public abstract class Field {
         this.friction = friction;
     }
 
-    public HashSet<ActiveObject> getBarrier() {
+    public HashSet<Circle> getBarrier() {
         return barrier;
     }
 
@@ -41,8 +41,8 @@ public abstract class Field {
         return collidables;
     }
 
-    public ArrayList<ActiveObject> getActiveCollidables() {
-        return activeCollidables;
+    public ArrayList<Circle> getCircles() {
+        return circles;
     }
 
     public Wall[] getWalls() {
@@ -64,17 +64,17 @@ public abstract class Field {
             collidables.add(collidable);
         }
 
-        synchronized (activeCollidables) {
-            if (collidable instanceof ActiveObject)
-                activeCollidables.add((ActiveObject) collidable);
+        synchronized (circles) {
+            if (collidable instanceof Circle)
+                circles.add((Circle) collidable);
         }
     }
 
-    public ActiveObject getActive(Vector dot) {
+    public Circle getActive(Vector dot) {
         if (dot == null) return null;
 
-        synchronized (activeCollidables) {
-            for (ActiveObject active : activeCollidables) {
+        synchronized (circles) {
+            for (Circle active : circles) {
                 if (active.isInside(dot)) {
                     return active;
                 }
@@ -84,18 +84,18 @@ public abstract class Field {
     }
 
     public int getNextId() {
-        synchronized (activeCollidables) {
-            return nextActiveId++;
+        synchronized (circles) {
+            return nextCircleId++;
         }
     }
 
     public void decrementId() {
-        synchronized (activeCollidables) {
-            nextActiveId--;
+        synchronized (circles) {
+            nextCircleId--;
         }
     }
 
-    public void barrier(ActiveObject active) throws InterruptedException {
+    public void barrier(Circle active) throws InterruptedException {
         synchronized (barrier) {
             if (!barrier.contains(active)) {
                 barrier.add(active);
@@ -112,7 +112,7 @@ public abstract class Field {
         }
     }
 
-    public boolean checkStopped(ActiveObject active) {
+    public boolean checkStopped(Circle active) {
         synchronized (barrier) {
             if (active.getSpeed().isZeroVector() && moving.contains(active)) {
                 moving.remove(active);
@@ -122,7 +122,7 @@ public abstract class Field {
         return false;
     }
 
-    public boolean checkStarted(ActiveObject active) {
+    public boolean checkStarted(Circle active) {
         synchronized (barrier) {
             if (!moving.contains(active)) {
                 moving.add(active);

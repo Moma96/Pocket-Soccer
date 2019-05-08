@@ -1,15 +1,14 @@
 package com.example.myapplication.model.collidables;
 
-import com.example.myapplication.model.Vector;
-import com.example.myapplication.model.collidables.active.ActiveObject;
+import com.example.myapplication.model.collidables.active.Circle;
 
 public interface Collidable {
 
-    double getDistance(ActiveObject active);
+    double getDistance(Circle active);
 
-    void collisionUpdateSpeed(ActiveObject active); //ActiveObject
+    void collisionUpdateSpeed(Circle active); //Circle
 
-    Collidable beforeCollision(ActiveObject active);
+    Collidable beforeCollision(Circle active);
 
-    void duringCollision(ActiveObject active);
+    void duringCollision(Circle active);
 }

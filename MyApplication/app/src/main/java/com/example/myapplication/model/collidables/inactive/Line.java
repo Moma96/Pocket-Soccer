@@ -1,7 +1,7 @@
 package com.example.myapplication.model.collidables.inactive;
 
 import com.example.myapplication.model.Vector;
-import com.example.myapplication.model.collidables.active.ActiveObject;
+import com.example.myapplication.model.collidables.active.Circle;
 
 public class Line extends InactiveObject {
 
@@ -22,7 +22,7 @@ public class Line extends InactiveObject {
     }
 
     @Override
-    public double getDistance(ActiveObject active) {
+    public double getDistance(Circle active) {
         if (active == null) return 1;
 
         switch(orientation) {
@@ -47,7 +47,7 @@ public class Line extends InactiveObject {
     }
 
     @Override
-    public void collisionUpdateSpeed(ActiveObject active) {
+    public void collisionUpdateSpeed(Circle active) {
         if (active == null) return;
 
         Vector new_speed = active.getSpeed();

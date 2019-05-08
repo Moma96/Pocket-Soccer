@@ -20,13 +20,7 @@ public abstract class SoccerModel {
     private Goal[] goals = new Goal[2];
 
     protected Ball ball;
-
     protected Player[][] players = new Player[2][3];
-    /*private int active = 0;
-    private Player selected = null;
-    private boolean responsiveness = false;
-
-    private int[] scores = {0, 0};*/
 
     private double x;
     private double y;
@@ -117,25 +111,15 @@ public abstract class SoccerModel {
             for (int i = 0; i < 3; i++)
                 players[p][i].start();
         }
-        //setResponsiveness();
     }
 
     public void terminate() {
-        //resetResponsiveness();
         ball.terminate();
         for (int p = 0; p < 2; p++) {
             for (int i = 0; i < 3; i++)
                 players[p][i].terminate();
         }
     }
-    /*
-    public void changeActive() {
-        active = (active + 1) % 2;
-    }
-
-    public Player getSelected() {
-        return selected;
-    }*/
 
     public void reset() {
         ball.clearSpeed();
@@ -147,45 +131,7 @@ public abstract class SoccerModel {
             }
         }
     }
-/*
-    public boolean push(final float x1, final float y1, final float x2, final float y2) {
-        if (!responsive()) return false;
 
-        if (selected != null) {
-            selected.push(new Vector(x2 - x1, y2 - y1));
-            selected = null;
-            changeActive();
-        }
-        return true;
-    }
-
-    public boolean select(final float x, final float y) {
-        if (!responsive()) return false;
-
-        selected = getActivePlayer(new Vector(x, y));
-        return true;
-    }
-
-    public boolean selectIfNothingSelected(final float x, final float y) {
-        if (selected != null) return false;
-
-        return select(x, y);
-    }
-
-    public synchronized boolean responsive() {
-        return responsiveness;
-    }
-
-    public synchronized void setResponsiveness() {
-        responsiveness = true;
-    }
-
-    public synchronized void resetResponsiveness() {
-        responsiveness = false;
-    }
-
-    public synchronized void resetSelection() { selected = null; }
-*/
     public Ball getBall() {
         return ball;
     }
@@ -202,36 +148,9 @@ public abstract class SoccerModel {
         return players[p];
     }
 
-    /*
-    public Player[] getActivePlayers() {
-        return players[active];
-    }
-
-    public Player[] getNonActivePlayers() {
-        return players[(active + 1) % 2];
-    }
-
-    public Player getActivePlayer(Vector dot) {
-        Player[] players = getActivePlayers();
-        double min_distance = Double.MAX_VALUE;
-        Player player = null;
-        for (Player p : players) {
-            double distance = p.getDistance(dot);
-            if (distance < min_distance) {
-                min_distance = distance;
-                player = p;
-            }
-        }
-        return player;
-    }*/
-
     public Goal[] getGoals() {
         return goals;
     }
-
-    /*public int[] getScores() {
-        return scores;
-    }*/
 
     public SoccerField getField() {
         return field;

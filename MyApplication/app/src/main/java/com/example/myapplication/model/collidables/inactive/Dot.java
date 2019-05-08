@@ -1,7 +1,7 @@
 package com.example.myapplication.model.collidables.inactive;
 
 import com.example.myapplication.model.Vector;
-import com.example.myapplication.model.collidables.active.ActiveObject;
+import com.example.myapplication.model.collidables.active.Circle;
 
 public class Dot extends InactiveObject {
 
@@ -20,12 +20,12 @@ public class Dot extends InactiveObject {
     }
 
     @Override
-    public double getDistance(ActiveObject active) {
+    public double getDistance(Circle active) {
         return center.sub(active.getCenter()).intensity() - active.getRadius();
     }
 
     @Override
-    public void collisionUpdateSpeed(ActiveObject collided) {
+    public void collisionUpdateSpeed(Circle collided) {
         if (collided == null) return;
         if (collided.getSpeed().isZeroVector()) return;
 

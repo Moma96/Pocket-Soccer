@@ -1,8 +1,10 @@
 package com.example.myapplication.model.collidables.active;
 
 import android.util.Log;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 
+import com.example.myapplication.model.Active;
 import com.example.myapplication.model.Vector;
 import com.example.myapplication.model.collidables.Collidable;
 import com.example.myapplication.model.collidables.Field;
@@ -11,51 +13,55 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 
-public abstract class ActiveObject extends Thread implements Collidable {
+public class Circle extends Active implements Collidable {
 
-    private static final String COLLISION_TAG = "Active collision";
-    private static final String STATE_TAG = "Active state";
+    private static final String COLLISION_TAG = "Collision";
+    private static final String STATE_TAG = "Circle state";
 
     protected static final int MOVING_DELAY = 15; //15; //ms
     protected static final double MOVING_INCREMENT = 0.03; //0.03;
     private static final double SPEED_ROUND_LIMIT = 0.05;
 
     protected double mass;
-    private double radius;
     protected Vector center;
     protected Vector speed;
 
-    private boolean active;
+    private double radius;
+    private double img_radius_coefficient;
+    private double img_radius;
+
     private Field field;
 
     private HashMap<String, Double> collision_in_process;
-    private HashMap<Integer, ActiveObject> old;
+    private HashMap<Integer, Circle> old;
 
     private int id;
 
-    public ActiveObject(double mass, Vector center, Vector speed, @NotNull Field field) {
-        this(mass, center, speed, field, true, null, null);
+    public Circle(double mass, double radius, double img_radius_coefficient, Vector center, Vector speed, @NotNull Field field) {
+        this(mass, radius, img_radius_coefficient, center, speed, field, true, null, null);
     }
 
-    public ActiveObject(@NotNull ActiveObject active) {
-        this(active, true);
+    public Circle(@NotNull Circle circle) {
+        this(circle, true);
     }
 
-    public ActiveObject(double mass, @NotNull Vector center, @NotNull Field field) {
-        this(mass, center, new Vector(0, 0), field);
+    public Circle(double mass, double radius, double img_radius_coefficient, @NotNull Vector center, @NotNull Field field) {
+        this(mass, radius, img_radius_coefficient, center, new Vector(0, 0), field);
     }
 
-    public ActiveObject(@NotNull ActiveObject active, @NotNull Field field) {
-        this(active.mass, active.center, active.speed, field);
+    public Circle(@NotNull Circle circle, @NotNull Field field) {
+        this(circle.mass, circle.radius, circle.img_radius_coefficient, circle.center, circle.speed, field);
     }
 
-    protected ActiveObject(@NotNull ActiveObject active, boolean include) {
-        this(active.mass, active.center, active.speed, active.field, include, active.collision_in_process, active.old);
+    protected Circle(@NotNull Circle circle, boolean include) {
+        this(circle.mass, circle.radius, circle.img_radius_coefficient, circle.center, circle.speed, circle.field, include, circle.collision_in_process, circle.old);
     }
 
-    protected ActiveObject(double mass, @NotNull Vector center, Vector speed, @NotNull Field field, boolean include,
-                           HashMap<String, Double> collision_in_process, HashMap<Integer, ActiveObject> old) {
+    protected Circle(double mass, double radius, double img_radius_coefficient, @NotNull Vector center, Vector speed, @NotNull Field field, boolean include,
+                     HashMap<String, Double> collision_in_process, HashMap<Integer, Circle> old) {
         setMass(mass);
+        this.img_radius_coefficient = img_radius_coefficient;
+        setRadius(radius);
         setCenter(new Vector(center));
         setSpeed(new Vector(speed));
         setField(field);
@@ -64,17 +70,17 @@ public abstract class ActiveObject extends Thread implements Collidable {
             field.addCollidable(this);
         }
         this.collision_in_process = (collision_in_process != null) ? new HashMap<>(collision_in_process) : new HashMap<String, Double>();
-        this.old = (old != null) ? new HashMap<>(old) : new HashMap<Integer, ActiveObject>();
+        this.old = (old != null) ? new HashMap<>(old) : new HashMap<Integer, Circle>();
     }
 
-    private synchronized ActiveObject getIdenticalNonInclusiveCopy() {
-        ActiveObject copy = getNonInclusiveCopy();
+    private synchronized Circle getIdenticalNonInclusiveCopy() {
+        Circle copy = getNonInclusiveCopy();
         copy.id = id;
         field.decrementId();
         return copy;
     }
 
-    public int getActiveId() {
+    public int getCircleId() {
         return id;
     }
 
@@ -116,16 +122,38 @@ public abstract class ActiveObject extends Thread implements Collidable {
 
     public void setRadius(double radius) {
         this.radius = radius;
+        img_radius = radius*img_radius_coefficient;
     }
 
+    public double getImgRadius() {
+        return img_radius;
+    }
+
+    @Override
+    public String toString() {
+        return "Circle " + getCircleId();
+    }
+
+    public void draw(ImageView view) {
+        if (view == null) return;
+        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) view.getLayoutParams();
+        params.leftMargin = (int) (getCenter().getX() - getImgRadius());
+        params.topMargin = (int) (getCenter().getY() - getImgRadius());
+        view.setLayoutParams(params);
+    }
+
+    protected Circle getNonInclusiveCopy() {
+        return new Circle(this, false);
+    }
     public double getRadius() {
         return radius;
     }
 
-    public synchronized double getDistance(ActiveObject active) {
-        if (active == null) return 1;
+    @Override
+    public synchronized double getDistance(Circle circle) {
+        if (circle == null) return 1;
 
-        return center.sub(active.center).intensity() - (getRadius() + active.getRadius());
+        return center.sub(circle.center).intensity() - (getRadius() + circle.getRadius());
     }
 
     public synchronized double getDistance(Vector dot) {
@@ -142,34 +170,36 @@ public abstract class ActiveObject extends Thread implements Collidable {
         speed.clear();
     }
 
-    public synchronized Collidable beforeCollision(ActiveObject active) {
-        if (active == null) return this;
+    @Override
+    public synchronized Collidable beforeCollision(Circle circle) {
+        if (circle == null) return this;
 
-        ActiveObject old_collided = active.old.get(id);
+        Circle old_collided = circle.old.get(id);
         if (old_collided != null)
             return old_collided;
         else
             return this;
     }
 
-    public synchronized void duringCollision(ActiveObject active) {
-        if (active == null) return;
+    @Override
+    public synchronized void duringCollision(Circle circle) {
+        if (circle == null) return;
 
-        ActiveObject old_collided = active.old.get(id);
+        Circle old_collided = circle.old.get(id);
         if (old_collided == null) {
 
-            ActiveObject copy = active.getIdenticalNonInclusiveCopy();
-            old.put(active.id, copy);
+            Circle copy = circle.getIdenticalNonInclusiveCopy();
+            old.put(circle.id, copy);
             notifyAll();
 
         } else
-            active.old.remove(id);
+            circle.old.remove(id);
     }
 
     private void collision(Collidable collided) {
         if (collided == null) return;
 
-        synchronized (field.getActiveCollidables()) {
+        synchronized (field.getCircles()) {
             collided = collided.beforeCollision(this);
             double distance = collided.getDistance(this);
             Double old_distance = collision_in_process.get(collided.toString());
@@ -194,7 +224,8 @@ public abstract class ActiveObject extends Thread implements Collidable {
         }
     }
 
-    public synchronized void collisionUpdateSpeed(ActiveObject collided) {
+    @Override
+    public synchronized void collisionUpdateSpeed(Circle collided) {
         if (collided == null) return;
         if (speed.isZeroVector() && collided.speed.isZeroVector()) return;
 
@@ -234,10 +265,6 @@ public abstract class ActiveObject extends Thread implements Collidable {
         setSpeed(speed.mul(1 - field.getFrictionCoefficient()));
     }
 
-    public synchronized void terminate() {
-        active = false;
-    }
-
     protected void work() {}
 
     protected void delay() throws InterruptedException {
@@ -245,25 +272,18 @@ public abstract class ActiveObject extends Thread implements Collidable {
     }
 
     @Override
-    public void run() {
+    protected void iterate() {
         try {
-            active = true;
-            while (active) {
-                checkCollision();
-                checkSpeed();
-                if (!speed.isZeroVector()) {
-                    move();
-                    work();
-                    delay();
-                    field.barrier(this);
-                }
+            checkCollision();
+            checkSpeed();
+            if (!speed.isZeroVector()) {
+                move();
+                work();
+                delay();
+                field.barrier(this);
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
-
-    public abstract void draw(ImageView view);
-
-    protected abstract ActiveObject getNonInclusiveCopy();
 }

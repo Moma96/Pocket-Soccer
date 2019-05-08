@@ -11,17 +11,17 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.myapplication.R;
-import com.example.myapplication.model.collidables.active.ActiveObject;
+import com.example.myapplication.model.Active;
+import com.example.myapplication.model.collidables.active.Circle;
 import com.example.myapplication.model.soccer.SoccerGameplay;
 import com.example.myapplication.model.soccer.models.Ball;
-import com.example.myapplication.model.soccer.models.Circle;
 import com.example.myapplication.model.soccer.models.Player;
 import com.example.myapplication.view.activities.GameplayActivity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class ViewUpdater extends Thread {
+public class ViewUpdater extends Active {
 
     private static final int FPS = 60;
     private static final String STATE_TAG = "View updater";
@@ -30,7 +30,7 @@ public class ViewUpdater extends Thread {
     private SoccerGameplay soccer;
 
     private BallImageUpdater ballImageUpdater;
-    private HashMap<ActiveObject, ImageView> imgActives = new HashMap<>();
+    private HashMap<Circle, ImageView> imgActives = new HashMap<>();
     private ImageView imgSelected;
     private ImageView imgGoalposts;
     //private TextView[] scores = new TextView[2];
@@ -53,7 +53,7 @@ public class ViewUpdater extends Thread {
         return soccer;
     }
 
-    public HashMap<ActiveObject, ImageView> getViews() {
+    public HashMap<Circle, ImageView> getViews() {
         return imgActives;
     }
 
@@ -154,8 +154,8 @@ public class ViewUpdater extends Thread {
         gameplay.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                ArrayList<ActiveObject> activeObjects = soccer.getField().getActiveCollidables();
-                for (ActiveObject active : activeObjects)
+                ArrayList<Circle> activeObjects = soccer.getField().getCircles();
+                for (Circle active : activeObjects)
                     active.draw(imgActives.get(active));
 
                 refreshSelection();
@@ -186,6 +186,27 @@ public class ViewUpdater extends Thread {
         background.removeView(view);
     }
 
+    @Override
+    protected void iterate() {
+        refresh();
+        try {
+            sleep( 1000 / FPS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    protected void before() {
+        Log.d(STATE_TAG, "View updater started");
+        ballImageUpdater.start();
+    }
+
+    @Override
+    protected void after() {
+        Log.d(STATE_TAG, "View updater finished");
+    }
+/*
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     public void run() {
@@ -202,5 +223,5 @@ public class ViewUpdater extends Thread {
         }
 
         Log.d(STATE_TAG, "View updater finished");
-    }
+    }*/
 }

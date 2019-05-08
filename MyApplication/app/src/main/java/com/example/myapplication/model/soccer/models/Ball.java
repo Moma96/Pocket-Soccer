@@ -1,7 +1,7 @@
 package com.example.myapplication.model.soccer.models;
 
 import com.example.myapplication.model.collidables.Field;
-import com.example.myapplication.model.collidables.active.ActiveObject;
+import com.example.myapplication.model.collidables.active.Circle;
 import com.example.myapplication.model.Vector;
 import com.example.myapplication.model.soccer.SoccerFacade;
 
@@ -48,7 +48,7 @@ public class Ball extends Circle {
 
     @Override
     public String toString() {
-        return "Ball " + getActiveId();
+        return "Ball " + getCircleId();
     }
 
     @Override

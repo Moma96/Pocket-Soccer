@@ -67,13 +67,6 @@ public class SoccerGameplay extends SoccerModel {
         return getPlayers((active + 1) % 2);
     }
 
-    public boolean select(final float x, final float y) {
-        if (!responsive()) return false;
-
-        selected = getActivePlayer(new Vector(x, y));
-        return true;
-    }
-
     public Player getActivePlayer(Vector dot) {
         Player[] players = getActivePlayers();
         double min_distance = Double.MAX_VALUE;
@@ -86,6 +79,17 @@ public class SoccerGameplay extends SoccerModel {
             }
         }
         return player;
+    }
+
+    public int getActive() {
+        return active;
+    }
+
+    public boolean select(final float x, final float y) {
+        if (!responsive()) return false;
+
+        selected = getActivePlayer(new Vector(x, y));
+        return true;
     }
 
     public boolean selectIfNothingSelected(final float x, final float y) {
