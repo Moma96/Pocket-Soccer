@@ -4,20 +4,18 @@ import android.graphics.Color;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.myapplication.R;
 import com.example.myapplication.model.collidables.active.ActiveObject;
+import com.example.myapplication.model.soccer.SoccerGameplay;
 import com.example.myapplication.model.soccer.models.Ball;
 import com.example.myapplication.model.soccer.models.Circle;
 import com.example.myapplication.model.soccer.models.Player;
-import com.example.myapplication.model.soccer.models.SoccerModel;
 import com.example.myapplication.view.activities.GameplayActivity;
 
 import java.util.ArrayList;
@@ -29,7 +27,7 @@ public class ViewUpdater extends Thread {
     private static final String STATE_TAG = "View updater";
 
     private GameplayActivity gameplay;
-    private SoccerModel soccer;
+    private SoccerGameplay soccer;
 
     private BallImageUpdater ballImageUpdater;
     private HashMap<ActiveObject, ImageView> imgActives = new HashMap<>();
@@ -38,7 +36,7 @@ public class ViewUpdater extends Thread {
     //private TextView[] scores = new TextView[2];
     private TextView imgScores;
 
-    public ViewUpdater(GameplayActivity gameplay, SoccerModel soccer) {
+    public ViewUpdater(GameplayActivity gameplay, SoccerGameplay soccer) {
         this.gameplay = gameplay;
         this.soccer = soccer;
 
@@ -49,6 +47,10 @@ public class ViewUpdater extends Thread {
 
     public GameplayActivity getGameplay() {
         return gameplay;
+    }
+
+    public SoccerGameplay getSoccer() {
+        return soccer;
     }
 
     public HashMap<ActiveObject, ImageView> getViews() {

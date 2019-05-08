@@ -4,6 +4,7 @@ import com.example.myapplication.model.soccer.models.SoccerModel;
 import com.example.myapplication.model.Vector;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 
@@ -117,11 +118,10 @@ public class GeneticTesting {
         }
 
         public synchronized void finished(int scored, int time) {
-            if (player == scored) {
+            if (player == scored)
                 fitness = time;
-            } else {
+            else
                 fitness = Integer.MAX_VALUE;
-            }
             selected.add(this);
 
             over = true;
@@ -135,15 +135,15 @@ public class GeneticTesting {
 
         @Override
         public void run() {
-            testingModel.getPlayers()[player][player_id].push(genes);
-            synchronized (this) {
-                while (!over) {
-                    try {
+            try {
+                testingModel.getPlayers()[player][player_id].push(genes);
+                synchronized (this) {
+                    while (!over) {
                         wait();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
                     }
                 }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
     }
@@ -212,6 +212,7 @@ public class GeneticTesting {
         return soccer;
     }
 
+    @Nullable
     private Unit fittest() {
         if (selected == null) return null;
 

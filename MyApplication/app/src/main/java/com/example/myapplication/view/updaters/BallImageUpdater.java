@@ -37,7 +37,7 @@ public class BallImageUpdater extends Thread {
     public void run() {
         Log.d(STATE_TAG, "Ball image updater started!");
         try {
-            Ball ball = viewUpdater.getGameplay().getSoccerModel().getBall();
+            Ball ball = viewUpdater.getSoccer().getBall();
 
             while(!viewUpdater.getGameplay().isDestroyed()) {
                 while (ball.getSpeed().isZeroVector()) {

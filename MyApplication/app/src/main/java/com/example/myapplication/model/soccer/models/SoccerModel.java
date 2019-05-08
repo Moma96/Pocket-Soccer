@@ -1,12 +1,8 @@
 package com.example.myapplication.model.soccer.models;
 
-import android.util.Log;
 import com.example.myapplication.model.Vector;
-import static java.lang.Thread.sleep;
 
-public class SoccerModel {
-
-    public static final int AFTER_GOAL_WAIT = 2; //s
+public abstract class SoccerModel {
 
     public static final double GOAL_WIDTH = 100;
     public static final double GOAL_HEIGHT = 300;
@@ -20,19 +16,17 @@ public class SoccerModel {
     public static final double[][] PLAYER_Y = {{ 1.0/2, 1.0/5, 4.0/5 },
                                                { 1.0/2, 1.0/5, 4.0/5 }};
 
-    private static final String GOAL_TAG = "Goal";
-
     protected SoccerField field;
     private Goal[] goals = new Goal[2];
 
     protected Ball ball;
 
     protected Player[][] players = new Player[2][3];
-    private int active = 0;
+    /*private int active = 0;
     private Player selected = null;
     private boolean responsiveness = false;
 
-    private int[] scores = {0, 0};
+    private int[] scores = {0, 0};*/
 
     private double x;
     private double y;
@@ -123,50 +117,25 @@ public class SoccerModel {
             for (int i = 0; i < 3; i++)
                 players[p][i].start();
         }
-        setResponsiveness();
+        //setResponsiveness();
     }
 
     public void terminate() {
-        resetResponsiveness();
+        //resetResponsiveness();
         ball.terminate();
         for (int p = 0; p < 2; p++) {
             for (int i = 0; i < 3; i++)
                 players[p][i].terminate();
         }
     }
-
+    /*
     public void changeActive() {
         active = (active + 1) % 2;
     }
 
     public Player getSelected() {
         return selected;
-    }
-
-    private void disableAndSleep(int wait) {
-        resetResponsiveness();
-        resetSelection();
-        try {
-            sleep(wait * 1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        setResponsiveness();
-    }
-
-    public boolean score(int player) {
-        if (!responsive()) return false;
-
-        scores[player]++;
-        Log.d(GOAL_TAG, "PLayer " + player + " scored! result: " + scores[0] + ":" + scores[1]);
-
-        disableAndSleep(AFTER_GOAL_WAIT);
-
-        reset();
-
-        active = (player + 1) % 2;
-        return true;
-    }
+    }*/
 
     public void reset() {
         ball.clearSpeed();
@@ -178,7 +147,7 @@ public class SoccerModel {
             }
         }
     }
-
+/*
     public boolean push(final float x1, final float y1, final float x2, final float y2) {
         if (!responsive()) return false;
 
@@ -216,7 +185,7 @@ public class SoccerModel {
     }
 
     public synchronized void resetSelection() { selected = null; }
-
+*/
     public Ball getBall() {
         return ball;
     }
@@ -233,6 +202,7 @@ public class SoccerModel {
         return players[p];
     }
 
+    /*
     public Player[] getActivePlayers() {
         return players[active];
     }
@@ -253,17 +223,19 @@ public class SoccerModel {
             }
         }
         return player;
-    }
+    }*/
 
     public Goal[] getGoals() {
         return goals;
     }
 
-    public int[] getScores() {
+    /*public int[] getScores() {
         return scores;
-    }
+    }*/
 
     public SoccerField getField() {
         return field;
     }
+
+    public abstract boolean score(int player);
 }

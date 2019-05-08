@@ -15,14 +15,14 @@ public class SoccerFacade {
 
     private GameplayActivity gameplay;
     private ViewUpdater updater;
-    private SoccerModel model;
+    private SoccerGameplay soccer;
 
-    public SoccerFacade(GameplayActivity gameplay, SoccerModel model, ViewUpdater updater) {
+    public SoccerFacade(GameplayActivity gameplay, SoccerGameplay soccer, ViewUpdater updater) {
         this.gameplay = gameplay;
-        this.model = model;
+        this.soccer = soccer;
         this.updater = updater;
 
-        model.getBall().setFacade(this);
+        soccer.getBall().setFacade(this);
         darkenInactive();
     }
 
@@ -30,8 +30,8 @@ public class SoccerFacade {
         gameplay.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Player[] active = model.getActivePlayers();
-                Player[] non_active = model.getNonActivePlayers();
+                Player[] active = soccer.getActivePlayers();
+                Player[] non_active = soccer.getNonActivePlayers();
                 HashMap<ActiveObject, ImageView> views = gameplay.getViewUpdater().getViews();
 
                 for (Player player : active) {
@@ -50,7 +50,7 @@ public class SoccerFacade {
             new AsyncTask<Void, Void, Void>() {
                 @Override
                 protected Void doInBackground( final Void ... params ) {
-                    if (model.score(player)) {
+                    if (soccer.score(player)) {
                         updater.updateScores();
                         darkenInactive();
                     }
@@ -63,7 +63,7 @@ public class SoccerFacade {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground( final Void ... params ) {
-                if (model.push(x1, y1, x2, y2))
+                if (soccer.push(x1, y1, x2, y2))
                     darkenInactive();
                 return null;
             }
@@ -74,7 +74,7 @@ public class SoccerFacade {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground( final Void ... params ) {
-                model.select(x, y);
+                soccer.select(x, y);
                 return null;
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -84,7 +84,7 @@ public class SoccerFacade {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground( final Void ... params ) {
-                model.selectIfNothingSelected(x, y);
+                soccer.selectIfNothingSelected(x, y);
                 return null;
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);

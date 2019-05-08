@@ -8,6 +8,7 @@ import android.widget.FrameLayout;
 
 import com.example.myapplication.R;
 import com.example.myapplication.model.soccer.SoccerFacade;
+import com.example.myapplication.model.soccer.SoccerGameplay;
 import com.example.myapplication.model.soccer.models.SoccerModel;
 import com.example.myapplication.view.GestureListener;
 import com.example.myapplication.view.updaters.ViewUpdater;
@@ -15,7 +16,7 @@ import com.example.myapplication.view.updaters.ViewUpdater;
 public class GameplayActivity extends AppCompatActivity {
 
     private GestureDetectorCompat gestureDetectorCompat;
-    private SoccerModel soccerModel;
+    private SoccerGameplay soccer;
     private SoccerFacade soccerFacade;
     private ViewUpdater viewUpdater;
 
@@ -43,19 +44,19 @@ public class GameplayActivity extends AppCompatActivity {
 
     private void setup(FrameLayout background) {
 
-        soccerModel = new SoccerModel(0, 0, background.getWidth(), background.getHeight());
-        viewUpdater = new ViewUpdater(this, soccerModel);
-        soccerFacade = new SoccerFacade(this, soccerModel, viewUpdater);
+        soccer = new SoccerGameplay(0, 0, background.getWidth(), background.getHeight());
+        viewUpdater = new ViewUpdater(this, soccer);
+        soccerFacade = new SoccerFacade(this, soccer, viewUpdater);
 
-        soccerModel.start();
+        soccer.start();
         viewUpdater.start();
 
         GestureListener gestureListener = new GestureListener(soccerFacade);
         gestureDetectorCompat = new GestureDetectorCompat(this, gestureListener);
     }
 
-    public SoccerModel getSoccerModel() {
-        return soccerModel;
+    public SoccerModel getSoccer() {
+        return soccer;
     }
 
     @Override

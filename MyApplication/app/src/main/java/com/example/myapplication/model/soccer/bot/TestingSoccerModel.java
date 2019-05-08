@@ -9,7 +9,6 @@ public class TestingSoccerModel extends SoccerModel {
     GeneticTesting.Unit genUnit;
 
     public TestingSoccerModel(@NotNull GeneticTesting.Unit genUnit) {
-        this.genUnit = genUnit;
         SoccerModel soccer = genUnit.getGen().getSoccer();
         setField(soccer.getX(), soccer.getY(), soccer.getWidth(), soccer.getHeight());
         setGoals();
@@ -20,6 +19,7 @@ public class TestingSoccerModel extends SoccerModel {
             for (int i = 0; i < 3; i++)
                 players[p][i] = new TestingPlayer(soccer.getPlayers()[p][i], field);
         }
+        this.genUnit = genUnit;
     }
 
     @Override
