@@ -21,41 +21,12 @@ public class SoccerFacade {
         this.soccer = soccer;
         this.updater = updater;
 
-        soccer.getBall().setFacade(this);
-        darkenInactive();
+        soccer.setFacade(this);
     }
 
-    public void darkenInactive() {
-        gameplay.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Player[] active = soccer.getActivePlayers();
-                Player[] non_active = soccer.getNonActivePlayers();
-                HashMap<Circle, ImageView> views = gameplay.getViewUpdater().getViews();
-
-                for (Player player : active) {
-                    ImageView view = views.get(player);
-                    view.setAlpha((float) 1);
-                }
-                for (Player player : non_active) {
-                    ImageView view = views.get(player);
-                    view.setAlpha((float) 0.7);
-                }
-            }
-        });
-    }
-
-    public void score(final int player) {
-            new AsyncTask<Void, Void, Void>() {
-                @Override
-                protected Void doInBackground( final Void ... params ) {
-                    if (soccer.score(player)) {
-                        updater.updateScores();
-                        darkenInactive();
-                    }
-                    return null;
-                }
-            }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    public void refreshScores() {
+        updater.updateScores();
+        updater.darkenInactive();
     }
 
     public void respondOnSwipe(final float x1, final float y1, final float x2, final float y2) {
@@ -63,7 +34,7 @@ public class SoccerFacade {
             @Override
             protected Void doInBackground( final Void ... params ) {
                 if (soccer.push(x1, y1, x2, y2))
-                    darkenInactive();
+                    updater.darkenInactive();
                 return null;
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);

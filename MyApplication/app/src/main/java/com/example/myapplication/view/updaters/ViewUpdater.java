@@ -30,7 +30,7 @@ public class ViewUpdater extends Active {
     private SoccerGameplay soccer;
 
     private BallImageUpdater ballImageUpdater;
-    private HashMap<Circle, ImageView> imgActives = new HashMap<>();
+    private HashMap<Circle, ImageView> imgCircles = new HashMap<>();
     private ImageView imgSelected;
     private ImageView imgGoalposts;
     //private TextView[] scores = new TextView[2];
@@ -53,10 +53,6 @@ public class ViewUpdater extends Active {
         return soccer;
     }
 
-    public HashMap<Circle, ImageView> getViews() {
-        return imgActives;
-    }
-
     private void draw(final int[] teams) {
         gameplay.runOnUiThread(new Runnable() {
             @Override
@@ -68,6 +64,7 @@ public class ViewUpdater extends Active {
                 drawScores(background);
             }
        });
+        darkenInactive();
     }
 
     private void drawBall(FrameLayout background) {
@@ -122,7 +119,7 @@ public class ViewUpdater extends Active {
         params.topMargin  = (int)(circle.getCenter().getY() - circle.getImgRadius());
         background.addView(img, params);
 
-        imgActives.put(circle, img);
+        imgCircles.put(circle, img);
         return img;
     }
 
@@ -156,7 +153,7 @@ public class ViewUpdater extends Active {
             public void run() {
                 ArrayList<Circle> activeObjects = soccer.getField().getCircles();
                 for (Circle active : activeObjects)
-                    active.draw(imgActives.get(active));
+                    active.draw(imgCircles.get(active));
 
                 refreshSelection();
                 refreshGoals();
@@ -180,6 +177,25 @@ public class ViewUpdater extends Active {
             removeView(background, imgSelected);
             imgSelected = null;
         }
+    }
+
+    public void darkenInactive() {
+        gameplay.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Player[] active = soccer.getActivePlayers();
+                Player[] non_active = soccer.getNonActivePlayers();
+
+                for (Player player : active) {
+                    ImageView view = imgCircles.get(player);
+                    view.setAlpha((float) 1);
+                }
+                for (Player player : non_active) {
+                    ImageView view = imgCircles.get(player);
+                    view.setAlpha((float) 0.7);
+                }
+            }
+        });
     }
 
     private void removeView(FrameLayout background, View view) {
@@ -206,22 +222,4 @@ public class ViewUpdater extends Active {
     protected void after() {
         Log.d(STATE_TAG, "View updater finished");
     }
-/*
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
-    @Override
-    public void run() {
-        Log.d(STATE_TAG, "View updater started");
-
-        ballImageUpdater.start();
-        while(!gameplay.isDestroyed()) {
-            refresh();
-            try {
-                sleep( 1000 / FPS);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-
-        Log.d(STATE_TAG, "View updater finished");
-    }*/
 }

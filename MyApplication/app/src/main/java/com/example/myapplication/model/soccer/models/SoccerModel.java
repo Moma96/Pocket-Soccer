@@ -156,5 +156,5 @@ public abstract class SoccerModel {
         return field;
     }
 
-    public abstract boolean score(int player);
+    public abstract void score(int player);
 }

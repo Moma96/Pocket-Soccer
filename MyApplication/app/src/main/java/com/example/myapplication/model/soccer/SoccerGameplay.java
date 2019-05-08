@@ -1,10 +1,13 @@
 package com.example.myapplication.model.soccer;
 
+import android.os.AsyncTask;
 import android.util.Log;
 
 import com.example.myapplication.model.Vector;
 import com.example.myapplication.model.soccer.models.Player;
 import com.example.myapplication.model.soccer.models.SoccerModel;
+
+import org.jetbrains.annotations.NotNull;
 
 import static java.lang.Thread.sleep;
 
@@ -18,12 +21,30 @@ public class SoccerGameplay extends SoccerModel {
     private boolean responsiveness = false;
     private int[] scores = {0, 0};
 
+    SoccerFacade facade;
+
     public SoccerGameplay(double x, double y, double width, double height) {
         super(x, y, width, height);
     }
 
+    public synchronized void setFacade(@NotNull SoccerFacade facade) {
+        this.facade = facade;
+        notifyAll();
+    }
+
+    public synchronized void waitFacade() {
+        while (facade == null) {
+            try {
+                wait();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     @Override
     public void start() {
+        waitFacade();
         super.start();
         setResponsiveness();
     }
@@ -34,18 +55,24 @@ public class SoccerGameplay extends SoccerModel {
         super.terminate();
     }
 
-    public boolean score(int player) {
-        if (!responsive()) return false;
+    public void score(final int player) {
+        if (!responsive()) return;
 
-        scores[player]++;
-        Log.d(GOAL_TAG, "PLayer " + player + " scored! result: " + scores[0] + ":" + scores[1]);
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground( final Void ... params ) {
+                scores[player]++;
+                Log.d(GOAL_TAG, "PLayer " + player + " scored! result: " + scores[0] + ":" + scores[1]);
 
-        disableAndSleep(AFTER_GOAL_WAIT);
+                disableAndSleep(AFTER_GOAL_WAIT);
 
-        reset();
+                reset();
 
-        active = (player + 1) % 2;
-        return true;
+                active = (player + 1) % 2;
+                facade.refreshScores();
+                return null;
+            }
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     public boolean push(final float x1, final float y1, final float x2, final float y2) {

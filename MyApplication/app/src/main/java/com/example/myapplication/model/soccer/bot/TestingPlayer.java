@@ -11,6 +11,8 @@ public class TestingPlayer extends Player {
         super(player, field);
     }
 
+    @Override
+    protected void delay() { /* do nothing */ }
 
     /*protected TestingPlayer(@NotNull Player player, boolean include) {
         super(player, include);
@@ -19,13 +21,10 @@ public class TestingPlayer extends Player {
     @Override
     protected TestingPlayer getNonInclusiveCopy() {
         return new TestingPlayer(this, false);
-    }*/
 
     @Override
-    protected void delay() { /* do nothing */ }
-
-    /*@Override
     public String toString() {
         return "Testplayer " + getActiveId();
     }*/
+
 }

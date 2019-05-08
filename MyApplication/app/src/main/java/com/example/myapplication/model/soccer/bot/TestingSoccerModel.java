@@ -23,11 +23,10 @@ public class TestingSoccerModel extends SoccerModel {
     }
 
     @Override
-    public boolean score(int player) {
+    public void score(int player) {
         synchronized (genUnit) {
             terminate();
             genUnit.finished(player, field.getTime());
-            return true;
         }
     }
 }

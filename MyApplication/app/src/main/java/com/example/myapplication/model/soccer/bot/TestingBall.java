@@ -11,6 +11,9 @@ public class TestingBall extends Ball {
         super(ball, field, soccer);
     }
 
+    @Override
+    protected void delay() { /* do nothing */ }
+
     /*protected TestingBall(@NotNull Ball ball, boolean include) {
         super(ball, include, null);
     }
@@ -18,16 +21,7 @@ public class TestingBall extends Ball {
     @Override
     protected TestingBall getNonInclusiveCopy() {
         return new TestingBall(this, false);
-    }*/
 
-    @Override
-    protected void goal(int player) {
-        soccer.score(player);
-    }
-
-    @Override
-    protected void delay() { /* do nothing */ }
-/*
     @Override
     public String toString() {
         return "Testball " + getActiveId();

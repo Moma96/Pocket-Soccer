@@ -13,7 +13,6 @@ public class Ball extends Circle {
     private static final double RADIUS = 30;
     private static final double IMG_RADIUS_COEFFICIENT = 2.5;
 
-    protected SoccerFacade facade;
     protected SoccerModel soccer;
     private int goal_in_process = -1;
 
@@ -37,13 +36,8 @@ public class Ball extends Circle {
         this.soccer = soccer;
     }
 
-    public synchronized void setFacade(@NotNull SoccerFacade facade) {
-        this.facade = facade;
-        notifyAll();
-    }
-
     protected void goal(int player) {
-        facade.score(player);
+        soccer.score(player);
     }
 
     @Override
@@ -58,14 +52,6 @@ public class Ball extends Circle {
 
     @Override
     protected synchronized void work() {
-        while (facade == null) {
-            try {
-                wait();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-
         Goal[] goals = soccer.getGoals();
         for (int i = 0; i < goals.length; i++) {
             if (goals[i].inGoal(this)) {
