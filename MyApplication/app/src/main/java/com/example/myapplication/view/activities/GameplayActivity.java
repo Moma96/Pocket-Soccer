@@ -38,10 +38,6 @@ public class GameplayActivity extends AppCompatActivity {
         });
     }
 
-    public ViewUpdater getViewUpdater() {
-        return viewUpdater;
-    }
-
     private void setup(FrameLayout background) {
 
         soccer = new SoccerGameplay(0, 0, background.getWidth(), background.getHeight());

@@ -109,6 +109,10 @@ public class GeneticTesting {
             return fitness;
         }
 
+        public Vector getGenes() {
+            return genes;
+        }
+
         public TestingSoccerModel getTestingModel() {
             return testingModel;
         }
@@ -213,7 +217,7 @@ public class GeneticTesting {
     }
 
     @Nullable
-    private Unit fittest() {
+    public Unit fittest() {
         if (selected == null) return null;
 
         Unit best = selected.get(0);

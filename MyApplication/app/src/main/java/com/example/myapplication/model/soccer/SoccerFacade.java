@@ -26,6 +26,10 @@ public class SoccerFacade {
 
     public void refreshScores() {
         updater.updateScores();
+        darkenInactive();
+    }
+
+    public void darkenInactive() {
         updater.darkenInactive();
     }
 
@@ -33,8 +37,9 @@ public class SoccerFacade {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground( final Void ... params ) {
-                if (soccer.push(x1, y1, x2, y2))
-                    updater.darkenInactive();
+                if (!soccer.botPlaying()) {
+                    soccer.push(x1, y1, x2, y2);
+                }
                 return null;
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -44,7 +49,9 @@ public class SoccerFacade {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground( final Void ... params ) {
-                soccer.select(x, y);
+                if (!soccer.botPlaying()) {
+                    soccer.select(x, y);
+                }
                 return null;
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -54,7 +61,9 @@ public class SoccerFacade {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground( final Void ... params ) {
-                soccer.selectIfNothingSelected(x, y);
+                if (!soccer.botPlaying()) {
+                    soccer.selectIfNothingSelected(x, y);
+                }
                 return null;
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
