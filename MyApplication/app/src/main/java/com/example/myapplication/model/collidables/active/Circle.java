@@ -203,16 +203,19 @@ public class Circle extends Active implements Collidable {
             collided = collided.beforeCollision(this);
             double distance = collided.getDistance(this);
             Double old_distance = collision_in_process.get(collided.toString());
-
+            /*if (old_distance != null && distance == old_distance) {
+                int blob = 1000;
+            }
+            //*/
             if (distance <= 0) {
                 collided.duringCollision(this);
                 collision_in_process.put(collided.toString(), distance);
 
-                if (old_distance == null || (old_distance != null && distance < old_distance)) {
+                if (old_distance == null || (old_distance != null && distance <= old_distance)) {
                     collided.collisionUpdateSpeed(this);
                     Log.d(COLLISION_TAG, this + " collided " + collided);
 
-                } else if (old_distance != null)// (distance >= old_distance) {
+                } else if (old_distance != null)// (distance > old_distance) {
                     Log.d(COLLISION_TAG, this + " recovering from collision with " + collided);
 
             } else {

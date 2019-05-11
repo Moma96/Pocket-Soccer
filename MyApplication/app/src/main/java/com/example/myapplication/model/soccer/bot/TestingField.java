@@ -8,8 +8,8 @@ public class TestingField extends SoccerField {
 
     GeneticTesting.Unit genUnit;
 
-    public TestingField(double x, double y, double width, double height, @NotNull GeneticTesting.Unit unit) {
-        super(x, y, width, height, 0, unit.getTestingModel());
+    public TestingField(double x, double y, double width, double height, @NotNull GeneticTesting.Unit unit, @NotNull TestingSoccerModel soccer) {
+        super(x, y, width, height, 0, soccer);
         this.genUnit = unit;
     }
 
@@ -17,7 +17,7 @@ public class TestingField extends SoccerField {
     protected void checkTime() {
         if (genUnit.getGen().getSelected().surpassed(getTime())) {
             getSoccer().terminate();
-            genUnit.terminated();
+            genUnit.terminated(getTime());
         }
     }
 }

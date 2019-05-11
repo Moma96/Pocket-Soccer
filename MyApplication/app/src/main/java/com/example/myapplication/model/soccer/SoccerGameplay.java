@@ -14,7 +14,7 @@ import static java.lang.Thread.sleep;
 
 public class SoccerGameplay extends SoccerModel {
 
-    public static final int AFTER_GOAL_WAIT = 2; //s
+    private static final int AFTER_GOAL_WAIT = 2; //s
     private static final String GOAL_TAG = "Goal";
 
     private Bot[] bots = new Bot[2];
@@ -32,8 +32,6 @@ public class SoccerGameplay extends SoccerModel {
 
         bots[0] = new Bot(this, 0);
         bots[1] = new Bot(this, 1);
-        bots[0].start();
-        //bots[1].start();
     }
 
     public synchronized void setFacade(@NotNull SoccerFacade facade) {
@@ -56,6 +54,9 @@ public class SoccerGameplay extends SoccerModel {
         waitFacade();
         super.start();
         setResponsiveness();
+
+        //bots[0].start();
+       // bots[1].start();
     }
 
     @Override
@@ -64,9 +65,18 @@ public class SoccerGameplay extends SoccerModel {
         super.terminate();
     }
 
+    @Override
+    public void allStopped() {
+        notifyActiveBot();
+    }
+
+    public boolean allNotMoving() {
+        return field.allNotMoving();
+    }
+
     public void score(final int player) {
         if (!responsive()) return;
-
+/*
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground( final Void ... params ) {
@@ -85,10 +95,12 @@ public class SoccerGameplay extends SoccerModel {
                 facade.refreshScores();
                 return null;
             }
-        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);*/
     }
 
-
+    public Bot[] getBots() {
+        return bots;
+    }
 
     public boolean push(final Vector speed) {
         if (!responsive()) return false;
@@ -132,7 +144,7 @@ public class SoccerGameplay extends SoccerModel {
         return player;
     }
 
-    public int getActive() {
+    public Integer getActive() {
         synchronized (active) {
             return active;
         }
@@ -213,9 +225,9 @@ public class SoccerGameplay extends SoccerModel {
         }
     }
 
-    private void notifyActiveBot() {            /////////CEKAJ SVOJ TURN!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    private void notifyActiveBot() {
         synchronized (bots[active]) {
-            bots[active].notify();
+            bots[active].notifyAll();
         }
     }
 

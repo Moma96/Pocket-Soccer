@@ -1,5 +1,7 @@
 package com.example.myapplication.model.soccer.bot;
 
+import android.util.Log;
+
 import com.example.myapplication.model.soccer.models.SoccerModel;
 import com.example.myapplication.model.Vector;
 
@@ -83,7 +85,7 @@ public class GeneticTesting {
         private boolean over = false;
 
         public Unit() {
-            this(new Vector(Math.random(), Math.random()), Integer.MAX_VALUE);
+            this(new Vector(Math.random()*2 - 1, Math.random()*2 - 1), Integer.MAX_VALUE);
             genes.scaleIntensity(SCALED_INTENSITY);
         }
 
@@ -122,24 +124,30 @@ public class GeneticTesting {
         }
 
         public synchronized void finished(int scored, int time) {
-            if (player == scored)
+            if (player == scored) {
                 fitness = time;
-            else
-                fitness = Integer.MAX_VALUE;
-            selected.add(this);
-
+                selected.add(this);
+                Log.d(GENETIC_TAG, "Unit finished with time " + time);
+            }
+            else {
+                fitness = time;//Integer.MAX_VALUE;
+                selected.add(this);
+                Log.d(GENETIC_TAG, "Bad score with time " + time);
+            }
             over = true;
             notify();
         }
 
-        public synchronized void terminated() {
+        public synchronized void terminated(int time) {
             over = true;
             notify();
+            Log.d(GENETIC_TAG, "Unit terminated with time " + time);
         }
 
         @Override
         public void run() {
             try {
+                testingModel.start();
                 testingModel.getPlayers()[player][player_id].push(genes);
                 synchronized (this) {
                     while (!over) {
@@ -155,7 +163,9 @@ public class GeneticTesting {
     private static final int POPULATION = 10;
     private static final int GENERATIONS = 10;
     private static final int TOP = POPULATION / 2;
-    private static final double SCALED_INTENSITY = 100;
+    private static final double SCALED_INTENSITY = 300;
+
+    private static final String GENETIC_TAG = "Genetic testing";
 
     private SoccerModel soccer;
     private int player;
@@ -190,22 +200,11 @@ public class GeneticTesting {
 
     public Unit test() {
         for (int g = 0; g < generations; g++) {
+            Log.d(GENETIC_TAG, "generation: " + g);
             calculateFitness();
             crossBreed();
         }
         return fittest();
-    }
-
-    public int getPopulation() {
-        return population;
-    }
-
-    public int getGenerations() {
-        return generations;
-    }
-
-    public int getTop() {
-        return top;
     }
 
     public Selected getSelected() {
@@ -244,10 +243,11 @@ public class GeneticTesting {
         try {
             for (int i = 0; i < POPULATION; i++) {
                 generation[i].start();
-            }
-
-            for (int i = 0; i < POPULATION; i++)
                 generation[i].join();
+            }
+/*
+            for (int i = 0; i < POPULATION; i++)
+                generation[i].join();*/
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

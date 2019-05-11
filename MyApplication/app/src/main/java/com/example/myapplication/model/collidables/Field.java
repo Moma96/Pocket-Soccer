@@ -6,6 +6,8 @@ import com.example.myapplication.model.Vector;
 import com.example.myapplication.model.collidables.active.Circle;
 import com.example.myapplication.model.collidables.inactive.Wall;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 
@@ -13,7 +15,7 @@ public abstract class Field {
 
     public static final String BARRIER_TAG = "Barrier";
 
-    private int nextCircleId = 0;
+    private Integer nextCircleId = 0;
     private int time = 0;
 
     protected Wall walls[];
@@ -84,13 +86,13 @@ public abstract class Field {
     }
 
     public int getNextId() {
-        synchronized (circles) {
+        synchronized (nextCircleId) {
             return nextCircleId++;
         }
     }
 
     public void decrementId() {
-        synchronized (circles) {
+        synchronized (nextCircleId) {
             nextCircleId--;
         }
     }
@@ -112,17 +114,20 @@ public abstract class Field {
         }
     }
 
-    public boolean checkStopped(Circle active) {
+    public boolean checkStopped(@NotNull Circle active) {
         synchronized (barrier) {
             if (active.getSpeed().isZeroVector() && moving.contains(active)) {
                 moving.remove(active);
+                if (moving.size() == 0) {
+                    allStopped();
+                }
                 return true;
             }
         }
         return false;
     }
 
-    public boolean checkStarted(Circle active) {
+    public boolean checkStarted(@NotNull Circle active) {
         synchronized (barrier) {
             if (!moving.contains(active)) {
                 moving.add(active);
@@ -137,4 +142,17 @@ public abstract class Field {
     }
 
     protected void checkTime() {}
+
+    public boolean allNotMoving() {
+        for (Circle circle : circles) {
+            if (!circle.getSpeed().isZeroVector()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    protected void allStopped() {
+        Log.d(BARRIER_TAG, "All stopped!");
+    }
 }

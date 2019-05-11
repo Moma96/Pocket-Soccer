@@ -202,10 +202,17 @@ public class ViewUpdater extends Active {
         background.removeView(view);
     }
 
+    private synchronized void waitMoving() throws InterruptedException {
+        while (soccer.allNotMoving()) {
+            wait();
+        }
+    }
+
     @Override
     protected void iterate() {
-        refresh();
         try {
+            //waitMoving();
+            refresh();
             sleep( 1000 / FPS);
         } catch (InterruptedException e) {
             e.printStackTrace();

@@ -1,9 +1,8 @@
 package com.example.myapplication.model.soccer.bot;
 
 import com.example.myapplication.model.Active;
-import com.example.myapplication.model.soccer.SoccerFacade;
 import com.example.myapplication.model.soccer.SoccerGameplay;
-import com.example.myapplication.model.Vector;
+import com.example.myapplication.model.soccer.models.Player;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -17,30 +16,20 @@ public class Bot extends Active {
         this.player = player;
     }
 
-    public synchronized void waitTurn() {
-        try {
-            while (soccer.getActive() != player) {
-                wait();
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+    public synchronized void waitTurn() throws InterruptedException {
+        while (soccer.getActive() != player) {
+            wait();
         }
     }
 
-    /*public synchronized void waitAllStopped() {
-        try {
-            while (soccer.allStopped() != player) {
-                wait();
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+    public synchronized void waitAllNotMoving() throws InterruptedException {
+        while (!soccer.allNotMoving()) {
+            wait();
         }
-    }*/
+    }
 
     public synchronized void play() {
-        soccer.botStarted();
 
-        /*
         Player[] players = soccer.getPlayers(player);
         GeneticTesting[] gens = new GeneticTesting[players.length];
         GeneticTesting.Unit[] results = new GeneticTesting.Unit[gens.length];
@@ -61,21 +50,25 @@ public class Bot extends Active {
 
         soccer.select(soccer.getPlayers(player)[id]);
         soccer.push(best.getGenes());
-*/
-        try {
-            sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        soccer.select(soccer.getPlayers(player)[0]);
-        soccer.push(new Vector(100, 0));
 
-        soccer.botFinished();
+        /*
+        soccer.select(soccer.getPlayers(player)[(int)(Math.random()*3)]);
+        Vector speed = new Vector(Math.random()*2 - 1, Math.random()*2 - 1);
+        speed.scaleIntensity(300);
+        soccer.push(speed);
+        */
     }
 
     @Override
     protected void iterate() {
-        waitTurn();
-        play();
+        try {
+            waitTurn();
+            soccer.botStarted();
+            waitAllNotMoving();
+            play();
+            soccer.botFinished();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }
