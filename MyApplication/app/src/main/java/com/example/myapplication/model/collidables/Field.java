@@ -2,9 +2,9 @@ package com.example.myapplication.model.collidables;
 
 import android.util.Log;
 
-import com.example.myapplication.model.Vector;
 import com.example.myapplication.model.collidables.active.Circle;
 import com.example.myapplication.model.collidables.inactive.Wall;
+import com.example.myapplication.model.Vector;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -51,38 +51,28 @@ public abstract class Field {
         return walls;
     }
 
-    public void setWalls(Wall[] walls) {
-        this.walls = walls;
-    }
-
     public double getFrictionCoefficient() {
         return friction;
     }
 
-    public void addCollidable(Collidable collidable) {
+    public synchronized void addCollidable(Collidable collidable) {
         if (collidable == null) return;
 
-        synchronized (collidables) {
-            collidables.add(collidable);
-        }
+        collidables.add(collidable);
 
-        synchronized (circles) {
-            if (collidable instanceof Circle)
-                circles.add((Circle) collidable);
-        }
+        if (collidable instanceof Circle)
+            circles.add((Circle) collidable);
     }
 
-    public Circle getActive(Vector dot) {
+    public synchronized Circle getActive(Vector dot) {
         if (dot == null) return null;
 
-        synchronized (circles) {
-            for (Circle active : circles) {
-                if (active.isInside(dot)) {
-                    return active;
-                }
+        for (Circle active : circles) {
+            if (active.isInside(dot)) {
+                return active;
             }
-            return null;
         }
+        return null;
     }
 
     public int getNextId() {
@@ -97,42 +87,36 @@ public abstract class Field {
         }
     }
 
-    public void barrier(Circle active) throws InterruptedException {
-        synchronized (barrier) {
-            if (!barrier.contains(active)) {
-                barrier.add(active);
-                if (barrier.size() == moving.size()) {
-                    barrier.notifyAll();
-                    barrier.clear();
-                    time++;
-                    checkTime();
-                } else
-                    barrier.wait();
-            } else {
-                Log.e(BARRIER_TAG, "Barrier is not working properly");
-            }
+    public synchronized void barrier(Circle active) throws InterruptedException {
+        if (!barrier.contains(active)) {
+            barrier.add(active);
+            if (barrier.size() == moving.size()) {
+                notifyAll();
+                barrier.clear();
+                time++;
+                checkTime();
+            } else
+                wait();
+        } else {
+            Log.e(BARRIER_TAG, "Barrier is not working properly");
         }
     }
 
-    public boolean checkStopped(@NotNull Circle active) {
-        synchronized (barrier) {
-            if (active.getSpeed().isZeroVector() && moving.contains(active)) {
-                moving.remove(active);
-                if (moving.size() == 0) {
-                    allStopped();
-                }
-                return true;
-            }
+    public synchronized boolean checkStarted(@NotNull Circle active) {
+        if (!moving.contains(active)) {
+            moving.add(active);
+            return true;
         }
         return false;
     }
 
-    public boolean checkStarted(@NotNull Circle active) {
-        synchronized (barrier) {
-            if (!moving.contains(active)) {
-                moving.add(active);
-                return true;
+    public synchronized boolean checkStopped(@NotNull Circle active) {
+        if (active.getSpeed().isZeroVector() && moving.contains(active)) {
+            moving.remove(active);
+            if (moving.size() == 0) {
+                allStopped();
             }
+            return true;
         }
         return false;
     }
@@ -143,7 +127,7 @@ public abstract class Field {
 
     protected void checkTime() {}
 
-    public boolean allNotMoving() {
+    public synchronized boolean allNotMoving() {
         for (Circle circle : circles) {
             if (!circle.getSpeed().isZeroVector()) {
                 return false;
@@ -154,5 +138,9 @@ public abstract class Field {
 
     protected void allStopped() {
         Log.d(BARRIER_TAG, "All stopped!");
+    }
+
+    public HashSet<Circle> getMoving() {
+        return moving;
     }
 }

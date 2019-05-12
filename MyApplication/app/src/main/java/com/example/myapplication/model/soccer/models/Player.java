@@ -44,7 +44,7 @@ public class Player extends Circle {
     }
 
     public void push(Vector force) {
-        setSpeed(force.mul(MOVING_INCREMENT));
+        updateSpeed(force.mul(MOVING_INCREMENT));
     }
 
     public void drawSelection(ImageView view) {

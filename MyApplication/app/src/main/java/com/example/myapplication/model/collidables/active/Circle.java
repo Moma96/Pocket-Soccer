@@ -59,12 +59,12 @@ public class Circle extends Active implements Collidable {
 
     protected Circle(double mass, double radius, double img_radius_coefficient, @NotNull Vector center, Vector speed, @NotNull Field field, boolean include,
                      HashMap<String, Double> collision_in_process, HashMap<Integer, Circle> old) {
+        setField(field);
         setMass(mass);
         this.img_radius_coefficient = img_radius_coefficient;
         setRadius(radius);
-        setCenter(new Vector(center));
-        setSpeed(new Vector(speed));
-        setField(field);
+        setCenter(center);
+        setSpeed(speed);
         id = field.getNextId();
         if (include) {
             field.addCollidable(this);
@@ -105,7 +105,7 @@ public class Circle extends Active implements Collidable {
     }
 
     public synchronized void setCenter(Vector center) {
-        this.center = center;
+        this.center = new Vector(center);
     }
 
     public synchronized Vector getSpeed() {
@@ -113,11 +113,7 @@ public class Circle extends Active implements Collidable {
     }
 
     public synchronized void setSpeed(Vector speed) {
-        this.speed = speed;
-        if (speed.intensity() < SPEED_ROUND_LIMIT)
-            clearSpeed();
-        else
-            notifyAll();
+        this.speed = new Vector(speed);
     }
 
     public void setRadius(double radius) {
@@ -199,14 +195,10 @@ public class Circle extends Active implements Collidable {
     private void collision(Collidable collided) {
         if (collided == null) return;
 
-        synchronized (field.getCircles()) {
+        synchronized (field) {
             collided = collided.beforeCollision(this);
             double distance = collided.getDistance(this);
             Double old_distance = collision_in_process.get(collided.toString());
-            /*if (old_distance != null && distance == old_distance) {
-                int blob = 1000;
-            }
-            //*/
             if (distance <= 0) {
                 collided.duringCollision(this);
                 collision_in_process.put(collided.toString(), distance);
@@ -232,7 +224,7 @@ public class Circle extends Active implements Collidable {
         if (collided == null) return;
         if (speed.isZeroVector() && collided.speed.isZeroVector()) return;
 
-        collided.setSpeed(collided.speed.sub(
+        collided.updateSpeed(collided.speed.sub(
                 collided.center.sub(center).mul(
                         2 * mass / (collided.mass + mass) *
                                 ((collided.speed.sub(speed).dotProduct(collided.center.sub(center))) / Math.pow(collided.center.sub(center).intensity(), 2))
@@ -248,23 +240,8 @@ public class Circle extends Active implements Collidable {
         }
     }
 
-    private synchronized void checkSpeed() throws InterruptedException {
-
-        if (field.checkStopped(this)) {
-            Log.d(STATE_TAG, this + " stopped");
-        }
-
-        if (speed.isZeroVector()) {
-            wait();
-        }
-
-        if (field.checkStarted(this)) {
-            Log.d(STATE_TAG, this + " is moving");
-        }
-    }
-
     private synchronized void move() {
-        center = center.add(speed);
+        setCenter(center.add(speed));
         setSpeed(speed.mul(1 - field.getFrictionCoefficient()));
     }
 
@@ -272,6 +249,28 @@ public class Circle extends Active implements Collidable {
 
     protected void delay() throws InterruptedException {
         sleep(MOVING_DELAY);
+    }
+
+    public synchronized void updateSpeed(Vector speed) {
+        setSpeed(speed);
+        if (speed.intensity() < SPEED_ROUND_LIMIT) {
+            clearSpeed();
+            if (field.checkStopped(this)) {
+                Log.d(STATE_TAG, this + " stopped");
+            }
+        }
+        else {
+            if (field.checkStarted(this)) {
+                Log.d(STATE_TAG, this + " is moving");
+            }
+            notifyAll();
+        }
+    }
+
+    private synchronized void checkSpeed() throws InterruptedException {
+        if (speed.isZeroVector()) {
+            wait();
+        }
     }
 
     @Override
