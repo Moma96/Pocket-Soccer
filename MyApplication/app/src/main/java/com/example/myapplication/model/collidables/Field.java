@@ -13,7 +13,8 @@ import java.util.HashSet;
 
 public abstract class Field {
 
-    public static final String BARRIER_TAG = "Barrier";
+    private static final String BARRIER_TAG = "Barrier";
+    private static final String TIME_TAG = "Time";
 
     private Integer nextCircleId = 0;
     private int time = 0;
@@ -133,6 +134,7 @@ public abstract class Field {
     public void barrierRelease() {
         synchronized (this) {
             time++;
+            Log.d(TIME_TAG, "Time: " + time);
             checkTime();
             barrier.clear();
             this.notifyAll();

@@ -67,13 +67,12 @@ public class GeneticTesting {
         }
 
         private synchronized void resetMax() {
-            Unit max = get(0);
+            maximum = 0;
             for (Unit unit : this) {
-                if (unit.getFitness() > max.getFitness()) {
-                    max = unit;
+                if (unit.getFitness() > maximum) {
+                    maximum = unit.getFitness();
                 }
             }
-            remove(max);
         }
     }
 
@@ -230,8 +229,8 @@ public class GeneticTesting {
     private void crossBreed() {
         Unit[] new_gen = new Unit[population];
         int p = 0;
-        for (int i = 0; i < population - 1; i++) {
-            for (int j = i + 1; j < population; j++) {
+        for (int i = 0; i < top - 1; i++) {
+            for (int j = i + 1; j < top; j++) {
                 new_gen[p] = selected.get(i).crossBreed(selected.get(j));
                 p++;
             }
@@ -241,13 +240,11 @@ public class GeneticTesting {
 
     private void calculateFitness() {
         try {
-            for (int i = 0; i < POPULATION; i++) {
+            for (int i = 0; i < population; i++)
                 generation[i].start();
+
+            for (int i = 0; i < population; i++)
                 generation[i].join();
-            }
-/*
-            for (int i = 0; i < POPULATION; i++)
-                generation[i].join();*/
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
