@@ -36,6 +36,14 @@ public class Ball extends Circle {
         this.soccer = soccer;
     }
 
+    @Override
+    public void updateSpeed(Vector speed) {
+        super.updateSpeed(speed);
+        synchronized (this) {
+            notifyAll(); ///NOTIFY BALL IMAGE UPDATER
+        }
+    }
+
     protected void goal(int player) {
         soccer.score(player);
     }

@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class SoccerField extends Field {
 
-    private static final double FRICTION_COEFFICIENT = 0.0;// 0.01;
+    private static final double FRICTION_COEFFICIENT = 0.01;// 0.01;
 
     private SoccerModel soccer;
 

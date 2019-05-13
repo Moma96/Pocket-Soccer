@@ -87,7 +87,7 @@ public abstract class Field {
         }
     }
 
-    public synchronized void barrier(Circle active) throws InterruptedException {
+    public  synchronized void barrier(Circle active) throws InterruptedException {
         if (!barrier.contains(active)) {
             barrier.add(active);
             if (barrier.size() == moving.size()) {

@@ -34,7 +34,7 @@ public abstract class SoccerModel {
         field = new SoccerField(x, y, width, height, this);
         setGoals();
 
-/*
+
         ball = new Ball(new Vector(x + width*BALL_X, y + height*BALL_Y), this);
 
         players = new Player[2][3];
@@ -42,6 +42,7 @@ public abstract class SoccerModel {
             for (int i = 0; i < 3; i++)
                 players[p][i] = new Player(new Vector(x + width * PLAYER_X[p][i], y + height * PLAYER_Y[p][i]), field);
         }
+
 //*/
         //////TEST 1
 /*
@@ -61,7 +62,7 @@ public abstract class SoccerModel {
         }
 //*/
         ///////TEST 2
-
+/*
         ball = new Ball(new Vector(x + width/2, y + height/5), this);
 
         players = new Player[2][3];
@@ -144,12 +145,14 @@ public abstract class SoccerModel {
     }
 
     public void reset() {
-        ball.clearSpeed();
-        ball.setCenter(new Vector(x + width*BALL_X, y + height*BALL_Y));
-        for (int p = 0; p < 2; p++) {
-            for (int i = 0; i < 3; i++) {
-                players[p][i].clearSpeed();
-                players[p][i].setCenter(new Vector(x + width * PLAYER_X[p][i], y + height * PLAYER_Y[p][i]));
+        synchronized (field) {
+            ball.clearSpeed();
+            ball.setCenter(new Vector(x + width * BALL_X, y + height * BALL_Y));
+            for (int p = 0; p < 2; p++) {
+                for (int i = 0; i < 3; i++) {
+                    players[p][i].clearSpeed();
+                    players[p][i].setCenter(new Vector(x + width * PLAYER_X[p][i], y + height * PLAYER_Y[p][i]));
+                }
             }
         }
     }
