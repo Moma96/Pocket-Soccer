@@ -1,5 +1,6 @@
 package com.example.myapplication.model.soccer.bot;
 
+import com.example.myapplication.model.soccer.models.Player;
 import com.example.myapplication.model.soccer.models.SoccerModel;
 
 import org.jetbrains.annotations.NotNull;
@@ -17,6 +18,7 @@ public class TestingSoccerModel extends SoccerModel {
 
         ball = new TestingBall(soccer.getBall(), field, this);
 
+        players = new Player[2][3];
         for (int p = 0; p < 2; p++) {
             for (int i = 0; i < 3; i++)
                 players[p][i] = new TestingPlayer(soccer.getPlayers()[p][i], field);

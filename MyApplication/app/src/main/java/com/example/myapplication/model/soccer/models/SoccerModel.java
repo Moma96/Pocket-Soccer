@@ -146,11 +146,11 @@ public abstract class SoccerModel {
 
     public void reset() {
         synchronized (field) {
-            ball.clearSpeed();
+            ball.reset();
             ball.setCenter(new Vector(x + width * BALL_X, y + height * BALL_Y));
             for (int p = 0; p < 2; p++) {
                 for (int i = 0; i < 3; i++) {
-                    players[p][i].clearSpeed();
+                    players[p][i].reset();
                     players[p][i].setCenter(new Vector(x + width * PLAYER_X[p][i], y + height * PLAYER_Y[p][i]));
                 }
             }

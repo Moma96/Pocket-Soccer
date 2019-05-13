@@ -169,8 +169,7 @@ public class Circle extends Active implements Collidable {
 
     public void clearSpeed() {
         synchronized (field) {
-            if (!speed.isZeroVector())
-                updateSpeed(new Vector(0, 0));
+            updateSpeed(new Vector(0, 0));
         }
     }
 
@@ -268,8 +267,8 @@ public class Circle extends Active implements Collidable {
             } else {
                 if (field.checkStarted(this)) {
                     Log.d(STATE_TAG, this + " is moving");
+                    field.notifyAll();
                 }
-                field.notifyAll();
             }
         }
     }
@@ -278,7 +277,6 @@ public class Circle extends Active implements Collidable {
         synchronized (field) {
             if (speed.isZeroVector()) {
                 field.wait();
-                int qqqwe = 1000;
             }
         }
     }
@@ -291,6 +289,12 @@ public class Circle extends Active implements Collidable {
         }
     }
 
+    public void reset() {
+        clearSpeed();
+        collision_in_process.clear();
+        old.clear();
+    }
+
     @Override
     protected void iterate() {
         try {
@@ -300,8 +304,8 @@ public class Circle extends Active implements Collidable {
                 move();
                 work();
                 delay();
-                field.barrier(this);
             }
+            field.barrier(this);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
