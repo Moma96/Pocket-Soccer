@@ -154,6 +154,8 @@ public abstract class SoccerModel {
                     players[p][i].setCenter(new Vector(x + width * PLAYER_X[p][i], y + height * PLAYER_Y[p][i]));
                 }
             }
+
+            field.barrierRelease();
         }
     }
 
