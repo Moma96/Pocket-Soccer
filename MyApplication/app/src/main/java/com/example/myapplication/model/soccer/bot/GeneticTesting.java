@@ -158,10 +158,11 @@ public class GeneticTesting {
         }
     }
 
-    private static final int INITIAL_POPULATION = 200;
+    private static final int INITIAL_POPULATION = 100;
     private static final int GENERATIONS = 10;
     private static final int TOP = 6;
-    private static final int TIME_LIMIT = 300; //500;
+    private static final int TIME_LIMIT = 100; //500;
+    private static final int SATISFACTORY_TIME = 50;
     private static final double SCALED_INTENSITY = 1000; // 300 - cenim bar 1000
 
     private static final String GENETIC_TAG = "Genetic testing";
@@ -200,15 +201,23 @@ public class GeneticTesting {
     }
 
     public Unit test() {
+        Unit fittest = null;
         for (int g = 0; g < generations; g++) {
             Log.d(GENETIC_TAG, "generation: " + g);
+
             calculateFitness();
             crossBreed();
-            if (selected.isEmpty()) return new Unit();
-            if (selected.size() == 1) break;
+            fittest = fittest();
+
+            if (fittest().getFitness() < SATISFACTORY_TIME)
+                break;
+            if (selected.isEmpty())
+                return new Unit();
+            if (selected.size() == 1)
+                break;
             Log.d(GENETIC_TAG, "selected: " + selected.size());
         }
-        Unit fittest = fittest();
+        //Unit fittest = fittest();
         Log.d(GENETIC_TAG, "THE BEST TIME FOR PLAYER " + player_id + ": " + fittest.getFitness());
         return fittest;
     }
