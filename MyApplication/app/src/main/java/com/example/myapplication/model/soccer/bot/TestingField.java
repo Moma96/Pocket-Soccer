@@ -15,7 +15,9 @@ public class TestingField extends SoccerField {
 
     @Override
     protected void checkTime() {
-        if (genUnit.getGen().getSelected().surpassed(getTime())) {
+        if (genUnit.getGen().getSelected().surpassed(getTime())
+                || getTime() >= genUnit.getGen().timeLimit()) {
+
             getSoccer().terminate();
             genUnit.terminated(getTime());
         }

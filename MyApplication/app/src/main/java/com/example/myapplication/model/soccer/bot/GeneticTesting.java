@@ -86,6 +86,7 @@ public class GeneticTesting {
         public Unit() {
             this(new Vector(Math.random()*2 - 1, Math.random()*2 - 1), Integer.MAX_VALUE);
             genes.scaleIntensity(SCALED_INTENSITY);
+            fitness = Integer.MAX_VALUE;
         }
 
         public Unit(@NotNull Unit unit) {
@@ -129,17 +130,15 @@ public class GeneticTesting {
                 Log.d(GENETIC_TAG, "Unit finished with time " + time);
             }
             else {
-                fitness = time;//Integer.MAX_VALUE;
-                selected.add(this);
                 Log.d(GENETIC_TAG, "Bad score with time " + time);
             }
             over = true;
-            notify();
+            notifyAll();
         }
 
         public synchronized void terminated(int time) {
             over = true;
-            notify();
+            notifyAll();
             Log.d(GENETIC_TAG, "Unit terminated with time " + time);
         }
 
@@ -159,10 +158,11 @@ public class GeneticTesting {
         }
     }
 
-    private static final int POPULATION = 10;
+    private static final int INITIAL_POPULATION = 200;
     private static final int GENERATIONS = 10;
-    private static final int TOP = POPULATION / 2;
-    private static final double SCALED_INTENSITY = 300;
+    private static final int TOP = 6;
+    private static final int TIME_LIMIT = 300; //500;
+    private static final double SCALED_INTENSITY = 1000; // 300 - cenim bar 1000
 
     private static final String GENETIC_TAG = "Genetic testing";
 
@@ -170,29 +170,31 @@ public class GeneticTesting {
     private int player;
     private int player_id;
 
-    private int population;
+    private int initialPopulation;
     private int generations;
     private int top;
+    private int timeLimit;
 
-    private Unit[] generation;
+    private ArrayList<Unit> generation;
     private Selected selected;
 
     public GeneticTesting(SoccerModel soccer, int player, int player_id) {
-        this(soccer, player, player_id, POPULATION, GENERATIONS, TOP);
+        this(soccer, player, player_id, INITIAL_POPULATION, GENERATIONS, TOP, TIME_LIMIT);
     }
 
-    public GeneticTesting(@NotNull SoccerModel soccer, int player, int player_id, int population, int generations, int top) {
+    public GeneticTesting(@NotNull SoccerModel soccer, int player, int player_id, int init_population, int generations, int top, int time_limit) {
         this.soccer = soccer;
         this.player = player;
         this.player_id = player_id;
 
-        this.population = population;
+        this.initialPopulation = init_population;
         this.generations = generations;
         this.top = top;
+        this.timeLimit = time_limit;
 
-        generation = new Unit[population];
-        for (int i = 0; i < population; i++) {
-            generation[i] = new Unit();
+        generation = new ArrayList<>();
+        for (int i = 0; i < initialPopulation; i++) {
+            generation.add(new Unit());
         }
         selected = new Selected(top);
     }
@@ -202,8 +204,29 @@ public class GeneticTesting {
             Log.d(GENETIC_TAG, "generation: " + g);
             calculateFitness();
             crossBreed();
+            if (selected.isEmpty()) return new Unit();
+            if (selected.size() == 1) break;
+            Log.d(GENETIC_TAG, "selected: " + selected.size());
         }
-        return fittest();
+        Unit fittest = fittest();
+        Log.d(GENETIC_TAG, "THE BEST TIME FOR PLAYER " + player_id + ": " + fittest.getFitness());
+        return fittest;
+    }
+
+    public int getInitialPopulation() {
+        return initialPopulation;
+    }
+
+    public int getGenerations() {
+        return generations;
+    }
+
+    public int getTop() {
+        return top;
+    }
+
+    public int timeLimit() {
+        return timeLimit;
     }
 
     public Selected getSelected() {
@@ -214,7 +237,6 @@ public class GeneticTesting {
         return soccer;
     }
 
-    @Nullable
     public Unit fittest() {
         if (selected == null) return null;
 
@@ -227,12 +249,10 @@ public class GeneticTesting {
     }
 
     private void crossBreed() {
-        Unit[] new_gen = new Unit[population];
-        int p = 0;
-        for (int i = 0; i < top - 1; i++) {
-            for (int j = i + 1; j < top; j++) {
-                new_gen[p] = selected.get(i).crossBreed(selected.get(j));
-                p++;
+        ArrayList<Unit> new_gen = new ArrayList<>();
+        for (int i = 0; i < selected.size() - 1; i++) {
+            for (int j = i + 1; j < selected.size(); j++) {
+                new_gen.add(selected.get(i).crossBreed(selected.get(j)));
             }
         }
         generation = new_gen;
@@ -240,11 +260,11 @@ public class GeneticTesting {
 
     private void calculateFitness() {
         try {
-            for (int i = 0; i < population; i++)
-                generation[i].start();
+            for (Unit unit : generation)
+                unit.start();
 
-            for (int i = 0; i < population; i++)
-                generation[i].join();
+            for (Unit unit : generation)
+                unit.join();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

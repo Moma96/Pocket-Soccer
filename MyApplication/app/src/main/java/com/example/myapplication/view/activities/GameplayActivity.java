@@ -57,7 +57,9 @@ public class GameplayActivity extends AppCompatActivity {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        gestureDetectorCompat.onTouchEvent(event);
+        if (gestureDetectorCompat != null) {
+            gestureDetectorCompat.onTouchEvent(event);
+        }
         return true;
     }
 
