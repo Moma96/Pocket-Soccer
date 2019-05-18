@@ -160,10 +160,10 @@ public class GeneticTesting {
 
     private static final int INITIAL_POPULATION = 100;
     private static final int GENERATIONS = 10;
-    private static final int TOP = 6;
-    private static final int TIME_LIMIT = 100; //500;
-    private static final int SATISFACTORY_TIME = 50;
-    private static final double SCALED_INTENSITY = 1000; // 300 - cenim bar 1000
+    private static final int TOP = 7;
+    private static final int TIME_LIMIT = 300; //500;
+    private static final int SATISFACTORY_TIME = 100;
+    private static final double SCALED_INTENSITY = 1000; // 300 - cenim bar 700
 
     private static final String GENETIC_TAG = "Genetic testing";
 
@@ -247,7 +247,7 @@ public class GeneticTesting {
     }
 
     public Unit fittest() {
-        if (selected == null) return null;
+        if (selected.isEmpty()) return new Unit();
 
         Unit best = selected.get(0);
         for (Unit unit : selected) {

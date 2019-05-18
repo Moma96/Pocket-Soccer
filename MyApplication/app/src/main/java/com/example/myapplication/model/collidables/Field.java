@@ -88,57 +88,49 @@ public abstract class Field {
         }
     }
 
-    public void barrier(Circle active) throws InterruptedException {
-        synchronized (this) {
-            if (active.getSpeed().isZeroVector()) return;
+    public synchronized void barrier(Circle active) throws InterruptedException {
+        if (active.getSpeed().isZeroVector()) return;
 
-            if (!barrier.contains(active)) {
-                barrier.add(active);
-                if (barrier.size() == moving.size()) {
-                    barrierRelease();
-                } else {
-                    int oldTime = time;
-                    while(oldTime == time) {
-                        wait();
-                    }
-                }
+        if (!barrier.contains(active)) {
+            barrier.add(active);
+            if (barrier.size() == moving.size()) {
+                barrierRelease();
             } else {
-                Log.e(BARRIER_TAG, "Barrier is not working properly");
-            }
-        }
-    }
-
-    public boolean checkStarted(@NotNull Circle active) {
-        synchronized (this) {
-            if (!moving.contains(active)) {
-                moving.add(active);
-                return true;
-            }
-            return false;
-        }
-    }
-
-    public boolean checkStopped(@NotNull Circle active) {
-        synchronized (this) {
-            if (active.getSpeed().isZeroVector() && moving.contains(active)) {
-                moving.remove(active);
-                if (moving.size() == 0) {
-                    allStopped();
+                int oldTime = time;
+                while(oldTime == time) {
+                    wait();
                 }
-                return true;
             }
-            return false;
+        } else {
+            Log.e(BARRIER_TAG, "Barrier is not working properly");
         }
     }
 
-    public void barrierRelease() {
-        synchronized (this) {
-            time++;
-            Log.d(TIME_TAG, "Time: " + time);
-            checkTime();
-            barrier.clear();
-            this.notifyAll();
+    public synchronized boolean checkStarted(@NotNull Circle active) {
+        if (!moving.contains(active)) {
+            moving.add(active);
+            return true;
         }
+        return false;
+    }
+
+    public synchronized boolean checkStopped(@NotNull Circle active) {
+        if (active.getSpeed().isZeroVector() && moving.contains(active)) {
+            moving.remove(active);
+            if (moving.size() == 0) {
+                allStopped();
+            }
+            return true;
+        }
+        return false;
+    }
+
+    public synchronized void barrierRelease() {
+        time++;
+        Log.d(TIME_TAG, "Time: " + time);
+        checkTime();
+        barrier.clear();
+        notifyAll();
     }
 
     public int getTime() {

@@ -9,7 +9,7 @@ public class TestingField extends SoccerField {
     GeneticTesting.Unit genUnit;
 
     public TestingField(double x, double y, double width, double height, @NotNull GeneticTesting.Unit unit, @NotNull TestingSoccerModel soccer) {
-        super(x, y, width, height, 0, soccer);
+        super(x, y, width, height, soccer);
         this.genUnit = unit;
     }
 

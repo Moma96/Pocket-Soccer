@@ -20,7 +20,7 @@ public class Circle extends Active implements Collidable {
 
     protected static final int MOVING_DELAY = 15; //15; //ms
     protected static final double MOVING_INCREMENT = 0.03; //0.03;
-    private static final double SPEED_ROUND_LIMIT = 0.05;
+    private static final double SPEED_ROUND_LIMIT = 1;//0.05;
 
     protected double mass;
     protected Vector center;
@@ -167,6 +167,12 @@ public class Circle extends Active implements Collidable {
         }
     }
 
+    public void reset() {
+        clearSpeed();
+        collision_in_process.clear();
+        old.clear();
+    }
+
     public void clearSpeed() {
         synchronized (field) {
             updateSpeed(new Vector(0, 0));
@@ -191,15 +197,18 @@ public class Circle extends Active implements Collidable {
         synchronized (field) {
             if (circle == null) return;
 
-            Circle old_collided = circle.old.get(id);
-            if (old_collided == null) {
+            synchronized (this) {
+                Circle old_collided = circle.old.get(id);
+                if (old_collided == null) {
 
-                Circle copy = circle.getIdenticalNonInclusiveCopy();
-                old.put(circle.id, copy);
-                field.notifyAll();
+                    Circle copy = circle.getIdenticalNonInclusiveCopy();
+                    old.put(circle.id, copy);
+                    //field.notifyAll();
+                    notifyAll();
 
-            } else
-                circle.old.remove(id);
+                } else
+                    circle.old.remove(id);
+            }
         }
     }
 
@@ -262,21 +271,16 @@ public class Circle extends Active implements Collidable {
             if (speed.intensity() < SPEED_ROUND_LIMIT) {
                 speed.clear();
                 if (field.checkStopped(this)) {
-                    Log.d(STATE_TAG, this + " stopped");
+                    //Log.d(STATE_TAG, this + " stopped");
                 }
             } else {
-                if (field.checkStarted(this)) {
-                    Log.d(STATE_TAG, this + " is moving");
-                    field.notifyAll();
+                synchronized (this) {
+                    if (field.checkStarted(this)) {
+                        Log.d(STATE_TAG, this + " is moving");
+                        //field.notifyAll();
+                        notifyAll();
+                    }
                 }
-            }
-        }
-    }
-
-    private void checkSpeed() throws InterruptedException {
-        synchronized (field) {
-            if (speed.isZeroVector()) {
-                field.wait();
             }
         }
     }
@@ -289,10 +293,14 @@ public class Circle extends Active implements Collidable {
         }
     }
 
-    public void reset() {
-        clearSpeed();
-        collision_in_process.clear();
-        old.clear();
+    private synchronized void checkSpeed() throws InterruptedException {
+        //synchronized (field) {
+            if (speed.isZeroVector()) {
+                Log.d(STATE_TAG, this + " stopped");
+                //field.wait();
+                wait();
+            }
+        //}
     }
 
     @Override

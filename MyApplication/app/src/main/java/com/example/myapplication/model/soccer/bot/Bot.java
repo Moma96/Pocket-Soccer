@@ -31,12 +31,12 @@ public class Bot extends Active {
     public synchronized void play() {
 
         Player[] players = soccer.getPlayers(player);
-        GeneticTesting[] gens = new GeneticTesting[players.length];
-        GeneticTesting.Unit[] results = new GeneticTesting.Unit[gens.length];
+        GeneticTesting.Unit[] results = new GeneticTesting.Unit[players.length];
+        //GeneticTesting[] gens = new GeneticTesting[players.length];
 
-        for (int i = 0; i < gens.length; i++) {
-            gens[i] = new GeneticTesting(soccer, player, i);
-            results[i] = gens[i].test();
+        for (int i = 0; i < players.length; i++) {
+            //gens[i] = new GeneticTesting(soccer, player, i);
+            results[i] = new GeneticTesting(soccer, player, i).test();//gens[i].test();
         }
 
         GeneticTesting.Unit best = results[0];
