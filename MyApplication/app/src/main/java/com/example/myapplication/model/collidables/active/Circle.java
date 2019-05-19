@@ -20,7 +20,7 @@ public class Circle extends Active implements Collidable {
 
     protected static final int MOVING_DELAY = 15; //15; //ms
     protected static final double MOVING_INCREMENT = 0.03; //0.03;
-    private static final double SPEED_ROUND_LIMIT = 1;//0.05;
+    private static final double SPEED_ROUND_LIMIT = 0.05;
 
     protected double mass;
     protected Vector center;
@@ -195,15 +195,14 @@ public class Circle extends Active implements Collidable {
     @Override
     public void duringCollision(Circle circle) {
         synchronized (field) {
-            if (circle == null) return;
-
             synchronized (this) {
+                if (circle == null) return;
+
                 Circle old_collided = circle.old.get(id);
                 if (old_collided == null) {
 
                     Circle copy = circle.getIdenticalNonInclusiveCopy();
                     old.put(circle.id, copy);
-                    //field.notifyAll();
                     notifyAll();
 
                 } else
@@ -269,15 +268,12 @@ public class Circle extends Active implements Collidable {
         synchronized (field) {
             setSpeed(speed);
             if (speed.intensity() < SPEED_ROUND_LIMIT) {
-                speed.clear();
-                if (field.checkStopped(this)) {
-                    //Log.d(STATE_TAG, this + " stopped");
-                }
+                this.speed.clear();
+                field.checkStopped(this);
             } else {
                 synchronized (this) {
                     if (field.checkStarted(this)) {
                         Log.d(STATE_TAG, this + " is moving");
-                        //field.notifyAll();
                         notifyAll();
                     }
                 }
@@ -294,13 +290,10 @@ public class Circle extends Active implements Collidable {
     }
 
     private synchronized void checkSpeed() throws InterruptedException {
-        //synchronized (field) {
-            if (speed.isZeroVector()) {
-                Log.d(STATE_TAG, this + " stopped");
-                //field.wait();
-                wait();
-            }
-        //}
+        if (speed.isZeroVector()) {
+            Log.d(STATE_TAG, this + " stopped");
+            wait();
+        }
     }
 
     @Override

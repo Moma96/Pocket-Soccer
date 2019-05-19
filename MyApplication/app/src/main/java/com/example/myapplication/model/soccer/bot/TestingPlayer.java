@@ -14,17 +14,5 @@ public class TestingPlayer extends Player {
     @Override
     protected void delay() { /* do nothing */ }
 
-    /*protected TestingPlayer(@NotNull Player player, boolean include) {
-        super(player, include);
-    }
-
-    @Override
-    protected TestingPlayer getNonInclusiveCopy() {
-        return new TestingPlayer(this, false);
-
-    @Override
-    public String toString() {
-        return "Testplayer " + getActiveId();
-    }*/
 
 }

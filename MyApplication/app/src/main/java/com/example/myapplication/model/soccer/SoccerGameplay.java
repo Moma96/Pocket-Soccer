@@ -15,7 +15,6 @@ import static java.lang.Thread.sleep;
 public class SoccerGameplay extends SoccerModel {
 
     private static final int AFTER_GOAL_WAIT = 2; //s
-    private static final String GOAL_TAG = "Goal";
 
     private Bot[] bots = new Bot[2];
     private Integer active = 0;
@@ -55,7 +54,7 @@ public class SoccerGameplay extends SoccerModel {
         super.start();
         setResponsiveness();
 
-        bots[0].start();
+        //bots[0].start();
         //bots[1].start();
     }
 

@@ -32,19 +32,26 @@ public class Bot extends Active {
 
         Player[] players = soccer.getPlayers(player);
         GeneticTesting.Unit[] results = new GeneticTesting.Unit[players.length];
-        //GeneticTesting[] gens = new GeneticTesting[players.length];
 
+        int id = 0;
+        GeneticTesting.Unit best = null;
         for (int i = 0; i < players.length; i++) {
-            //gens[i] = new GeneticTesting(soccer, player, i);
-            results[i] = new GeneticTesting(soccer, player, i).test();//gens[i].test();
+            GeneticTesting gen = new GeneticTesting(soccer, player, i);
+            results[i] = gen.test();
+            if (gen.getFinished() != null) {
+                best = gen.getFinished();
+                id = i;
+                break;
+            }
         }
 
-        GeneticTesting.Unit best = results[0];
-        int id = 0;
-        for (int i = 1; i < results.length; i++) {
-            if (results[i].getFitness() < best.getFitness()) {
-                best = results[i];
-                id = i;
+        if (best == null) {
+            best = results[0];
+            for (int i = 1; i < results.length; i++) {
+                if (results[i].getFitness() < best.getFitness()) {
+                    best = results[i];
+                    id = i;
+                }
             }
         }
 
@@ -54,7 +61,7 @@ public class Bot extends Active {
         /*
         soccer.select(soccer.getPlayers(player)[(int)(Math.random()*3)]);
         Vector speed = new Vector(Math.random()*2 - 1, Math.random()*2 - 1);
-        speed.scaleIntensity(300);
+        speed.scaleIntensity(1000);
         soccer.push(speed);
         */
     }

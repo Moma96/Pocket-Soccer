@@ -28,9 +28,13 @@ public class TestingSoccerModel extends SoccerModel {
 
     @Override
     public void score(int player) {
-        synchronized (genUnit) {
-            terminate();
-            genUnit.finished(player, field.getTime());
-        }
+        terminate();
+        genUnit.finished(player, field.getTime());
+    }
+
+    @Override
+    public void goalMissed(int player, double missed) {
+        super.goalMissed(player, missed);
+        genUnit.updateFitness(player, missed);
     }
 }

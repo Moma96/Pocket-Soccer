@@ -8,13 +8,11 @@ import com.example.myapplication.model.collidables.inactive.Line;
 
 public class GoalPost extends InactiveObject {
 
-    public enum Direction { EAST, WEST };
-
-    Direction direction;
+    Goal.Direction direction;
     Line line;
     Dot dot;
 
-    public GoalPost(Direction direction, double x, double y, double length, Field field) {
+    public GoalPost(Goal.Direction direction, double x, double y, double length, Field field) {
         this.direction = direction;
         this.line = new Line(Line.Orientation.HORIZONTAL, x, y, length);
         switch (direction) {

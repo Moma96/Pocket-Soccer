@@ -48,8 +48,8 @@ public class BallImageUpdater extends Active {
     @Override
     protected void iterate() {
         try {
-            while (ball.getSpeed().isZeroVector()) {
-                synchronized (ball) {
+            synchronized (ball) {
+                while (ball.getSpeed().isZeroVector()) {
                     ball.wait();
                 }
             }

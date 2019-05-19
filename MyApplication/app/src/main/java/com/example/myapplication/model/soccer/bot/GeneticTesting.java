@@ -14,7 +14,7 @@ public class GeneticTesting {
 
     public class Selected extends ArrayList<Unit> {
         private int capacity;
-        private int maximum = 0;
+        private double maximum = 0;
 
         public Selected(int capacity) {
             super();
@@ -52,7 +52,7 @@ public class GeneticTesting {
             return size() == capacity;
         }
 
-        public int getMaximum() {
+        public double getMaximum() {
             return maximum;
         }
 
@@ -80,11 +80,11 @@ public class GeneticTesting {
 
         private TestingSoccerModel testingModel;
         private Vector genes;
-        private int fitness;
+        private double fitness;
         private boolean over = false;
 
         public Unit() {
-            this(new Vector(Math.random()*2 - 1, Math.random()*2 - 1), Integer.MAX_VALUE);
+            this(new Vector(Math.random()*2 - 1, Math.random()*2 - 1), Double.MAX_VALUE);
             genes.scaleIntensity(SCALED_INTENSITY);
             fitness = Integer.MAX_VALUE;
         }
@@ -93,7 +93,7 @@ public class GeneticTesting {
             this(unit.genes, unit.fitness);
         }
 
-        public Unit(Vector genes, int fitness) {
+        public Unit(Vector genes, double fitness) {
             testingModel = new TestingSoccerModel(this);
             this.genes = new Vector(genes);
             this.fitness = fitness;
@@ -107,7 +107,7 @@ public class GeneticTesting {
             return result;
         }
 
-        public int getFitness() {
+        public double getFitness() {
             return fitness;
         }
 
@@ -125,8 +125,9 @@ public class GeneticTesting {
 
         public synchronized void finished(int scored, int time) {
             if (player == scored) {
-                fitness = time;
-                selected.add(this);
+                //fitness = time;
+                //selected.add(this);
+                finished = this;
                 Log.d(GENETIC_TAG, "Unit finished with time " + time);
             }
             else {
@@ -137,9 +138,18 @@ public class GeneticTesting {
         }
 
         public synchronized void terminated(int time) {
+            selected.add(this);
             over = true;
             notifyAll();
             Log.d(GENETIC_TAG, "Unit terminated with time " + time);
+        }
+
+        public synchronized void updateFitness(int p, double missed) {
+            if (player == p) {
+                if (missed < fitness)
+                    fitness = missed;
+                Log.d(GENETIC_TAG, "Fitness updated: " + missed);
+            }
         }
 
         @Override
@@ -158,12 +168,11 @@ public class GeneticTesting {
         }
     }
 
-    private static final int INITIAL_POPULATION = 100;
+    private static final int INITIAL_POPULATION = 50;
     private static final int GENERATIONS = 10;
-    private static final int TOP = 7;
+    private static final int TOP = 5;
     private static final int TIME_LIMIT = 300; //500;
-    private static final int SATISFACTORY_TIME = 100;
-    private static final double SCALED_INTENSITY = 1000; // 300 - cenim bar 700
+    private static final double SCALED_INTENSITY = 1000;
 
     private static final String GENETIC_TAG = "Genetic testing";
 
@@ -178,6 +187,7 @@ public class GeneticTesting {
 
     private ArrayList<Unit> generation;
     private Selected selected;
+    private Unit finished = null;
 
     public GeneticTesting(SoccerModel soccer, int player, int player_id) {
         this(soccer, player, player_id, INITIAL_POPULATION, GENERATIONS, TOP, TIME_LIMIT);
@@ -206,20 +216,26 @@ public class GeneticTesting {
             Log.d(GENETIC_TAG, "generation: " + g);
 
             calculateFitness();
+            if (finished != null)
+                return finished;
+            //////AKO JE NEKO ZAVRSIO OVDE - VRACAJ TO!!!!
             crossBreed();
             fittest = fittest();
 
-            if (fittest().getFitness() < SATISFACTORY_TIME)
-                break;
+            /*if (fittest().getFitness() < SATISFACTORY_TIME)
+                break;*/
             if (selected.isEmpty())
                 return new Unit();
             if (selected.size() == 1)
                 break;
             Log.d(GENETIC_TAG, "selected: " + selected.size());
         }
-        //Unit fittest = fittest();
         Log.d(GENETIC_TAG, "THE BEST TIME FOR PLAYER " + player_id + ": " + fittest.getFitness());
         return fittest;
+    }
+
+    public Unit getFinished() {
+        return finished;
     }
 
     public int getInitialPopulation() {

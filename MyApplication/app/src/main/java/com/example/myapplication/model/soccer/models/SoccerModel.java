@@ -1,8 +1,12 @@
 package com.example.myapplication.model.soccer.models;
 
+import android.util.Log;
+
 import com.example.myapplication.model.Vector;
 
 public abstract class SoccerModel {
+
+    protected static final String GOAL_TAG = "Goal";
 
     public static final double GOAL_WIDTH = 100;
     public static final double GOAL_HEIGHT = 300;
@@ -124,8 +128,8 @@ public abstract class SoccerModel {
     }
 
     public void setGoals() {
-        goals[0] = new Goal(GoalPost.Direction.WEST, x, y + height/2 - GOAL_HEIGHT/2, GOAL_WIDTH, GOAL_HEIGHT, field);
-        goals[1] = new Goal(GoalPost.Direction.EAST, x + width - GOAL_WIDTH, y + height/2 - GOAL_HEIGHT/2, GOAL_WIDTH, GOAL_HEIGHT, field);
+        goals[0] = new Goal(Goal.Direction.WEST, x, y + height/2 - GOAL_HEIGHT/2, GOAL_WIDTH, GOAL_HEIGHT, field);
+        goals[1] = new Goal(Goal.Direction.EAST, x + width - GOAL_WIDTH, y + height/2 - GOAL_HEIGHT/2, GOAL_WIDTH, GOAL_HEIGHT, field);
     }
 
     public void start() {
@@ -184,6 +188,10 @@ public abstract class SoccerModel {
     }
 
     public void allStopped() {}
+
+    public void goalMissed(int player, double missed) {
+        Log.d(GOAL_TAG, "Ball missed goal " + player + " by " + missed);
+    }
 
     public abstract void score(int player);
 }
