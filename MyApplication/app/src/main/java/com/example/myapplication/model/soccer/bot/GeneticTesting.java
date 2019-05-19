@@ -138,7 +138,7 @@ public class GeneticTesting {
         }
 
         public synchronized void terminated(int time) {
-            selected.add(this);
+            selected.add(this); ///////////////////////////PAZI OVDE
             over = true;
             notifyAll();
             Log.d(GENETIC_TAG, "Unit terminated with time " + time);

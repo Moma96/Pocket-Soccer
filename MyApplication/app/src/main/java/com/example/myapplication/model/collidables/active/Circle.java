@@ -261,7 +261,7 @@ public class Circle extends Active implements Collidable {
     protected void work() {}
 
     protected void delay() throws InterruptedException {
-        sleep(MOVING_DELAY);
+        //sleep(MOVING_DELAY);
     }
 
     public void updateSpeed(Vector speed) {

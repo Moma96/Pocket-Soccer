@@ -37,4 +37,9 @@ public class TestingSoccerModel extends SoccerModel {
         super.goalMissed(player, missed);
         genUnit.updateFitness(player, missed);
     }
+
+    @Override
+    public void allStopped() {
+        genUnit.terminated(field.getTime());
+    }
 }

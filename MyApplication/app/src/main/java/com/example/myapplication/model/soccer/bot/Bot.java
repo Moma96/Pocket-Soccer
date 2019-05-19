@@ -3,6 +3,8 @@ package com.example.myapplication.model.soccer.bot;
 import com.example.myapplication.model.Active;
 import com.example.myapplication.model.soccer.SoccerGameplay;
 import com.example.myapplication.model.soccer.models.Player;
+import com.example.myapplication.model.Vector;
+
 
 import org.jetbrains.annotations.NotNull;
 
@@ -29,7 +31,7 @@ public class Bot extends Active {
     }
 
     public synchronized void play() {
-
+/*
         Player[] players = soccer.getPlayers(player);
         GeneticTesting.Unit[] results = new GeneticTesting.Unit[players.length];
 
@@ -57,13 +59,13 @@ public class Bot extends Active {
 
         soccer.select(soccer.getPlayers(player)[id]);
         soccer.push(best.getGenes());
+*/
 
-        /*
         soccer.select(soccer.getPlayers(player)[(int)(Math.random()*3)]);
         Vector speed = new Vector(Math.random()*2 - 1, Math.random()*2 - 1);
         speed.scaleIntensity(1000);
         soccer.push(speed);
-        */
+
     }
 
     @Override
