@@ -59,6 +59,6 @@ public class Line extends InactiveObject {
                 new_speed.setX(-new_speed.getX());
                 break;
         }
-        active.setSpeed(new_speed);
+        active.updateSpeed(new_speed);
     }
 }

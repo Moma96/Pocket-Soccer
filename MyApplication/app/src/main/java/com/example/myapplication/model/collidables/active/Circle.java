@@ -73,7 +73,7 @@ public class Circle extends Active implements Collidable {
         this.old = (old != null) ? new HashMap<>(old) : new HashMap<Integer, Circle>();
     }
 
-    private synchronized Circle getIdenticalNonInclusiveCopy() {
+    private Circle getIdenticalNonInclusiveCopy() {
         Circle copy = getNonInclusiveCopy();
         copy.id = id;
         field.decrementId();
@@ -112,8 +112,10 @@ public class Circle extends Active implements Collidable {
         return speed;
     }
 
-    public synchronized void setSpeed(Vector speed) {
-        this.speed = new Vector(speed);
+    protected void setSpeed(Vector speed) {
+        synchronized (field) {
+            this.speed = new Vector(speed);
+        }
     }
 
     public synchronized void setRadius(double radius) {
@@ -174,9 +176,7 @@ public class Circle extends Active implements Collidable {
     }
 
     public void clearSpeed() {
-        synchronized (field) {
-            updateSpeed(new Vector(0, 0));
-        }
+        updateSpeed(new Vector(0, 0));
     }
 
     @Override
@@ -185,10 +185,10 @@ public class Circle extends Active implements Collidable {
             if (circle == null) return this;
 
             Circle old_collided = circle.old.get(id);
-            if (old_collided != null)
-                return old_collided;
-            else
+            if (old_collided == null)
                 return this;
+            else
+                return old_collided;
         }
     }
 
@@ -203,6 +203,9 @@ public class Circle extends Active implements Collidable {
 
                     Circle copy = circle.getIdenticalNonInclusiveCopy();
                     old.put(circle.id, copy);
+
+                    //////////////// VERY NECESSARY!
+                    //field.checkStarted(this); //////////////PAZI OVDE!
                     notifyAll();
 
                 } else
@@ -238,17 +241,15 @@ public class Circle extends Active implements Collidable {
 
     @Override
     public void collisionUpdateSpeed(Circle collided) {
-        synchronized (field) {
-            if (collided == null) return;
-            if (speed.isZeroVector() && collided.speed.isZeroVector()) return;
+        if (collided == null) return;
+        if (speed.isZeroVector() && collided.speed.isZeroVector()) return;
 
-            collided.updateSpeed(collided.speed.sub(
-                    collided.center.sub(center).mul(
-                            2 * mass / (collided.mass + mass) *
-                                    ((collided.speed.sub(speed).dotProduct(collided.center.sub(center))) / Math.pow(collided.center.sub(center).intensity(), 2))
-                    )
-            ));
-        }
+        collided.updateSpeed(collided.speed.sub(
+                collided.center.sub(center).mul(
+                        2 * mass / (collided.mass + mass) *
+                                ((collided.speed.sub(speed).dotProduct(collided.center.sub(center))) / Math.pow(collided.center.sub(center).intensity(), 2))
+                )
+        ));
     }
 
     private void move() {
@@ -266,18 +267,16 @@ public class Circle extends Active implements Collidable {
 
     public void updateSpeed(Vector speed) {
         synchronized (field) {
-            setSpeed(speed);
-            if (speed.intensity() < SPEED_ROUND_LIMIT) {
-                this.speed.clear();
-                field.checkStopped(this);
-            } else {
-                synchronized (this) {
-                    if (field.checkStarted(this)) {
-                        Log.d(STATE_TAG, this + " is moving");
-                        notifyAll();
-                    }
-                }
+            synchronized (this) {
+                setSpeed(speed);
+                if (speed.intensity() < SPEED_ROUND_LIMIT) {
+                    this.speed.clear();
+                    // field.checkStopped(this);
+                } else
+                    notifyAll();
             }
+            //else
+              //  field.checkStarted(this);
         }
     }
 

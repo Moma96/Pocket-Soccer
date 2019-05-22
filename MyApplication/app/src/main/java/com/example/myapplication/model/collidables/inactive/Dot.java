@@ -29,7 +29,7 @@ public class Dot extends InactiveObject {
         if (collided == null) return;
         if (collided.getSpeed().isZeroVector()) return;
 
-        collided.setSpeed(collided.getSpeed().sub(
+        collided.updateSpeed(collided.getSpeed().sub(
            collided.getCenter().sub(center).mul(
                    2 * ((collided.getSpeed().dotProduct(collided.getCenter().sub(center))) / Math.pow(collided.getCenter().sub(center).intensity(), 2))
            )

@@ -23,7 +23,8 @@ public class Goal {
     }
 
     public boolean inGoal(Ball ball) {
-        if (ball.getCenter().getY() > position.getY() && ball.getCenter().getY() < position.getY() + height) {
+        if (ball.getCenter().getY() - ball.getRadius() >= position.getY() &&
+            ball.getCenter().getY() + ball.getRadius() <= position.getY() + height) {
             switch(direction) {
                 case EAST:
                     if (ball.getCenter().getX() > position.getX())
@@ -41,11 +42,11 @@ public class Goal {
     public double missedGoalBy(Ball ball) {
         if ((direction == Direction.EAST &&
             ball.getCenter().getX() + ball.getRadius() > position.getX() &&
-            ball.getSpeed().getX() > 0) // ball is going in right direction
+            ball.getSpeed().getX() > 0) // ball is going in the right direction
             ||
             (direction == Direction.WEST &&
             ball.getCenter().getX() - ball.getRadius() < position.getX() + width &&
-            ball.getSpeed().getY() < 0)) { // ball is going in right direction
+            ball.getSpeed().getY() < 0)) { // ball is going in the right direction
 
                 if (ball.getCenter().getY() - ball.getRadius() < position.getY())
                     return position.getY() - (ball.getCenter().getY() - ball.getRadius());
