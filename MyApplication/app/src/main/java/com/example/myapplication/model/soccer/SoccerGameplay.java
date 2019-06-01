@@ -75,10 +75,10 @@ public class SoccerGameplay extends SoccerModel {
 
     public void score(final int player) {
         if (!responsive()) return;
-/*
+
         new AsyncTask<Void, Void, Void>() {
             @Override
-            protected Void doInBackground( final Void ... params ) {
+            protected Void doInBackground(final Void... params) {
                 scores[player]++;
                 Log.d(GOAL_TAG, "PLayer " + player + " scored! result: " + scores[0] + ":" + scores[1]);
 
@@ -95,7 +95,7 @@ public class SoccerGameplay extends SoccerModel {
                 return null;
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-        */
+
     }
 
     public Bot[] getBots() {

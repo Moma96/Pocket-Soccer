@@ -106,7 +106,7 @@ public abstract class Field {
                     wait();
             }
         }
-        ///////NAJBOLJE JE OVDE DA IZBACUJES IZ BARRIER CARE AKO JE SPEED == ZERO
+
         checkStopped(circle);
 
         if (barrier.size() == moving.size()) {
