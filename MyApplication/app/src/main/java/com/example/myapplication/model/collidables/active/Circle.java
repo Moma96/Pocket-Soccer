@@ -279,7 +279,7 @@ public class Circle extends Active implements Collidable {
     protected void work() {}
 
     protected void delay() throws InterruptedException {
-        //sleep(MOVING_DELAY);
+       // sleep(MOVING_DELAY);
     }
 
     private void checkCollision() {

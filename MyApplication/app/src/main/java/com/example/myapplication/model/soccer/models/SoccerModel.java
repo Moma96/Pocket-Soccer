@@ -148,7 +148,7 @@ public abstract class SoccerModel {
         }
     }
 
-    public void reset() {
+    public void reset() {   //OVO ISPRAVI LEPO SABANE :)))
         synchronized (field) {
             ball.reset();
             ball.setCenter(new Vector(x + width * BALL_X, y + height * BALL_Y));
@@ -159,7 +159,7 @@ public abstract class SoccerModel {
                 }
             }
 
-            field.barrierRelease();
+            field.reset();
         }
     }
 

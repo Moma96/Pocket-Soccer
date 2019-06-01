@@ -146,6 +146,11 @@ public abstract class Field {
         notifyAll();
     }
 
+    public synchronized void reset() {
+        //moving.clear();
+        barrierRelease();
+    }
+
     public int getTime() {
         return time;
     }

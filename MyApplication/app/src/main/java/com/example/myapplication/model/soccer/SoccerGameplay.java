@@ -75,7 +75,7 @@ public class SoccerGameplay extends SoccerModel {
 
     public void score(final int player) {
         if (!responsive()) return;
-
+/*
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(final Void... params) {
@@ -94,12 +94,7 @@ public class SoccerGameplay extends SoccerModel {
                 facade.refreshScores();
                 return null;
             }
-        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-
-    }
-
-    public Bot[] getBots() {
-        return bots;
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);*/
     }
 
     public boolean push(final Vector speed) {
