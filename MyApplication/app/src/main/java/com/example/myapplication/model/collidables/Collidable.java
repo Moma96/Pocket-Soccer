@@ -4,11 +4,8 @@ import com.example.myapplication.model.collidables.active.Circle;
 
 public interface Collidable {
 
-    double getDistance(Circle active);
+    double getDistance(Circle circle);
 
-    void collisionUpdateSpeed(Circle active); //Circle
+    void collisionUpdateSpeed(Circle circle);
 
-    Collidable beforeCollision(Circle active);
-
-    void duringCollision(Circle active);
 }

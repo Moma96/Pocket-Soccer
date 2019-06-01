@@ -3,6 +3,7 @@ package com.example.myapplication.model.collidables;
 import android.util.Log;
 
 import com.example.myapplication.model.collidables.active.Circle;
+import com.example.myapplication.model.collidables.inactive.InactiveObject;
 import com.example.myapplication.model.collidables.inactive.Wall;
 import com.example.myapplication.model.Vector;
 
@@ -21,7 +22,8 @@ public abstract class Field {
     protected Wall walls[];
     protected double friction;
 
-    private ArrayList<Collidable> collidables = new ArrayList<>();
+    //private ArrayList<Collidable> collidables = new ArrayList<>();
+    private ArrayList<InactiveObject> inactives = new ArrayList<>();
     private ArrayList<Circle> circles = new ArrayList<>();
 
     private HashSet<Circle> moving = new HashSet<>();
@@ -39,8 +41,8 @@ public abstract class Field {
         return barrier;
     }
 
-    public ArrayList<Collidable> getCollidables() {
-        return collidables;
+    public ArrayList<InactiveObject> getInactives() {
+        return inactives;
     }
 
     public ArrayList<Circle> getCircles() {
@@ -57,11 +59,13 @@ public abstract class Field {
 
     public synchronized void addCollidable(Collidable collidable) {
         if (collidable == null) return;
-
-        collidables.add(collidable);
+        //collidables.add(collidable);
 
         if (collidable instanceof Circle)
             circles.add((Circle) collidable);
+        else if (collidable instanceof InactiveObject)
+            inactives.add((InactiveObject) collidable);
+
     }
 
     public synchronized Circle getActive(Vector dot) {
@@ -90,11 +94,9 @@ public abstract class Field {
     public synchronized void barrier(@NotNull Circle circle) throws InterruptedException {
         ///PROBLEM KOD BARRIERA JE STO NAKON COLLISION-A MORA DA SE CEKA NA UDARENI DA PRODJE KROZ BARRIER DA BI MOGLO DA SE NASTAVI.
 
-        //checkStarted(circle);
-
         //if (!circle.getSpeed().isZeroVector()) {
             if (!moving.contains(circle)) {
-                Log.e(BARRIER_TAG, "Barrier doesn't constain " + circle + " barrier: " + barrier);
+                Log.e(BARRIER_TAG, "Barrier doesn't contain " + circle + " barrier: " + barrier);
                 return;
             }
 
@@ -127,7 +129,7 @@ public abstract class Field {
 
     public synchronized void checkStarted(@NotNull Circle circle) {
         synchronized (circle) {
-            if (/*!circle.getSpeed().isZeroVector() && */!moving.contains(circle)) {
+            if (!circle.getSpeed().isZeroVector() && !moving.contains(circle)) {
                 moving.add(circle);
                 Log.d(BARRIER_TAG, circle + " is moving");
             }

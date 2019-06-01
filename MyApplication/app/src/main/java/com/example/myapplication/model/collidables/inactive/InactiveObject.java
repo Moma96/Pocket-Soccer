@@ -12,15 +12,6 @@ public abstract class InactiveObject implements Collidable {
         id = next_id++;
     }
 
-    @Override
-    public Collidable beforeCollision(Circle active) {
-        return this;
-    }
-
-    @Override
-    public void duringCollision(Circle active) {
-    }
-
     public String toString() {
         return "InactiveObject " + id;
     }

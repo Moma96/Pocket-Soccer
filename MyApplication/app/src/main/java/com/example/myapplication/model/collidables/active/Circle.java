@@ -8,10 +8,12 @@ import com.example.myapplication.model.Active;
 import com.example.myapplication.model.Vector;
 import com.example.myapplication.model.collidables.Collidable;
 import com.example.myapplication.model.collidables.Field;
+import com.example.myapplication.model.collidables.inactive.InactiveObject;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
+import java.util.HashSet;
 
 public class Circle extends Active implements Collidable {
 
@@ -32,8 +34,10 @@ public class Circle extends Active implements Collidable {
 
     private Field field;
 
-    private HashMap<String, Double> collision_in_process;
-    private HashMap<Integer, Circle> old;
+    //private HashMap<String, Double> collision_in_process; // CHANGE TO CIRCLE - DOUBLE
+    private HashMap<Collidable, Double> collision_in_process; // CHANGE TO CIRCLE - DOUBLE
+    private HashSet<Circle> collision_processed;
+    //private HashMap<Integer, Circle> old;
 
     private int id;
 
@@ -54,11 +58,11 @@ public class Circle extends Active implements Collidable {
     }
 
     protected Circle(@NotNull Circle circle, boolean include) {
-        this(circle.mass, circle.radius, circle.img_radius_coefficient, circle.center, circle.speed, circle.field, include, circle.collision_in_process, circle.old);
+        this(circle.mass, circle.radius, circle.img_radius_coefficient, circle.center, circle.speed, circle.field, include, circle.collision_in_process, circle.collision_processed);
     }
 
     protected Circle(double mass, double radius, double img_radius_coefficient, @NotNull Vector center, Vector speed, @NotNull Field field, boolean include,
-                     HashMap<String, Double> collision_in_process, HashMap<Integer, Circle> old) {
+                     HashMap<Collidable, Double> collision_in_process, HashSet<Circle> collision_processed) {
         setField(field);
         setMass(mass);
         this.img_radius_coefficient = img_radius_coefficient;
@@ -68,8 +72,9 @@ public class Circle extends Active implements Collidable {
         if (include) {
             field.addCollidable(this);
         }
-        this.collision_in_process = (collision_in_process != null) ? new HashMap<>(collision_in_process) : new HashMap<String, Double>();
-        this.old = (old != null) ? new HashMap<>(old) : new HashMap<Integer, Circle>();
+        this.collision_in_process = (collision_in_process != null) ? new HashMap<>(collision_in_process) : new HashMap<Collidable, Double>();
+        this.collision_processed = (collision_processed != null) ? new HashSet<>(collision_processed) : new HashSet<Circle>();
+        //this.old = (old != null) ? new HashMap<>(old) : new HashMap<Integer, Circle>();
 
         setSpeed(speed);
     }
@@ -123,6 +128,7 @@ public class Circle extends Active implements Collidable {
                     notifyAll();
                 }
             }
+            field.checkStarted(this);
         }
     }
 
@@ -180,78 +186,85 @@ public class Circle extends Active implements Collidable {
     public void reset() {
         clearSpeed();
         collision_in_process.clear();
-        old.clear();
+        collision_processed.clear();
+        //old.clear();
     }
 
     public void clearSpeed() {
         setSpeed(new Vector(0, 0));
     }
 
-    @Override
-    public Collidable beforeCollision(Circle circle) {
+    private void collision(@NotNull InactiveObject collided) {
         synchronized (field) {
-            if (circle == null) return this;
-
-            Circle old_collided = circle.old.get(id);
-            if (old_collided == null)
-                return this;
-            else
-                return old_collided;
-        }
-    }
-
-    @Override
-    public void duringCollision(Circle circle) {
-        synchronized (field) {
-            synchronized (this) {
-                if (circle == null) return;
-
-                Circle old_collided = circle.old.get(id);
-                if (old_collided == null) {
-
-                    Circle copy = circle.getIdenticalNonInclusiveCopy();
-                    old.put(circle.id, copy);
-
-
-                    /////////////
-                    field.checkStarted(this);
-                    ///////////////
-                    notifyAll();
-
-                } else
-                    circle.old.remove(id);
-            }
-        }
-    }
-
-    private void collision(@NotNull Collidable collided) {
-        synchronized (field) {
-            collided = collided.beforeCollision(this);
             double distance = collided.getDistance(this);
-            Double old_distance = collision_in_process.get(collided.toString());
+            Double old_distance = collision_in_process.get(collided);
             if (distance <= 0) {
-                collided.duringCollision(this);
-                collision_in_process.put(collided.toString(), distance);
 
-                if (old_distance == null || (old_distance != null && distance <= old_distance)) {
+                collision_in_process.put(collided, distance);
+
+                if (old_distance == null || (old_distance != null && distance < old_distance)) {
                     collided.collisionUpdateSpeed(this);
                     Log.d(COLLISION_TAG, this + " collided " + collided);
 
-                } else if (old_distance != null)// (distance > old_distance) {
+                } else // old_distance != null && distance => old_distance
                     Log.d(COLLISION_TAG, this + " recovering from collision with " + collided);
 
             } else {
                 if (old_distance != null) {
-                    collision_in_process.remove(collided.toString());
+                    collision_in_process.remove(collided);
                     Log.d(COLLISION_TAG, "Collision status for " + this + " and " + collided + " reset");
                 }
             }
         }
     }
 
+    private boolean checkCollisionProcessed(@NotNull Circle collided) {
+        if (collision_processed.contains(collided)) {
+            collision_processed.remove(collided);
+            return true;
+        }
+        collided.collision_processed.add(this);
+        return false;
+    }
+
+    private void collision(@NotNull Circle collided) {
+        synchronized (field) {
+
+            if (checkCollisionProcessed(collided))
+                return;
+
+            double distance = collided.getDistance(this);
+            Double old_distance = collision_in_process.get(collided);
+            if (distance <= 0) {
+
+                collision_in_process.put(collided, distance);
+                collided.collision_in_process.put(this, distance);
+
+                if (old_distance == null || (old_distance != null && distance < old_distance)) {
+
+                    Circle oldCollided = collided.getIdenticalNonInclusiveCopy();
+                    this.collisionUpdateSpeed(collided);
+                    oldCollided.collisionUpdateSpeed(this);
+                    Log.d(COLLISION_TAG, this + " and " + collided + " collided");
+
+                } else // old_distance != null && distance => old_distance
+                    Log.d(COLLISION_TAG, this + " and " + collided + " recovering from collision");
+
+            } else {
+                if (old_distance != null) {
+
+                    collision_in_process.remove(collided);
+                    collided.collision_in_process.remove(this);
+                    Log.d(COLLISION_TAG, "Collision status for " + this + " and " + collided + " reset");
+
+                }
+            }
+        }
+    }
+
+
     @Override
-    public void collisionUpdateSpeed(Circle collided) { ////////////PROBLEM JE STO BI TREBALO DA SE DODA U STARTED SAMO AKO JE NAKON KOLIZIJE BRZINA PROMENJENA
-        //NA VISE OD NULA I SAMO AKO JE KRUG SA TABLE, A NE POMOCNI!
+    public void collisionUpdateSpeed(Circle collided) {
         if (collided == null) return;
         if (speed.isZeroVector() && collided.speed.isZeroVector()) return;
 
@@ -273,15 +286,18 @@ public class Circle extends Active implements Collidable {
     protected void work() {}
 
     protected void delay() throws InterruptedException {
-        //sleep(MOVING_DELAY);
+        sleep(MOVING_DELAY);
     }
 
     private void checkCollision() {
         synchronized (field) {
-            for (Collidable collidable : field.getCollidables()) {
-                if (this != collidable && collidable != null) {
-                    collision(collidable);
-                }
+            for (InactiveObject inactive : field.getInactives()) {
+                collision(inactive);
+            }
+
+            for (Circle circle : field.getCircles()) {
+                if (this != circle)
+                    collision(circle);
             }
         }
     }
@@ -302,7 +318,7 @@ public class Circle extends Active implements Collidable {
                 move();
                 work();
                 delay();
-                field.barrier(this);
+                //field.barrier(this);
             }
             //field.barrier(this);
         } catch (InterruptedException e) {
