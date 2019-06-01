@@ -22,7 +22,6 @@ public abstract class Field {
     protected Wall walls[];
     protected double friction;
 
-    //private ArrayList<Collidable> collidables = new ArrayList<>();
     private ArrayList<InactiveObject> inactives = new ArrayList<>();
     private ArrayList<Circle> circles = new ArrayList<>();
 
@@ -59,7 +58,6 @@ public abstract class Field {
 
     public synchronized void addCollidable(Collidable collidable) {
         if (collidable == null) return;
-        //collidables.add(collidable);
 
         if (collidable instanceof Circle)
             circles.add((Circle) collidable);
@@ -68,7 +66,7 @@ public abstract class Field {
 
     }
 
-    public synchronized Circle getActive(Vector dot) {
+    public synchronized Circle getCircle(Vector dot) {
         if (dot == null) return null;
 
         for (Circle active : circles) {
@@ -92,11 +90,10 @@ public abstract class Field {
     }
 
     public synchronized void barrier(@NotNull Circle circle) throws InterruptedException {
-        ///PROBLEM KOD BARRIERA JE STO NAKON COLLISION-A MORA DA SE CEKA NA UDARENI DA PRODJE KROZ BARRIER DA BI MOGLO DA SE NASTAVI.
 
-        //if (!circle.getSpeed().isZeroVector()) {
+        if (!circle.getSpeed().isZeroVector()) {
             if (!moving.contains(circle)) {
-                Log.e(BARRIER_TAG, "Barrier doesn't contain " + circle + " barrier: " + barrier);
+                Log.e(BARRIER_TAG, "Barrier doesn't contain " + circle + ", barrier: " + barrier);
                 return;
             }
 
@@ -105,31 +102,21 @@ public abstract class Field {
             Log.d(BARRIER_TAG, "barrier: " + barrier + " moving: " + moving);
             if (barrier.size() != moving.size()) {
                 int oldTime = time;
-                while (oldTime == time) {
+                while (oldTime == time)
                     wait();
-                }
-            } else
-                barrierRelease();
-
-       // }
-
-        /*if (barrier.size() == moving.size()) {
-            barrierRelease();
-        }*/
-
-        ///at this point, barrier is empty!
-        if (!barrier.isEmpty()) {
-            Log.e(BARRIER_TAG, "Barrier is not empty");
-            return;
+            }
         }
-
         ///////NAJBOLJE JE OVDE DA IZBACUJES IZ BARRIER CARE AKO JE SPEED == ZERO
         checkStopped(circle);
+
+        if (barrier.size() == moving.size()) {
+            barrierRelease();
+        }
     }
 
     public synchronized void checkStarted(@NotNull Circle circle) {
         synchronized (circle) {
-            if (!circle.getSpeed().isZeroVector() && !moving.contains(circle)) {
+            if (!circle.getSpeed().isZeroVector() && circles.contains(circle) && !moving.contains(circle)) {
                 moving.add(circle);
                 Log.d(BARRIER_TAG, circle + " is moving");
             }
@@ -140,6 +127,8 @@ public abstract class Field {
         if (circle.getSpeed().isZeroVector()) {
             if (moving.contains(circle)) {
                 moving.remove(circle);
+                if (barrier.contains(circle))
+                    barrier.remove(circle);
                 Log.d(BARRIER_TAG, circle + " stopped");
                 if (moving.size() == 0) {
                     allStopped();

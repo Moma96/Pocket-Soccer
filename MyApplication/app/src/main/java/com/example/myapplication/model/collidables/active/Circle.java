@@ -34,10 +34,8 @@ public class Circle extends Active implements Collidable {
 
     private Field field;
 
-    //private HashMap<String, Double> collision_in_process; // CHANGE TO CIRCLE - DOUBLE
-    private HashMap<Collidable, Double> collision_in_process; // CHANGE TO CIRCLE - DOUBLE
+    private HashMap<Collidable, Double> collision_in_process;
     private HashSet<Circle> collision_processed;
-    //private HashMap<Integer, Circle> old;
 
     private int id;
 
@@ -74,16 +72,17 @@ public class Circle extends Active implements Collidable {
         }
         this.collision_in_process = (collision_in_process != null) ? new HashMap<>(collision_in_process) : new HashMap<Collidable, Double>();
         this.collision_processed = (collision_processed != null) ? new HashSet<>(collision_processed) : new HashSet<Circle>();
-        //this.old = (old != null) ? new HashMap<>(old) : new HashMap<Integer, Circle>();
 
         setSpeed(speed);
     }
 
     private Circle getIdenticalNonInclusiveCopy() {
-        Circle copy = getNonInclusiveCopy();
-        copy.id = id;
-        field.decrementId();
-        return copy;
+        synchronized (field) {
+            Circle copy = getNonInclusiveCopy();
+            copy.id = id;
+            field.decrementId();
+            return copy;
+        }
     }
 
     public int getCircleId() {
@@ -125,10 +124,10 @@ public class Circle extends Active implements Collidable {
                 if (speed.intensity() < SPEED_ROUND_LIMIT) {
                     this.speed.clear();
                 } else {
+                    field.checkStarted(this);
                     notifyAll();
                 }
             }
-            field.checkStarted(this);
         }
     }
 
@@ -167,18 +166,14 @@ public class Circle extends Active implements Collidable {
     }
 
     @Override
-    public double getDistance(Circle circle) {
+    public double getDistance(@NotNull Circle circle) {
         synchronized (field) {
-            if (circle == null) return 1;
-
             return center.sub(circle.center).intensity() - (getRadius() + circle.getRadius());
         }
     }
 
-    public double getDistance(Vector dot) {
+    public double getDistance(@NotNull Vector dot) {
         synchronized (field) {
-            if (dot == null) return 1;
-
             return center.sub(dot).intensity() - getRadius();
         }
     }
@@ -187,7 +182,6 @@ public class Circle extends Active implements Collidable {
         clearSpeed();
         collision_in_process.clear();
         collision_processed.clear();
-        //old.clear();
     }
 
     public void clearSpeed() {
@@ -264,8 +258,7 @@ public class Circle extends Active implements Collidable {
 
 
     @Override
-    public void collisionUpdateSpeed(Circle collided) {
-        if (collided == null) return;
+    public void collisionUpdateSpeed(@NotNull Circle collided) {
         if (speed.isZeroVector() && collided.speed.isZeroVector()) return;
 
         collided.setSpeed(collided.speed.sub(
@@ -286,7 +279,7 @@ public class Circle extends Active implements Collidable {
     protected void work() {}
 
     protected void delay() throws InterruptedException {
-        sleep(MOVING_DELAY);
+        //sleep(MOVING_DELAY);
     }
 
     private void checkCollision() {
@@ -318,9 +311,8 @@ public class Circle extends Active implements Collidable {
                 move();
                 work();
                 delay();
-                //field.barrier(this);
             }
-            //field.barrier(this);
+            field.barrier(this);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

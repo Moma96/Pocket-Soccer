@@ -31,7 +31,7 @@ public class Bot extends Active {
     }
 
     public synchronized void play() throws InterruptedException {
-
+/*
         Player[] players = soccer.getPlayers(player);
         GeneticTesting.Unit[] results = new GeneticTesting.Unit[players.length];
 
@@ -60,14 +60,17 @@ public class Bot extends Active {
         soccer.select(soccer.getPlayers(player)[id]);
         soccer.push(best.getGenes());
 //*/
-/*
+
         //sleep(2000);
 
         soccer.select(soccer.getPlayers(player)[(int)(Math.random()*3)]);
+        //soccer.select(soccer.getPlayers(player)[0]);
+
         Vector speed = new Vector(Math.random()*2 - 1, Math.random()*2 - 1);
+        //Vector speed = new Vector(1, 0);
         speed.scaleIntensity(1000);
         soccer.push(speed);
-*/
+//*/
     }
 
     @Override

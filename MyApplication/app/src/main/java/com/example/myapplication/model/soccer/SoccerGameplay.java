@@ -54,8 +54,8 @@ public class SoccerGameplay extends SoccerModel {
         super.start();
         setResponsiveness();
 
-       // bots[0].start();
-       // bots[1].start();
+        bots[0].start();
+        bots[1].start();
     }
 
     @Override
