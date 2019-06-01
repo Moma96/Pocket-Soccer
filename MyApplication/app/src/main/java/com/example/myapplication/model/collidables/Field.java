@@ -87,77 +87,63 @@ public abstract class Field {
         }
     }
 
-    public synchronized void barrier(Circle circle) throws InterruptedException {
-        //if (!moving.contains(active)) return;
+    public synchronized void barrier(@NotNull Circle circle) throws InterruptedException {
+        ///PROBLEM KOD BARRIERA JE STO NAKON COLLISION-A MORA DA SE CEKA NA UDARENI DA PRODJE KROZ BARRIER DA BI MOGLO DA SE NASTAVI.
 
-        //CHECK STARTED
-        synchronized (circle) {
-            if (!circle.getSpeed().isZeroVector() && !moving.contains(circle)) {
-                moving.add(circle);
-                Log.d(BARRIER_TAG, circle + " is moving");
+        //checkStarted(circle);
+
+        //if (!circle.getSpeed().isZeroVector()) {
+            if (!moving.contains(circle)) {
+                Log.e(BARRIER_TAG, "Barrier doesn't constain " + circle + " barrier: " + barrier);
+                return;
             }
-        }
 
-        if (!circle.getSpeed().isZeroVector()) {
-        //if (!barrier.contains(circle)) {
             Log.d(BARRIER_TAG, "E " + circle); //+ " time: " + time);
             barrier.add(circle);
             Log.d(BARRIER_TAG, "barrier: " + barrier + " moving: " + moving);
-            //if (barrier.size() == moving.size()) {
-            //    barrierRelease();
-            //} else {
             if (barrier.size() != moving.size()) {
                 int oldTime = time;
-                while(oldTime == time) {
+                while (oldTime == time) {
                     wait();
                 }
-            }
-        } //else {
-          //  Log.e(BARRIER_TAG, "Barrier is not working properly");
-        //}
+            } else
+                barrierRelease();
+
+       // }
+
+        /*if (barrier.size() == moving.size()) {
+            barrierRelease();
+        }*/
 
         ///at this point, barrier is empty!
-        //CHECK STOPPED
-        if (circle.getSpeed().isZeroVector() && moving.contains(circle)) {
-            moving.remove(circle);
-            Log.d(BARRIER_TAG, circle + " stopped");
-            if (moving.size() == 0) {
-                allStopped();
-            }
+        if (!barrier.isEmpty()) {
+            Log.e(BARRIER_TAG, "Barrier is not empty");
+            return;
         }
 
-        /////RELEASING
-        if (barrier.size() == moving.size()) {
-            barrierRelease();
-        }
         ///////NAJBOLJE JE OVDE DA IZBACUJES IZ BARRIER CARE AKO JE SPEED == ZERO
+        checkStopped(circle);
     }
 
-    private synchronized void checkStarted(@NotNull Circle circle) {
-        // speed check is not done because collided object is added
-        // to moved list before his speed was updated!
+    public synchronized void checkStarted(@NotNull Circle circle) {
         synchronized (circle) {
-            if (!moving.contains(circle)) {
+            if (/*!circle.getSpeed().isZeroVector() && */!moving.contains(circle)) {
                 moving.add(circle);
                 Log.d(BARRIER_TAG, circle + " is moving");
-                circle.notifyAll();
             }
         }
     }
 
     private synchronized void checkStopped(@NotNull Circle circle) {
-        if (circle.getSpeed().isZeroVector() && moving.contains(circle)) {
-            moving.remove(circle);
-            if (barrier.contains(circle))
-                barrier.remove(circle);
-            if (moving.size() == 0) {
-                allStopped();
-            } else if (barrier.size() == moving.size()) {
-                barrierRelease();
-                //barrier.clear();
-                //notifyAll();
-            }
-            Log.d(BARRIER_TAG, circle + " stopped");
+        if (circle.getSpeed().isZeroVector()) {
+            if (moving.contains(circle)) {
+                moving.remove(circle);
+                Log.d(BARRIER_TAG, circle + " stopped");
+                if (moving.size() == 0) {
+                    allStopped();
+                }
+            } else
+                Log.e(BARRIER_TAG, "Circle stopped, but was not considered moving");
         }
     }
 

@@ -54,8 +54,8 @@ public class SoccerGameplay extends SoccerModel {
         super.start();
         setResponsiveness();
 
-        bots[0].start();
-        bots[1].start();
+       // bots[0].start();
+       // bots[1].start();
     }
 
     @Override
@@ -94,7 +94,8 @@ public class SoccerGameplay extends SoccerModel {
                 facade.refreshScores();
                 return null;
             }
-        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);*/
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        */
     }
 
     public Bot[] getBots() {

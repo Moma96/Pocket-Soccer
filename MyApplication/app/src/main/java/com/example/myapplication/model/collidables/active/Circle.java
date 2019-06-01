@@ -64,13 +64,14 @@ public class Circle extends Active implements Collidable {
         this.img_radius_coefficient = img_radius_coefficient;
         setRadius(radius);
         setCenter(center);
-        setSpeed(speed);
         id = field.getNextId();
         if (include) {
             field.addCollidable(this);
         }
         this.collision_in_process = (collision_in_process != null) ? new HashMap<>(collision_in_process) : new HashMap<String, Double>();
         this.old = (old != null) ? new HashMap<>(old) : new HashMap<Integer, Circle>();
+
+        setSpeed(speed);
     }
 
     private Circle getIdenticalNonInclusiveCopy() {
@@ -112,9 +113,16 @@ public class Circle extends Active implements Collidable {
         return speed;
     }
 
-    protected void setSpeed(Vector speed) {
+    public void setSpeed(Vector speed) {
         synchronized (field) {
-            this.speed = new Vector(speed);
+            synchronized (this) {
+                this.speed = new Vector(speed);
+                if (speed.intensity() < SPEED_ROUND_LIMIT) {
+                    this.speed.clear();
+                } else {
+                    notifyAll();
+                }
+            }
         }
     }
 
@@ -176,7 +184,7 @@ public class Circle extends Active implements Collidable {
     }
 
     public void clearSpeed() {
-        updateSpeed(new Vector(0, 0));
+        setSpeed(new Vector(0, 0));
     }
 
     @Override
@@ -204,8 +212,10 @@ public class Circle extends Active implements Collidable {
                     Circle copy = circle.getIdenticalNonInclusiveCopy();
                     old.put(circle.id, copy);
 
-                    //////////////// VERY NECESSARY!
-                    //field.checkStarted(this); //////////////PAZI OVDE!
+
+                    /////////////
+                    field.checkStarted(this);
+                    ///////////////
                     notifyAll();
 
                 } else
@@ -240,11 +250,12 @@ public class Circle extends Active implements Collidable {
     }
 
     @Override
-    public void collisionUpdateSpeed(Circle collided) {
+    public void collisionUpdateSpeed(Circle collided) { ////////////PROBLEM JE STO BI TREBALO DA SE DODA U STARTED SAMO AKO JE NAKON KOLIZIJE BRZINA PROMENJENA
+        //NA VISE OD NULA I SAMO AKO JE KRUG SA TABLE, A NE POMOCNI!
         if (collided == null) return;
         if (speed.isZeroVector() && collided.speed.isZeroVector()) return;
 
-        collided.updateSpeed(collided.speed.sub(
+        collided.setSpeed(collided.speed.sub(
                 collided.center.sub(center).mul(
                         2 * mass / (collided.mass + mass) *
                                 ((collided.speed.sub(speed).dotProduct(collided.center.sub(center))) / Math.pow(collided.center.sub(center).intensity(), 2))
@@ -255,7 +266,7 @@ public class Circle extends Active implements Collidable {
     private void move() {
         synchronized (field) {
             setCenter(center.add(speed));
-            updateSpeed(speed.mul(1 - field.getFrictionCoefficient()));
+            setSpeed(speed.mul(1 - field.getFrictionCoefficient()));
         }
     }
 
@@ -265,25 +276,12 @@ public class Circle extends Active implements Collidable {
         //sleep(MOVING_DELAY);
     }
 
-    public void updateSpeed(Vector speed) {
-        synchronized (field) {
-            synchronized (this) {
-                setSpeed(speed);
-                if (speed.intensity() < SPEED_ROUND_LIMIT) {
-                    this.speed.clear();
-                    // field.checkStopped(this);
-                } else
-                    notifyAll();
-            }
-            //else
-              //  field.checkStarted(this);
-        }
-    }
-
     private void checkCollision() {
-        for (Collidable collidable : field.getCollidables()) {
-            if (this != collidable && collidable != null) {
-                collision(collidable);
+        synchronized (field) {
+            for (Collidable collidable : field.getCollidables()) {
+                if (this != collidable && collidable != null) {
+                    collision(collidable);
+                }
             }
         }
     }
@@ -304,8 +302,9 @@ public class Circle extends Active implements Collidable {
                 move();
                 work();
                 delay();
+                field.barrier(this);
             }
-            field.barrier(this);
+            //field.barrier(this);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

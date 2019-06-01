@@ -64,7 +64,7 @@ public class Wall extends InactiveObject {
                 new_speed.setX(-new_speed.getX());
                 break;
         }
-        active.updateSpeed(new_speed);
+        active.setSpeed(new_speed);
     }
 
     public String toString() {

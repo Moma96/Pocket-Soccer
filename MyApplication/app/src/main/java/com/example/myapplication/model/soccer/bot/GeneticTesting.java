@@ -41,13 +41,6 @@ public class GeneticTesting {
             return result;
         }
 
-        public synchronized boolean surpassed(int fitness) {
-            if (full() && fitness > maximum) {
-                return true;
-            }
-            return false;
-        }
-
         public synchronized boolean full() {
             return size() == capacity;
         }
@@ -139,9 +132,9 @@ public class GeneticTesting {
 
         public synchronized void terminated(int time) {
             selected.add(this); ///////////////////////////PAZI OVDE
+            Log.d(GENETIC_TAG, "Unit terminated with time " + time);
             over = true;
             notifyAll();
-            Log.d(GENETIC_TAG, "Unit terminated with time " + time);
         }
 
         public synchronized void updateFitness(int p, double missed) {
@@ -222,8 +215,6 @@ public class GeneticTesting {
             crossBreed();
             fittest = fittest();
 
-            /*if (fittest().getFitness() < SATISFACTORY_TIME)
-                break;*/
             if (selected.isEmpty())
                 return new Unit();
             if (selected.size() == 1)
