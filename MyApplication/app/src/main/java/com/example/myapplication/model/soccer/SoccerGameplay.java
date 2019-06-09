@@ -49,17 +49,18 @@ public class SoccerGameplay extends SoccerModel {
     }
 
     @Override
-    public void start() {
+    public synchronized void start() {
         waitFacade();
         super.start();
-        setResponsiveness();
 
         bots[0].start();
         bots[1].start();
+
+        setResponsiveness();
     }
 
     @Override
-    public void terminate() {
+    public synchronized void terminate() {
         resetResponsiveness();
         super.terminate();
     }
@@ -73,31 +74,32 @@ public class SoccerGameplay extends SoccerModel {
         return field.allNotMoving();
     }
 
-    public void score(final int player) {
+    public synchronized void score(final int player) {
         if (!responsive()) return;
-/*
+        resetResponsiveness();
+        resetSelection();
+
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(final Void... params) {
                 scores[player]++;
                 Log.d(GOAL_TAG, "PLayer " + player + " scored! result: " + scores[0] + ":" + scores[1]);
 
-                disableAndSleep(AFTER_GOAL_WAIT);
+                sleepFor(AFTER_GOAL_WAIT);
 
                 reset();
 
-                synchronized (active) {
-                    active = (player + 1) % 2;
-                    notifyActiveBot();
-                }
+                setActive((player + 1) % 2);
 
                 facade.refreshScores();
+
+                setResponsiveness();
                 return null;
             }
-        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);*/
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
-    public boolean push(final Vector speed) {
+    public synchronized boolean push(final Vector speed) {
         if (!responsive()) return false;
 
         if (selected != null) {
@@ -105,24 +107,19 @@ public class SoccerGameplay extends SoccerModel {
             selected = null;
             changeActive();
         }
-        facade.darkenInactive();
         return true;
     }
 
-    public boolean push(final float x1, final float y1, final float x2, final float y2) {
+    public synchronized boolean push(final float x1, final float y1, final float x2, final float y2) {
         return push(new Vector(x2 - x1, y2 - y1));
     }
 
-    public Player[] getActivePlayers() {
-        synchronized (active) {
-            return getPlayers(active);
-        }
+    public synchronized Player[] getActivePlayers() {
+        return getPlayers(active);
     }
 
-    public Player[] getNonActivePlayers() {
-        synchronized (active) {
-            return getPlayers((active + 1) % 2);
-        }
+    public synchronized Player[] getNonActivePlayers() {
+        return getPlayers((active + 1) % 2);
     }
 
     public Player getActivePlayer(Vector dot) {
@@ -139,10 +136,8 @@ public class SoccerGameplay extends SoccerModel {
         return player;
     }
 
-    public Integer getActive() {
-        synchronized (active) {
-            return active;
-        }
+    public synchronized Integer getActive() {
+        return active;
     }
 
     public int[] getScores() {
@@ -150,56 +145,46 @@ public class SoccerGameplay extends SoccerModel {
     }
 
     public synchronized boolean responsive() {
-        synchronized (responsiveness) {
-            return responsiveness;
-        }
+        return responsiveness;
     }
 
     public synchronized void setResponsiveness() {
-        synchronized (responsiveness) {
-            responsiveness = true;
-        }
+        responsiveness = true;
+        notifyAll();
     }
 
     public synchronized void resetResponsiveness() {
-        synchronized (responsiveness) {
-            responsiveness = false;
-        }
+        responsiveness = false;
     }
 
-    public boolean botPlaying() {
-        synchronized (botPlaying) {
-            return botPlaying;
-        }
+    public synchronized boolean botPlaying() {
+        return botPlaying;
     }
 
-    public void botStarted() {
-        synchronized(botPlaying) {
-            botPlaying = true;
-        }
+    public synchronized void botStarted() {
+        resetSelection();
+        botPlaying = true;
     }
 
-    public void botFinished() {
-        synchronized (botPlaying) {
-            botPlaying = false;
-        }
+    public synchronized void botFinished() {
+        botPlaying = false;
     }
 
-    public boolean select(Player player) {
+    public synchronized boolean select(Player player) {
         if (!responsive()) return false;
 
         selected = player;
         return true;
     }
 
-    public boolean select(final float x, final float y) {
+    public synchronized boolean select(final float x, final float y) {
         if (!responsive()) return false;
 
         selected = getActivePlayer(new Vector(x, y));
         return true;
     }
 
-    public boolean selectIfNothingSelected(final float x, final float y) {
+    public synchronized boolean selectIfNothingSelected(final float x, final float y) {
         if (selected != null) return false;
 
         return select(x, y);
@@ -209,15 +194,18 @@ public class SoccerGameplay extends SoccerModel {
         selected = null;
     }
 
-    public Player getSelected() {
+    public synchronized Player getSelected() {
         return selected;
     }
 
-    public void changeActive() {
-        synchronized (active) {
-            active = (active + 1) % 2;
-            notifyActiveBot();
-        }
+    public synchronized void changeActive() {
+        setActive((active + 1) % 2);
+    }
+
+    public synchronized void setActive(int player) {
+        active = player;
+        notifyActiveBot();
+        facade.darkenInactive();
     }
 
     private void notifyActiveBot() {
@@ -226,14 +214,11 @@ public class SoccerGameplay extends SoccerModel {
         }
     }
 
-    private void disableAndSleep(int wait) {
-        resetResponsiveness();
-        resetSelection();
+    private void sleepFor(int wait) {
         try {
             sleep(wait * 1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        setResponsiveness();
     }
 }

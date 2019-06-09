@@ -24,6 +24,14 @@ public class Bot extends Active {
         }
     }
 
+    public void waitResponsiveness() throws InterruptedException {
+        synchronized (soccer) {
+            while (!soccer.responsive()) {
+                soccer.wait();
+            }
+        }
+    }
+
     public synchronized void waitAllNotMoving() throws InterruptedException {
         while (!soccer.allNotMoving()) {
             wait();
@@ -78,7 +86,9 @@ public class Bot extends Active {
     @Override
     protected void iterate() {
         try {
+            waitResponsiveness();
             waitTurn();
+
             soccer.botStarted();
             waitAllNotMoving();
             play();

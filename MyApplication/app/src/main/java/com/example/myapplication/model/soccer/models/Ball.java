@@ -88,23 +88,5 @@ public class Ball extends Circle {
     protected synchronized void checkGoal(Goal goal, int i) {
         checkInGoal(goal, i);
         checkMissedGoal(goal, i);
-        /*if (goal.inGoal(this)) {
-            if (goal_in_process == i) return;
-            else {
-                goal((i + 1) % 2);
-                goal_in_process = i;
-            }
-        } else if (goal_in_process == i)
-            goal_in_process = -1;*/
-/*
-        double missed = goal.missedGoalBy(this);
-        if (missed != 0) {
-            if (goal_distance_measured == i) return;
-            else {
-                soccer.goalMissed((i + 1) % 2, missed);
-                goal_distance_measured = i;
-            }
-        } else if (goal_distance_measured == i)
-            goal_distance_measured = -1;*/
     }
 }
