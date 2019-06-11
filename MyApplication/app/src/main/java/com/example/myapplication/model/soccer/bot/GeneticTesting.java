@@ -118,8 +118,6 @@ public class GeneticTesting {
 
         public synchronized void finished(int scored, int time) {
             if (player == scored) {
-                //fitness = time;
-                //selected.add(this);
                 finished = this;
                 Log.d(GENETIC_TAG, "Unit finished with time " + time);
             }

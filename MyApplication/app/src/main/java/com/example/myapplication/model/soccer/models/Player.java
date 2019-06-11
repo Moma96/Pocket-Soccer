@@ -17,8 +17,8 @@ public class Player extends Circle {
 
     private double selectionRadius;
 
-    public Player(@NotNull Vector center, SoccerField field) {
-        super(MASS, RADIUS, IMG_RADIUS_COEFFICIENT, center, field);
+    public Player(@NotNull Vector center, final int moving_delay, SoccerField field) {
+        super(MASS, RADIUS, IMG_RADIUS_COEFFICIENT, moving_delay, center, field);
     }
 
     public Player(@NotNull Player player) {

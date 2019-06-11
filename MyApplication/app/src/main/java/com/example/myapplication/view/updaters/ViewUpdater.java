@@ -36,11 +36,11 @@ public class ViewUpdater extends Active {
     //private TextView[] scores = new TextView[2];
     private TextView imgScores;
 
-    public ViewUpdater(GameplayActivity gameplay, SoccerGameplay soccer) {
+    public ViewUpdater(GameplayActivity gameplay, SoccerGameplay soccer, int[] teams) {
         this.gameplay = gameplay;
         this.soccer = soccer;
 
-        int[] teams = { 25, 5 };
+        //int[] teams = { 25, 5 };
 
         draw(teams);
     }
@@ -78,7 +78,7 @@ public class ViewUpdater extends Active {
             int rotation = 90;
             if (p == 1) rotation = -90;
             for (Player player : soccer.getPlayers(p)) {
-                drawCircle(background, player, gameplay.getResources().getIdentifier("team" + teams[p], "drawable", gameplay.getPackageName())).setRotation(rotation);
+                drawCircle(background, player, gameplay.getResources().getIdentifier("t" + teams[p], "drawable", gameplay.getPackageName())).setRotation(rotation);
             }
         }
     }

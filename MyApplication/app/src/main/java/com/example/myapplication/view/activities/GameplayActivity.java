@@ -27,21 +27,29 @@ public class GameplayActivity extends AppCompatActivity {
 
         final FrameLayout background = findViewById(R.id.background);
 
-        int field = getResources().getIdentifier("field" + 3, "drawable", getPackageName());
+        final int[] teamsimg = { 0, 1 };
+        final int fieldimg = 4;
+
+        final double friction = 0.01;
+        final double gamespeed = 1;
+
+        final boolean[] botplay = { true, true };
+
+        int field = getResources().getIdentifier("field" + fieldimg, "drawable", getPackageName());
         background.setBackgroundResource(field);
 
         background.post(new Runnable() {
             @Override
             public void run() {
-                setup(background);
+                setup(background, teamsimg, friction, gamespeed, botplay);
             }
         });
     }
 
-    private void setup(FrameLayout background) {
+    private void setup(FrameLayout background, final int[] teams, final double friction, final double gamespeed, final boolean[] botplay) {
 
-        soccer = new SoccerGameplay(0, 0, background.getWidth(), background.getHeight());
-        viewUpdater = new ViewUpdater(this, soccer);
+        soccer = new SoccerGameplay(0, 0, background.getWidth(), background.getHeight(), friction, gamespeed, botplay);
+        viewUpdater = new ViewUpdater(this, soccer, teams);
         soccerFacade = new SoccerFacade(this, soccer, viewUpdater);
 
         soccer.start();

@@ -20,7 +20,7 @@ public abstract class Field {
     private int time = 0;
 
     protected Wall walls[];
-    protected double friction;
+    protected final double friction;
 
     private ArrayList<InactiveObject> inactives = new ArrayList<>();
     private ArrayList<Circle> circles = new ArrayList<>();
@@ -28,13 +28,13 @@ public abstract class Field {
     private HashSet<Circle> moving = new HashSet<>();
     private HashSet<Circle> barrier = new HashSet<>();
 
-    public double getFriction() {
-        return friction;
-    }
-
-    public void setFriction(double friction) {
+    public Field(final double friction) {
         this.friction = friction;
     }
+
+    /*public void setFriction(double friction) {
+        this.friction = friction;
+    }*/
 
     public HashSet<Circle> getBarrier() {
         return barrier;

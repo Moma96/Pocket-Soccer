@@ -20,13 +20,14 @@ public class Circle extends Active implements Collidable {
     private static final String COLLISION_TAG = "Collision";
     private static final String STATE_TAG = "Circle state";
 
-    protected static final int MOVING_DELAY = 15; //15; //ms
+    public static final int MOVING_DELAY = 15; //15; //ms
     protected static final double MOVING_INCREMENT = 0.03; //0.03;
     private static final double SPEED_ROUND_LIMIT = 0.05;
 
     protected double mass;
     protected Vector center;
     protected Vector speed;
+    protected int moving_delay;
 
     private double radius;
     private double img_radius_coefficient;
@@ -39,31 +40,32 @@ public class Circle extends Active implements Collidable {
 
     private int id;
 
-    public Circle(double mass, double radius, double img_radius_coefficient, Vector center, Vector speed, @NotNull Field field) {
-        this(mass, radius, img_radius_coefficient, center, speed, field, true, null, null);
+    public Circle(double mass, double radius, double img_radius_coefficient, int moving_delay, Vector center, Vector speed, @NotNull Field field) {
+        this(mass, radius, img_radius_coefficient, moving_delay, center, speed, field, true, null, null);
     }
 
     public Circle(@NotNull Circle circle) {
         this(circle, true);
     }
 
-    public Circle(double mass, double radius, double img_radius_coefficient, @NotNull Vector center, @NotNull Field field) {
-        this(mass, radius, img_radius_coefficient, center, new Vector(0, 0), field);
+    public Circle(double mass, double radius, double img_radius_coefficient, int moving_delay, @NotNull Vector center, @NotNull Field field) {
+        this(mass, radius, img_radius_coefficient, moving_delay, center, new Vector(0, 0), field);
     }
 
     public Circle(@NotNull Circle circle, @NotNull Field field) {
-        this(circle.mass, circle.radius, circle.img_radius_coefficient, circle.center, circle.speed, field);
+        this(circle.mass, circle.radius, circle.img_radius_coefficient, circle.moving_delay, circle.center, circle.speed, field);
     }
 
     protected Circle(@NotNull Circle circle, boolean include) {
-        this(circle.mass, circle.radius, circle.img_radius_coefficient, circle.center, circle.speed, circle.field, include, circle.collision_in_process, circle.collision_processed);
+        this(circle.mass, circle.radius, circle.img_radius_coefficient, circle.moving_delay, circle.center, circle.speed, circle.field, include, circle.collision_in_process, circle.collision_processed);
     }
 
-    protected Circle(double mass, double radius, double img_radius_coefficient, @NotNull Vector center, Vector speed, @NotNull Field field, boolean include,
+    protected Circle(double mass, double radius, double img_radius_coefficient, int moving_delay, @NotNull Vector center, Vector speed, @NotNull Field field, boolean include,
                      HashMap<Collidable, Double> collision_in_process, HashSet<Circle> collision_processed) {
         setField(field);
         setMass(mass);
         this.img_radius_coefficient = img_radius_coefficient;
+        this.moving_delay = moving_delay;
         setRadius(radius);
         setCenter(center);
         id = field.getNextId();
@@ -279,7 +281,7 @@ public class Circle extends Active implements Collidable {
     protected void work() {}
 
     protected void delay() throws InterruptedException {
-       // sleep(MOVING_DELAY);
+        sleep(moving_delay);
     }
 
     private void checkCollision() {

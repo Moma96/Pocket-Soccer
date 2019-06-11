@@ -3,6 +3,7 @@ package com.example.myapplication.model.soccer.models;
 import android.util.Log;
 
 import com.example.myapplication.model.Vector;
+import com.example.myapplication.model.collidables.active.Circle;
 
 public abstract class SoccerModel {
 
@@ -33,18 +34,18 @@ public abstract class SoccerModel {
 
     public SoccerModel() {}
 
-    public SoccerModel(double x, double y, double width, double height) {
+    public SoccerModel(double x, double y, double width, double height, final double friction, final double gamespeed) {
         setParameters(x, y, width, height);
-        field = new SoccerField(x, y, width, height, this);
+        field = new SoccerField(x, y, width, height, friction, this);
         setGoals();
 
 
-        ball = new Ball(new Vector(x + width*BALL_X, y + height*BALL_Y), this);
+        ball = new Ball(new Vector(x + width*BALL_X, y + height*BALL_Y), (int)(Circle.MOVING_DELAY/gamespeed), this);
 
         players = new Player[2][3];
         for (int p = 0; p < 2; p++) {
             for (int i = 0; i < 3; i++)
-                players[p][i] = new Player(new Vector(x + width * PLAYER_X[p][i], y + height * PLAYER_Y[p][i]), field);
+                players[p][i] = new Player(new Vector(x + width * PLAYER_X[p][i], y + height * PLAYER_Y[p][i]), (int)(Circle.MOVING_DELAY/gamespeed), field);
         }
 
 //*/

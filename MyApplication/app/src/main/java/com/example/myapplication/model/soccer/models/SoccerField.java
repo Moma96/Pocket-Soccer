@@ -11,8 +11,8 @@ public class SoccerField extends Field {
 
     private SoccerModel soccer;
 
-    public SoccerField(double x, double y, double width, double height, double friction, @NotNull SoccerModel soccer) {
-        setFriction(friction);
+    public SoccerField(final double x, final double y, final double width, final double height, final double friction, @NotNull SoccerModel soccer) {
+        super(friction);
 
         walls = new Wall[4];
         walls[0] = new Wall(Wall.Direction.NORTH, y);
@@ -25,10 +25,10 @@ public class SoccerField extends Field {
         }
         this.soccer = soccer;
     }
-
+/*
     public SoccerField(double x, double y, double width, double height, @NotNull SoccerModel soccer) {
         this(x, y, width, height, FRICTION_COEFFICIENT, soccer);
-    }
+    }*/
 
     public SoccerModel getSoccer() {
         return soccer;

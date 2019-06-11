@@ -17,6 +17,8 @@ public class SoccerGameplay extends SoccerModel {
     private static final int AFTER_GOAL_WAIT = 2; //s
 
     private Bot[] bots = new Bot[2];
+    final private boolean[] botplay;
+
     private Integer active = 0;
     private Player selected = null;
     private int[] scores = {0, 0};
@@ -26,11 +28,13 @@ public class SoccerGameplay extends SoccerModel {
     private Boolean responsiveness = false;
     private Boolean botPlaying = false;
 
-    public SoccerGameplay(double x, double y, double width, double height) {
-        super(x, y, width, height);
+    public SoccerGameplay(double x, double y, double width, double height, final double friction, final double gamespeed, final boolean[] botplay) {
+        super(x, y, width, height, friction, gamespeed);
 
         bots[0] = new Bot(this, 0);
         bots[1] = new Bot(this, 1);
+
+        this.botplay = botplay;
     }
 
     public synchronized void setFacade(@NotNull SoccerFacade facade) {
@@ -53,8 +57,10 @@ public class SoccerGameplay extends SoccerModel {
         waitFacade();
         super.start();
 
-        bots[0].start();
-        bots[1].start();
+        for (int i = 0; i < 2; i++) {
+            if (botplay[i])
+                bots[i].start();
+        }
 
         setResponsiveness();
     }
@@ -76,6 +82,7 @@ public class SoccerGameplay extends SoccerModel {
 
     public synchronized void score(final int player) {
         if (!responsive()) return;
+
         resetResponsiveness();
         resetSelection();
 
@@ -83,20 +90,19 @@ public class SoccerGameplay extends SoccerModel {
             @Override
             protected Void doInBackground(final Void... params) {
                 scores[player]++;
+                facade.refreshScores();
+
                 Log.d(GOAL_TAG, "PLayer " + player + " scored! result: " + scores[0] + ":" + scores[1]);
 
                 sleepFor(AFTER_GOAL_WAIT);
-
                 reset();
-
-                setActive((player + 1) % 2);
-
-                facade.refreshScores();
+                //setActive((player + 1) % 2); OVO PRAVI PROBLEM!!
 
                 setResponsiveness();
                 return null;
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        //*/
     }
 
     public synchronized boolean push(final Vector speed) {

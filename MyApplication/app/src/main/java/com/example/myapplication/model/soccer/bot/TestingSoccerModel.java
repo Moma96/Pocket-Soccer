@@ -13,15 +13,15 @@ public class TestingSoccerModel extends SoccerModel {
         SoccerModel soccer = genUnit.getGen().getSoccer();
 
         setParameters(soccer.getX(), soccer.getY(), soccer.getWidth(), soccer.getHeight());
-        field = new TestingField(soccer.getX(), soccer.getY(), soccer.getWidth(), soccer.getHeight(), genUnit, this);
+        field = new TestingField(soccer.getX(), soccer.getY(), soccer.getWidth(), soccer.getHeight(), soccer.getField().getFrictionCoefficient(), genUnit, this);
         setGoals();
 
-        ball = new TestingBall(soccer.getBall(), field, this);
+        ball = new TestingBall(soccer.getBall(), field, this); /// da li je dobro ovo?
 
         players = new Player[2][3];
         for (int p = 0; p < 2; p++) {
             for (int i = 0; i < 3; i++)
-                players[p][i] = new TestingPlayer(soccer.getPlayers()[p][i], field);
+                players[p][i] = new TestingPlayer(soccer.getPlayers()[p][i], field); // da li je dobro ovo?
         }
         this.genUnit = genUnit;
     }
