@@ -29,7 +29,7 @@ public class TestingSoccerModel extends SoccerModel {
     @Override
     public void score(int player) {
         terminate();
-        genUnit.finished(player, field.getTime());
+        genUnit.finished(player, (int)field.getTime());     ////////////////////////////////////////////////// PAZI!!!!
     }
 
     @Override
@@ -40,6 +40,6 @@ public class TestingSoccerModel extends SoccerModel {
 
     @Override
     public void allStopped() {
-        genUnit.terminated(field.getTime());
+        genUnit.terminated((int)field.getTime());    ///////////////////////////////////////////////// PAZI!!!!
     }
 }

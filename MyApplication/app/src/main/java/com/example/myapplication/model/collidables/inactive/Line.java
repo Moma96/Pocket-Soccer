@@ -61,4 +61,9 @@ public class Line extends InactiveObject {
         }
         active.setSpeed(new_speed);
     }
+
+    @Override
+    public double nextCollisionTime(Circle circle) {
+        return 0;
+    }
 }

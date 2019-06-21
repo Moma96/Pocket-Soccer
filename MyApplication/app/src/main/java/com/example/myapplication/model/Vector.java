@@ -72,4 +72,8 @@ public class Vector {
         x *= coefficient;
         y *= coefficient;
     }
+
+    public String toString() {
+        return "(" + x + "," + y + ")";
+    }
 }

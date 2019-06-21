@@ -8,4 +8,6 @@ public interface Collidable {
 
     void collisionUpdateSpeed(Circle circle);
 
+    double nextCollisionTime(Circle circle);
+
 }

@@ -41,6 +41,11 @@ public class GoalPost extends InactiveObject {
         else line.collisionUpdateSpeed(active);
     }
 
+    @Override
+    public double nextCollisionTime(Circle circle) {
+        return 0;
+    }
+
     public String toString() {
         return direction + " GoalPost " + id;
     }

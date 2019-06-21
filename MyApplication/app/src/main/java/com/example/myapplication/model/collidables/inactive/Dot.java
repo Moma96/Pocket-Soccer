@@ -36,6 +36,12 @@ public class Dot extends InactiveObject {
         ));
     }
 
+    @Override
+    public double nextCollisionTime(Circle circle) {
+        return 0;
+    }
+
+
     public String toString() {
         return "Dot " + id;
     }

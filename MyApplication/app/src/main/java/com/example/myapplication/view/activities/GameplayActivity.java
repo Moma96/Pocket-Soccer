@@ -33,7 +33,7 @@ public class GameplayActivity extends AppCompatActivity {
         final double friction = 0.01;
         final double gamespeed = 1;
 
-        final boolean[] botplay = { true, true };
+        final boolean[] botplay = { false, false };
 
         int field = getResources().getIdentifier("field" + fieldimg, "drawable", getPackageName());
         background.setBackgroundResource(field);

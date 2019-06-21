@@ -18,7 +18,7 @@ public class TestingField extends SoccerField {
         if (getTime() >= genUnit.getGen().timeLimit()) {
 
             getSoccer().terminate();
-            genUnit.terminated(getTime());
+            genUnit.terminated((int)getTime()); ///////////////////////////////////////////////// PAZI!!!!
         }
     }
 }

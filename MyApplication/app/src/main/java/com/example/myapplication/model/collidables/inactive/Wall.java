@@ -67,6 +67,12 @@ public class Wall extends InactiveObject {
         active.setSpeed(new_speed);
     }
 
+    @Override
+    public double nextCollisionTime(Circle circle) {
+        return 0;
+    }
+
+
     public String toString() {
         return direction + " Wall " + id;
     }
