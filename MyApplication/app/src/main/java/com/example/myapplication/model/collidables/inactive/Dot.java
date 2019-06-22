@@ -40,7 +40,7 @@ public class Dot extends InactiveObject {
     public double nextCollisionTime(Circle circle) {
         double R = circle.getRadius();
         Vector deltaS = circle.getSpeed();
-        Vector deltaC = center.sub(circle.getCenter());
+        Vector deltaC = circle.getCenter().sub(center);
 
         double a = deltaS.getX()*deltaS.getX() + deltaS.getY()*deltaS.getY();
         double b = 2*(deltaC.getX()*deltaS.getX() + deltaC.getY()*deltaS.getY());
