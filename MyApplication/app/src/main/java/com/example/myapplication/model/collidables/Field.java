@@ -127,13 +127,30 @@ public abstract class Field {
         for (Circle circle : getCircles())
             circles[c++] = circle;
 
+        for (int i = 0; i < circles.length; i++) {
+            for (int j = i + 1; j < circles.length; j++) {
+                circles[i].collision(circles[j]);
+            }
+
+            for (InactiveObject inactive : getInactives()) {
+                circles[i].collision(inactive);
+            }
+
+        }
+
         for (int i = 0; i < circles.length - 1; i++) {
             for (int j = i + 1; j < circles.length; j++) {
                 if (circles[i].getDistance(circles[j]) <= circles[i].getCollisionZoneRadius() + circles[j].getCollisionZoneRadius() - (circles[i].getRadius() + circles[j].getRadius())) {
-                    ///////
-                    circles[i].collision(circles[j]);
-                    ///////
                     double ttimeSpeed = circles[i].nextCollisionTime(circles[j]);
+                    if (ttimeSpeed < timeSpeed) {
+                        timeSpeed = ttimeSpeed;
+                    }
+                }
+            }
+
+            for (InactiveObject inactive : getInactives()) {
+                if (inactive.getDistance(circles[i]) <= circles[i].getCollisionZoneRadius() - circles[i].getRadius()) {
+                    double ttimeSpeed = inactive.nextCollisionTime(circles[i]);
                     if (ttimeSpeed < timeSpeed) {
                         timeSpeed = ttimeSpeed;
                     }
@@ -141,7 +158,8 @@ public abstract class Field {
             }
         }
 
-        Log.d(STATE_TAG, "time speed in next round will be " + timeSpeed);
+
+        // Log.d(STATE_TAG, "time speed in next round will be " + timeSpeed);
     }
 
     public synchronized void checkStarted(@NotNull Circle circle) {
@@ -202,7 +220,7 @@ public abstract class Field {
         Log.d(BARRIER_TAG, "All stopped!");
     }
 
-    public synchronized HashSet<Circle> getMoving() {
-        return moving;
-    }
+    //public synchronized HashSet<Circle> getMoving() {
+      //  return moving;
+    //}
 }

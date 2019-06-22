@@ -3,6 +3,8 @@ package com.example.myapplication.model.collidables.inactive;
 import com.example.myapplication.model.Vector;
 import com.example.myapplication.model.collidables.active.Circle;
 
+import org.jetbrains.annotations.NotNull;
+
 public class Wall extends InactiveObject {
 
     public enum Direction { NORTH, SOUTH, WEST, EAST };
@@ -68,8 +70,33 @@ public class Wall extends InactiveObject {
     }
 
     @Override
-    public double nextCollisionTime(Circle circle) {
-        return 0;
+    public double nextCollisionTime(@NotNull Circle active) {
+        double distance = getDistance(active);
+        if (distance == Double.MAX_VALUE)
+            return 1;
+
+        double t = 1;
+        switch(direction) {
+            case EAST:
+            case WEST:
+                if (active.getSpeed().getX() > 0) {
+                    t = distance / active.getSpeed().getX();
+                } else {
+                    t = - distance / active.getSpeed().getX();
+                }
+                break;
+            case NORTH:
+            case SOUTH:
+                if (active.getSpeed().getY() > 0) {
+                    t = distance / active.getSpeed().getY();
+                } else {
+                    t = - distance / active.getSpeed().getY();
+                }
+                break;
+        }
+
+        if (t > 0 && t < 1) return t;
+        else return 1;
     }
 
 

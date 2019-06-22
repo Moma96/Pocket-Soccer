@@ -6,11 +6,13 @@ import com.example.myapplication.model.collidables.inactive.Dot;
 import com.example.myapplication.model.collidables.inactive.InactiveObject;
 import com.example.myapplication.model.collidables.inactive.Line;
 
+import org.jetbrains.annotations.NotNull;
+
 public class GoalPost extends InactiveObject {
 
-    Goal.Direction direction;
-    Line line;
-    Dot dot;
+    private Goal.Direction direction;
+    private Line line;
+    private Dot dot;
 
     public GoalPost(Goal.Direction direction, double x, double y, double length, Field field) {
         this.direction = direction;
@@ -34,16 +36,33 @@ public class GoalPost extends InactiveObject {
         return distance;
     }
 
-    @Override
+    /*@Override
     public void collisionUpdateSpeed(Circle active) {
         if (line.getDistance(active) == Double.MAX_VALUE)
             dot.collisionUpdateSpeed(active);
-        else line.collisionUpdateSpeed(active);
+        else
+            line.collisionUpdateSpeed(active);
+    }*/
+
+    @Override
+    public void collisionUpdateSpeed(Circle active) {
+        double distance = dot.getDistance(active);
+
+        if (distance >= -1.0E-13 && distance <= 1.0E-13)
+            dot.collisionUpdateSpeed(active);
+        else
+            line.collisionUpdateSpeed(active);
     }
 
     @Override
-    public double nextCollisionTime(Circle circle) {
-        return 0;
+    public double nextCollisionTime(@NotNull Circle active) {
+        double dotTime = dot.nextCollisionTime(active);
+        double lineTime = line.nextCollisionTime(active);
+
+        if (dotTime < lineTime)
+            return dotTime;
+        else
+            return lineTime;
     }
 
     public String toString() {

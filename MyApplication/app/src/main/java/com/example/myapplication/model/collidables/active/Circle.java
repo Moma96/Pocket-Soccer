@@ -21,7 +21,7 @@ public class Circle extends Active implements Collidable {
 
     public static final int MOVING_DELAY = 15; //15; //ms
     protected static final double MOVING_INCREMENT = 0.03; //0.03;
-    private static final double SPEED_ROUND_LIMIT = 0.005;
+    private static final double SPEED_ROUND_LIMIT = 0.01;
 
     protected double mass;
     protected Vector center;
@@ -212,7 +212,51 @@ public class Circle extends Active implements Collidable {
         return t;
     }
 
-    private void collision(@NotNull InactiveObject collided) {
+    /*private boolean checkCollisionProcessed(@NotNull Circle collided) {
+        if (collision_processed.contains(collided)) {
+            collision_processed.remove(collided);
+            return true;
+        }
+        collided.collision_processed.add(this);
+        return false;
+    }*/
+
+    public void collision(@NotNull Circle collided) {
+        synchronized (field) {
+
+            //if (checkCollisionProcessed(collided))
+              //  return;
+
+            double distance = collided.getDistance(this);
+            /*if (distance < -1.0E-13) {
+                int a;
+                a = 1;
+            }*/
+            if (distance >= -1.0E-13 && distance <= 1.0E-13) {
+
+                Log.d(COLLISION_TAG, this + " and " + collided + " collided");
+
+                Circle oldCollided = collided.getIdenticalNonInclusiveCopy();
+                this.collisionUpdateSpeed(collided);
+                oldCollided.collisionUpdateSpeed(this);
+
+            }
+        }
+    }
+
+    public void collision(@NotNull InactiveObject collided) {
+        synchronized (field) {
+            double distance = collided.getDistance(this);
+
+            if (distance >= -1.0E-13 && distance <= 1.0E-13) {
+
+                Log.d(COLLISION_TAG, this + " collided " + collided);
+                collided.collisionUpdateSpeed(this);
+            }
+        }
+    }
+
+    /*public void collision(@NotNull InactiveObject collided) {
         synchronized (field) {
             double distance = collided.getDistance(this);
             Double old_distance = collision_in_process.get(collided);
@@ -234,35 +278,7 @@ public class Circle extends Active implements Collidable {
                 }
             }
         }
-    }
-
-    private boolean checkCollisionProcessed(@NotNull Circle collided) {
-        if (collision_processed.contains(collided)) {
-            collision_processed.remove(collided);
-            return true;
-        }
-        collided.collision_processed.add(this);
-        return false;
-    }
-
-    public void collision(@NotNull Circle collided) {
-        synchronized (field) {
-
-            if (checkCollisionProcessed(collided))
-                return;
-
-            double distance = collided.getDistance(this);
-            if (distance >= -0.000000001 && distance <= 0.000000001) {
-
-                Log.d(COLLISION_TAG, this + " and " + collided + " collided");
-
-                Circle oldCollided = collided.getIdenticalNonInclusiveCopy();
-                this.collisionUpdateSpeed(collided);
-                oldCollided.collisionUpdateSpeed(this);
-
-            }
-        }
-    }
+    }*/
 
     @Override
     public synchronized void collisionUpdateSpeed(@NotNull Circle collided) {
@@ -276,18 +292,18 @@ public class Circle extends Active implements Collidable {
                 )
         ));
 
-        Log.d(COLLISION_TAG, collided + " speed after collision: " + collided.speed);
+        //Log.d(COLLISION_TAG, collided + " speed after collision: " + collided.speed);
 
     }
 
     private void move() {
-        Log.d(COLLISION_TAG, "speed before " + speed);
+        //Log.d(COLLISION_TAG, "speed before " + speed);
         synchronized (field) {
             setCenter(center.add(speed.mul(field.getTimeSpeed())));
-            setSpeed(speed.mul(1.0 - field.getFrictionCoefficient()*field.getTimeSpeed()));
-            Log.d(COLLISION_TAG, this + " moved");
+            //setSpeed(speed.mul(1.0 - field.getFrictionCoefficient()*field.getTimeSpeed()));
+            //Log.d(COLLISION_TAG, this + " moved");
         }
-        Log.d(COLLISION_TAG, "speed after " + speed);
+       // Log.d(COLLISION_TAG, "speed after " + speed);
     }
 
     protected void work() {}
@@ -311,9 +327,9 @@ public class Circle extends Active implements Collidable {
 
     private synchronized void checkSpeed() throws InterruptedException {
         if (speed.isZeroVector()) {
-            Log.d(COLLISION_TAG, this + " wait");
+            //Log.d(COLLISION_TAG, this + " wait");
             wait();
-            Log.d(COLLISION_TAG, this + " notified");
+           // Log.d(COLLISION_TAG, this + " notified");
         }
     }
 
@@ -321,7 +337,7 @@ public class Circle extends Active implements Collidable {
     protected void iterate() {
         try {
             checkSpeed();
-            checkCollision();
+            //checkCollision();
             if (!speed.isZeroVector()) {
                 move();
                 work();

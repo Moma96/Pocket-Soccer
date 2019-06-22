@@ -82,7 +82,7 @@ public class SoccerGameplay extends SoccerModel {
 
     public synchronized void score(final int player) {
         if (!responsive()) return;
-
+/*
         resetResponsiveness();
         resetSelection();
 

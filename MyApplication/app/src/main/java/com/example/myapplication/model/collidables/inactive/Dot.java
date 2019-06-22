@@ -38,7 +38,20 @@ public class Dot extends InactiveObject {
 
     @Override
     public double nextCollisionTime(Circle circle) {
-        return 0;
+        double R = circle.getRadius();
+        Vector deltaS = circle.getSpeed();
+        Vector deltaC = center.sub(circle.getCenter());
+
+        double a = deltaS.getX()*deltaS.getX() + deltaS.getY()*deltaS.getY();
+        double b = 2*(deltaC.getX()*deltaS.getX() + deltaC.getY()*deltaS.getY());
+        double c = deltaC.getX()*deltaC.getX() + deltaC.getY()*deltaC.getY() - R*R;
+        double d = b*b - 4*a*c;
+        if (d < 0 || a == 0) return 1;
+
+        double t = (-b - Math.sqrt(d))/(2*a);
+        if (t > 1 || t < 0) return 1;
+
+        return t;
     }
 
 

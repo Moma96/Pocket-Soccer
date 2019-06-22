@@ -3,6 +3,8 @@ package com.example.myapplication.model.collidables.inactive;
 import com.example.myapplication.model.Vector;
 import com.example.myapplication.model.collidables.active.Circle;
 
+import org.jetbrains.annotations.NotNull;
+
 public class Line extends InactiveObject {
 
     public enum Orientation { HORIZONTAL, VERTICAL };
@@ -63,7 +65,51 @@ public class Line extends InactiveObject {
     }
 
     @Override
-    public double nextCollisionTime(Circle circle) {
-        return 0;
+    public double nextCollisionTime(@NotNull Circle active) {
+        double distance; //= getDistance(active);
+        /*if (distance == Double.MAX_VALUE)               ///////OVO UOPSTE NE MORA DA ZNACI!!!!
+            return 1;*/
+
+        double t = 1;
+        switch (orientation) {
+            case VERTICAL:
+
+                if (active.getCenter().getY() - active.getSpeed().getY() < position.getY() + length
+                        && active.getCenter().getY() + active.getSpeed().getY() > position.getY()) {
+                    if (active.getCenter().getX() > position.getX()) {
+                        distance = active.getCenter().getX() - position.getX() - active.getRadius();
+                        t = distance / active.getSpeed().getX();
+                    } else {
+                        distance = position.getX() - active.getCenter().getX() - active.getRadius();
+                        t = - distance / active.getSpeed().getX();
+                    }
+                }
+                /*if (active.getSpeed().getX() > 0) {
+                    t = distance / active.getSpeed().getX();
+                } else {
+                    t = - distance / active.getSpeed().getX();
+                }*/
+                break;
+            case HORIZONTAL:
+                if (active.getCenter().getX() - active.getSpeed().getX() < position.getX() + length
+                        && active.getCenter().getX() + active.getSpeed().getX() > position.getX()) {
+                    if (active.getCenter().getY() > position.getY()) {
+                        distance = active.getCenter().getY() - position.getY() - active.getRadius();
+                        t = - distance / active.getSpeed().getY();
+                    } else {
+                        distance = position.getY() - active.getCenter().getY() - active.getRadius();
+                        t = distance / active.getSpeed().getY();
+                    }
+                }
+                /*if (active.getSpeed().getY() > 0) {
+                    t = distance / active.getSpeed().getY();
+                } else {
+                    t = - distance / active.getSpeed().getY();
+                }*/
+                break;
+        }
+
+        if (t > 0 && t < 1) return t;
+        else return 1;
     }
 }
