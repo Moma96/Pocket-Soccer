@@ -21,7 +21,6 @@ public class Circle extends Active implements Collidable {
 
     public static final int MOVING_DELAY = 15; //15; //ms
     protected static final double MOVING_INCREMENT = 0.03; //0.03;
-    private static final double SPEED_ROUND_LIMIT = 0.01;
 
     protected double mass;
     protected Vector center;
@@ -124,7 +123,11 @@ public class Circle extends Active implements Collidable {
                 friction = speed.invert();
                 friction.scaleIntensity(field.getFrictionCoefficient() * field.getTimeSpeed());
 
-                if (!speed.isZeroVector())
+                if (speed.getX() < field.DISTANCE_PRECISSION && speed.getX() > -field.DISTANCE_PRECISSION
+                 && speed.getY() < field.DISTANCE_PRECISSION && speed.getY() > -field.DISTANCE_PRECISSION)
+                    this.speed.clear();
+
+                if (!this.speed.isZeroVector())
                     notifyAll();
             }
         }
@@ -263,6 +266,7 @@ public class Circle extends Active implements Collidable {
     private void move() {
         synchronized (field) {
             setCenter(center.add(speed.mul(field.getTimeSpeed())));
+            friction.scaleIntensity(field.getFrictionCoefficient() * field.getTimeSpeed());
             setSpeed(speed.add(friction));
         }
     }
