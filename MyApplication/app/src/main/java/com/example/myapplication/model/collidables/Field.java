@@ -125,7 +125,7 @@ public abstract class Field {
     }
 
     private synchronized void checkCollisions() {
-        for (Circle circle: circles) {
+        for (Circle circle: barrier) {
             for (Collidable collidable: collidables) {
                 if (circle != collidable)
                     circle.collision(collidable);
@@ -135,13 +135,14 @@ public abstract class Field {
 
     private synchronized void calculateMinTime() {
         timeSpeed = 1;
-        for (Circle circle: circles) {
+        for (Circle circle: barrier) {
+            double stoppingTime = circle.stoppingTime();
+            if (stoppingTime < timeSpeed) timeSpeed = stoppingTime;
             for (Collidable collidable: collidables) {
                 if (circle != collidable) {
                     if (collidable.isClose(circle)) {
                         double ttimeSpeed = collidable.nextCollisionTime(circle);
-                        if (ttimeSpeed < timeSpeed)
-                            timeSpeed = ttimeSpeed;
+                        if (ttimeSpeed < timeSpeed) timeSpeed = ttimeSpeed;
                     }
                 }
             }

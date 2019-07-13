@@ -25,7 +25,10 @@ public class Circle extends Active implements Collidable {
 
     protected double mass;
     protected Vector center;
+
     protected Vector speed;
+    private Vector friction;
+
     protected int moving_delay;
 
     private double radius;
@@ -119,13 +122,19 @@ public class Circle extends Active implements Collidable {
         synchronized (field) {
             synchronized (this) {
                 this.speed = new Vector(speed);
-                if (speed.intensity() < SPEED_ROUND_LIMIT) {
+                friction = speed.invert();
+                friction.scaleIntensity(field.getFrictionCoefficient() * field.getTimeSpeed());
+
+                if (!speed.isZeroVector())
+                    notifyAll();
+
+                /*if (speed.intensity() < SPEED_ROUND_LIMIT) {
                     Log.d(COLLISION_TAG, "speed cleared, intensity was " + speed.intensity());
                     this.speed.clear();
                 } else {
                     //field.checkStarted(this);
                     notifyAll();
-                }
+                }*/
             }
         }
     }
@@ -268,17 +277,14 @@ public class Circle extends Active implements Collidable {
     private void move() {
         synchronized (field) {
             setCenter(center.add(speed.mul(field.getTimeSpeed())));
-            friction();
+            setSpeed(speed.add(friction));
         }
     }
 
-    private void friction() {
-        Vector friction = new Vector(speed);
-        friction.scaleIntensity(field.getFrictionCoefficient() * field.getTimeSpeed());
+    public double stoppingTime() {
         if (friction.intensity() > speed.intensity()) {
-            speed.clear();
-        } else
-            setSpeed(speed.sub(friction));
+            return speed.intensity() / friction.intensity();
+        } else return 1;
     }
 
     protected void work() {}
@@ -286,19 +292,6 @@ public class Circle extends Active implements Collidable {
     protected void delay() throws InterruptedException {
         sleep((int)((double)moving_delay*field.getTimeSpeed()));
     }
-
-    /*private void checkCollision() {
-        synchronized (field) {
-            for (InactiveObject inactive : field.getInactives()) {
-                collision(inactive);
-            }
-
-            for (Circle circle : field.getCircles()) {
-                if (this != circle)
-                    collision(circle);
-            }
-        }
-    }*/
 
     private synchronized void checkSpeed() throws InterruptedException {
         if (speed.isZeroVector()) {
