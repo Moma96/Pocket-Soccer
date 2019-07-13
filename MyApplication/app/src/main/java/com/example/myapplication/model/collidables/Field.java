@@ -14,7 +14,7 @@ import java.util.HashSet;
 
 public abstract class Field {
 
-    public static final double DISTANCE_PRECISSION = 1.0E-12;
+    public static final double DISTANCE_PRECISSION = 1.0E-11;
 
     private static final String BARRIER_TAG = "Barrier";
     private static final String STATE_TAG = "Circle state";
@@ -28,6 +28,7 @@ public abstract class Field {
 
     private ArrayList<InactiveObject> inactives = new ArrayList<>();
     private ArrayList<Circle> circles = new ArrayList<>();
+    private ArrayList<Collidable> collidables = new ArrayList<>();
 
     private HashSet<Circle> moving = new HashSet<>();
     private HashSet<Circle> barrier = new HashSet<>();
@@ -59,6 +60,7 @@ public abstract class Field {
     public synchronized void addCollidable(Collidable collidable) {
         if (collidable == null) return;
 
+        collidables.add(collidable);
         if (collidable instanceof Circle)
             circles.add((Circle) collidable);
         else if (collidable instanceof InactiveObject)
@@ -111,7 +113,7 @@ public abstract class Field {
             }
         }
 
-        checkStopped(circle);
+        //checkStopped(circle);
 
         if (barrier.size() == moving.size()) {
             /////
@@ -123,40 +125,23 @@ public abstract class Field {
     }
 
     private synchronized void checkCollisions() {
-        for (Circle circle1: circles) {
-            for (Circle circle2: circles) {
-                if (circle1 != circle2)
-                    circle1.collision(circle2);
+        for (Circle circle: circles) {
+            for (Collidable collidable: collidables) {
+                if (circle != collidable)
+                    circle.collision(collidable);
             }
-
-            for (InactiveObject inactive : getInactives()) {
-                circle1.collision(inactive);
-            }
-
         }
     }
 
     private synchronized void calculateMinTime() {
-
         timeSpeed = 1;
-
-        for (Circle circle1: circles) {
-            for (Circle circle2: circles) {
-                if (circle1 != circle2) {
-                    if (circle1.isClose(circle2)) {
-                        double ttimeSpeed = circle1.nextCollisionTime(circle2);
-                        if (ttimeSpeed < timeSpeed) {
+        for (Circle circle: circles) {
+            for (Collidable collidable: collidables) {
+                if (circle != collidable) {
+                    if (collidable.isClose(circle)) {
+                        double ttimeSpeed = collidable.nextCollisionTime(circle);
+                        if (ttimeSpeed < timeSpeed)
                             timeSpeed = ttimeSpeed;
-                        }
-                    }
-                }
-            }
-
-            for (InactiveObject inactive : getInactives()) {
-                if (inactive.isClose(circle1)) {
-                    double ttimeSpeed = inactive.nextCollisionTime(circle1);
-                    if (ttimeSpeed < timeSpeed) {
-                        timeSpeed = ttimeSpeed;
                     }
                 }
             }
@@ -167,16 +152,15 @@ public abstract class Field {
     }
 
     public synchronized void checkStarted(@NotNull Circle circle) {
-        synchronized (circle) {
-            if (!circle.getSpeed().isZeroVector() && circles.contains(circle) && !moving.contains(circle)) {
-                moving.add(circle);
-                Log.d(BARRIER_TAG, circle + " entered moving");
-                Log.d(STATE_TAG, circle + " is moving");
-            }
+        if (!circle.getSpeed().isZeroVector() && !moving.contains(circle)) {
+            moving.add(circle);
+
+            Log.d(BARRIER_TAG, circle + " entered moving");
+            Log.d(STATE_TAG, circle + " is moving");
         }
     }
 
-    private synchronized void checkStopped(@NotNull Circle circle) {
+    public synchronized void checkStopped(@NotNull Circle circle) {
         if (circle.getSpeed().isZeroVector()) {
             if (moving.contains(circle)) {
                 moving.remove(circle);

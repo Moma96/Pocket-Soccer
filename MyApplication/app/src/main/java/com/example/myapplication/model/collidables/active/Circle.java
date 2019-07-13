@@ -123,7 +123,7 @@ public class Circle extends Active implements Collidable {
                     Log.d(COLLISION_TAG, "speed cleared, intensity was " + speed.intensity());
                     this.speed.clear();
                 } else {
-                    field.checkStarted(this);
+                    //field.checkStarted(this);
                     notifyAll();
                 }
             }
@@ -268,8 +268,17 @@ public class Circle extends Active implements Collidable {
     private void move() {
         synchronized (field) {
             setCenter(center.add(speed.mul(field.getTimeSpeed())));
-            setSpeed(speed.mul(1.0 - field.getFrictionCoefficient()*field.getTimeSpeed()));
+            friction();
         }
+    }
+
+    private void friction() {
+        Vector friction = new Vector(speed);
+        friction.scaleIntensity(field.getFrictionCoefficient() * field.getTimeSpeed());
+        if (friction.intensity() > speed.intensity()) {
+            speed.clear();
+        } else
+            setSpeed(speed.sub(friction));
     }
 
     protected void work() {}
@@ -300,8 +309,10 @@ public class Circle extends Active implements Collidable {
     @Override
     protected void iterate() {
         try {
+            field.checkStopped(this);
             field.barrier(this);
             checkSpeed();
+            field.checkStarted(this);
             //checkCollision();
             if (!speed.isZeroVector()) {
                 move();

@@ -30,7 +30,7 @@ public class GameplayActivity extends AppCompatActivity {
         final int[] teamsimg = { 0, 1 };
         final int fieldimg = 4;
 
-        final double friction = 0.01;
+        final double friction = 0.1;
         final double gamespeed = 1;
 
         final boolean[] botplay = { false, false };
