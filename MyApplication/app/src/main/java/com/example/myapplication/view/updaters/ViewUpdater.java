@@ -23,7 +23,7 @@ import java.util.HashMap;
 
 public class ViewUpdater extends Active {
 
-    private static final int FPS = 60;
+   // private static final int FPS = 60;
     private static final String STATE_TAG = "View updater";
 
     private GameplayActivity gameplay;
@@ -212,8 +212,11 @@ public class ViewUpdater extends Active {
     protected void iterate() {
         try {
             //waitMoving();
+            //sleep( 1000 / FPS);
+            sleep(15);
+            //((int)(15.0*soccer.getField().getTimeSpeed()));
             refresh();
-            sleep( 1000 / FPS);
+
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

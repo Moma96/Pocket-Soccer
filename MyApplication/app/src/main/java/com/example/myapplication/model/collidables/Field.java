@@ -11,9 +11,10 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 
 public abstract class Field {
+
+    public static final double DISTANCE_PRECISSION = 1.0E-12;
 
     private static final String BARRIER_TAG = "Barrier";
     private static final String STATE_TAG = "Circle state";
@@ -114,43 +115,46 @@ public abstract class Field {
 
         if (barrier.size() == moving.size()) {
             /////
+            checkCollisions();
             calculateMinTime();
             /////
             barrierRelease();
         }
     }
 
+    private synchronized void checkCollisions() {
+        for (Circle circle1: circles) {
+            for (Circle circle2: circles) {
+                if (circle1 != circle2)
+                    circle1.collision(circle2);
+            }
+
+            for (InactiveObject inactive : getInactives()) {
+                circle1.collision(inactive);
+            }
+
+        }
+    }
+
     private synchronized void calculateMinTime() {
+
         timeSpeed = 1;
-        Circle[] circles = new Circle[getCircles().size()];
-        int c = 0;
-        for (Circle circle : getCircles())
-            circles[c++] = circle;
 
-        for (int i = 0; i < circles.length; i++) {
-            for (int j = i + 1; j < circles.length; j++) {
-                circles[i].collision(circles[j]);
-            }
-
-            for (InactiveObject inactive : getInactives()) {
-                circles[i].collision(inactive);
-            }
-
-        }
-
-        for (int i = 0; i < circles.length - 1; i++) {
-            for (int j = i + 1; j < circles.length; j++) {
-                if (circles[i].getDistance(circles[j]) <= circles[i].getCollisionZoneRadius() + circles[j].getCollisionZoneRadius() - (circles[i].getRadius() + circles[j].getRadius())) {
-                    double ttimeSpeed = circles[i].nextCollisionTime(circles[j]);
-                    if (ttimeSpeed < timeSpeed) {
-                        timeSpeed = ttimeSpeed;
+        for (Circle circle1: circles) {
+            for (Circle circle2: circles) {
+                if (circle1 != circle2) {
+                    if (circle1.isClose(circle2)) {
+                        double ttimeSpeed = circle1.nextCollisionTime(circle2);
+                        if (ttimeSpeed < timeSpeed) {
+                            timeSpeed = ttimeSpeed;
+                        }
                     }
                 }
             }
 
             for (InactiveObject inactive : getInactives()) {
-                if (inactive.getDistance(circles[i]) <= circles[i].getCollisionZoneRadius() - circles[i].getRadius()) {
-                    double ttimeSpeed = inactive.nextCollisionTime(circles[i]);
+                if (inactive.isClose(circle1)) {
+                    double ttimeSpeed = inactive.nextCollisionTime(circle1);
                     if (ttimeSpeed < timeSpeed) {
                         timeSpeed = ttimeSpeed;
                     }
@@ -158,8 +162,8 @@ public abstract class Field {
             }
         }
 
-
-        // Log.d(STATE_TAG, "time speed in next round will be " + timeSpeed);
+        if (timeSpeed < 1)
+            Log.d(STATE_TAG, "time speed in next round will be " + timeSpeed);
     }
 
     public synchronized void checkStarted(@NotNull Circle circle) {
@@ -190,7 +194,7 @@ public abstract class Field {
     }
 
     public synchronized void barrierRelease() {
-        time++;
+        time += timeSpeed;
         Log.d(BARRIER_TAG, "Released, time: " + time);
         checkTime();
         barrier.clear();
@@ -219,8 +223,4 @@ public abstract class Field {
     protected void allStopped() {
         Log.d(BARRIER_TAG, "All stopped!");
     }
-
-    //public synchronized HashSet<Circle> getMoving() {
-      //  return moving;
-    //}
 }

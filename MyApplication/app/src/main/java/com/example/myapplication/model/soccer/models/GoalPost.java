@@ -25,7 +25,7 @@ public class GoalPost extends InactiveObject {
                 dot = new Dot(x + length, y);
                 break;
         }
-        field.addCollidable(this);
+        //field.addCollidable(this);
     }
 
     @Override
@@ -48,7 +48,7 @@ public class GoalPost extends InactiveObject {
     public void collisionUpdateSpeed(Circle active) {
         double distance = dot.getDistance(active);
 
-        if (distance >= -1.0E-13 && distance <= 1.0E-13)
+        if (distance >= -1.0E-12 && distance <= 1.0E-12)
             dot.collisionUpdateSpeed(active);
         else
             line.collisionUpdateSpeed(active);
