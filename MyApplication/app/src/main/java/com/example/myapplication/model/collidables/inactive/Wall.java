@@ -21,18 +21,9 @@ public class Wall extends InactiveObject {
         return direction;
     }
 
-    public void setDirection(Direction direction) {
-        this.direction = direction;
-    }
-
     public double getXY() {
         return xy;
     }
-
-    public void setXY(double xy) {
-        this.xy = xy;
-    }
-
 
     @Override
     public double getDistance(Circle active) {
@@ -99,7 +90,12 @@ public class Wall extends InactiveObject {
         else return 1;
     }
 
+    @Override
+    public boolean isClose(Circle circle) {
+        return getDistance(circle) <= circle.getCollisionZoneRadius() - circle.getRadius();
+    }
 
+    @Override
     public String toString() {
         return direction + " Wall " + id;
     }

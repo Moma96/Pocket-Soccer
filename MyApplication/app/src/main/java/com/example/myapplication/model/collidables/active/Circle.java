@@ -42,7 +42,7 @@ public class Circle extends Active implements Collidable {
     private int id;
 
     public Circle(double mass, double radius, double img_radius_coefficient, int moving_delay, Vector center, Vector speed, @NotNull Field field) {
-        this(mass, radius, img_radius_coefficient, moving_delay, center, speed, field, true, null);
+        this(mass, radius, img_radius_coefficient, moving_delay, center, speed, field, true);
     }
 
     public Circle(@NotNull Circle circle) {
@@ -58,10 +58,10 @@ public class Circle extends Active implements Collidable {
     }
 
     protected Circle(@NotNull Circle circle, boolean include) {
-        this(circle.mass, circle.radius, circle.img_radius_coefficient, circle.moving_delay, circle.center, circle.speed, circle.field, include, circle.collision_processed);
+        this(circle.mass, circle.radius, circle.img_radius_coefficient, circle.moving_delay, circle.center, circle.speed, circle.field, include);
     }
 
-    protected Circle(double mass, double radius, double img_radius_coefficient, int moving_delay, @NotNull Vector center, Vector speed, @NotNull Field field, boolean include, HashSet<Circle> collision_processed) {
+    protected Circle(double mass, double radius, double img_radius_coefficient, int moving_delay, @NotNull Vector center, Vector speed, @NotNull Field field, boolean include) {
         setField(field);
         setMass(mass);
         this.img_radius_coefficient = img_radius_coefficient;
@@ -72,8 +72,7 @@ public class Circle extends Active implements Collidable {
         if (include) {
             field.addCollidable(this);
         }
-        this.collision_processed = (collision_processed != null) ? new HashSet<>(collision_processed) : new HashSet<Circle>();
-
+        this.collision_processed = new HashSet<>();
         setSpeed(speed);
     }
 
@@ -127,14 +126,6 @@ public class Circle extends Active implements Collidable {
 
                 if (!speed.isZeroVector())
                     notifyAll();
-
-                /*if (speed.intensity() < SPEED_ROUND_LIMIT) {
-                    Log.d(COLLISION_TAG, "speed cleared, intensity was " + speed.intensity());
-                    this.speed.clear();
-                } else {
-                    //field.checkStarted(this);
-                    notifyAll();
-                }*/
             }
         }
     }
@@ -160,11 +151,6 @@ public class Circle extends Active implements Collidable {
         return getDistance(dot) <= 0;
     }
 
-    @Override
-    public String toString() {
-        return "Circle " + getCircleId();
-    }
-
     public void draw(ImageView view) {
         if (view == null) return;
         FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) view.getLayoutParams();
@@ -175,13 +161,6 @@ public class Circle extends Active implements Collidable {
 
     protected Circle getNonInclusiveCopy() {
         return new Circle(this, false);
-    }
-
-    @Override
-    public double getDistance(@NotNull Circle circle) {
-        synchronized (field) {
-            return center.sub(circle.center).intensity() - (getRadius() + circle.getRadius());
-        }
     }
 
     public double getDistance(@NotNull Vector dot) {
@@ -198,6 +177,13 @@ public class Circle extends Active implements Collidable {
 
     public void clearSpeed() {
         setSpeed(new Vector(0, 0));
+    }
+
+    @Override
+    public double getDistance(@NotNull Circle circle) {
+        synchronized (field) {
+            return center.sub(circle.center).intensity() - (getRadius() + circle.getRadius());
+        }
     }
 
     @Override
@@ -315,5 +301,10 @@ public class Circle extends Active implements Collidable {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public String toString() {
+        return "Circle " + getCircleId();
     }
 }

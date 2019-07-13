@@ -67,7 +67,7 @@ public class Line extends InactiveObject {
     @Override
     public double nextCollisionTime(@NotNull Circle active) {
         double distance; //= getDistance(active);
-        /*if (distance == Double.MAX_VALUE)               ///////OVO UOPSTE NE MORA DA ZNACI!!!!
+        /*if (distance == Double.MAX_VALUE)               ///////OVO UOPSTE NE MORA DA ZNACI!!!! (nego isClose)
             return 1;*/
 
         double t = 1;
@@ -84,11 +84,6 @@ public class Line extends InactiveObject {
                         t = - distance / active.getSpeed().getX();
                     }
                 }
-                /*if (active.getSpeed().getX() > 0) {
-                    t = distance / active.getSpeed().getX();
-                } else {
-                    t = - distance / active.getSpeed().getX();
-                }*/
                 break;
             case HORIZONTAL:
                 if (active.getCenter().getX() - active.getSpeed().getX() < position.getX() + length
@@ -101,15 +96,38 @@ public class Line extends InactiveObject {
                         t = distance / active.getSpeed().getY();
                     }
                 }
-                /*if (active.getSpeed().getY() > 0) {
-                    t = distance / active.getSpeed().getY();
-                } else {
-                    t = - distance / active.getSpeed().getY();
-                }*/
                 break;
         }
 
         if (t > 0 && t < 1) return t;
         else return 1;
+    }
+
+    @Override
+    public boolean isClose(Circle active) {
+        if (active == null) return false;
+        double speedIntensity = active.getSpeed().intensity();
+
+        switch(orientation) {
+            case VERTICAL:
+                if (active.getCenter().getY() - speedIntensity < position.getY() + length
+                        && active.getCenter().getY() + speedIntensity > position.getY()) {
+                    if (active.getCenter().getX() > position.getX())
+                        return active.getCenter().getX() - position.getX() <= active.getCollisionZoneRadius();
+                    else
+                        return position.getX() - active.getCenter().getX() <= active.getCollisionZoneRadius();
+                }
+                break;
+            case HORIZONTAL:
+                if (active.getCenter().getX() - speedIntensity < position.getX() + length
+                        && active.getCenter().getX() + speedIntensity > position.getX()) {
+                    if (active.getCenter().getY() > position.getY())
+                        return active.getCenter().getY() - position.getY() <= active.getCollisionZoneRadius();
+                    else
+                        return position.getY() - active.getCenter().getY() <= active.getCollisionZoneRadius();
+                }
+                break;
+        }
+        return false;
     }
 }

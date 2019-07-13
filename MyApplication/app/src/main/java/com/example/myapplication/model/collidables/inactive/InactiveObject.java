@@ -22,11 +22,6 @@ public abstract class InactiveObject implements Collidable {
         collisionUpdateSpeed(circle);
     }
 
-    @Override
-    public boolean isClose(Circle circle) {                 /////////DISTRIBUTE THIS!!!!!!!!!!!!!!!!!!!!!!!!!
-        return getDistance(circle) <= circle.getCollisionZoneRadius() - circle.getRadius();
-    }
-
     public String toString() {
         return "InactiveObject " + id;
     }

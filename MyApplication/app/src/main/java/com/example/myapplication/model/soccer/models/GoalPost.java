@@ -13,8 +13,10 @@ public class GoalPost extends InactiveObject {
     private Goal.Direction direction;
     private Line line;
     private Dot dot;
+    private Field field;
 
     public GoalPost(Goal.Direction direction, double x, double y, double length, Field field) {
+        this.field = field;
         this.direction = direction;
         this.line = new Line(Line.Orientation.HORIZONTAL, x, y, length);
         switch (direction) {
@@ -25,7 +27,7 @@ public class GoalPost extends InactiveObject {
                 dot = new Dot(x + length, y);
                 break;
         }
-        //field.addCollidable(this);
+        field.addCollidable(this);
     }
 
     @Override
@@ -36,19 +38,11 @@ public class GoalPost extends InactiveObject {
         return distance;
     }
 
-    /*@Override
-    public void collisionUpdateSpeed(Circle active) {
-        if (line.getDistance(active) == Double.MAX_VALUE)
-            dot.collisionUpdateSpeed(active);
-        else
-            line.collisionUpdateSpeed(active);
-    }*/
-
     @Override
     public void collisionUpdateSpeed(Circle active) {
         double distance = dot.getDistance(active);
 
-        if (distance >= -1.0E-12 && distance <= 1.0E-12)
+        if (distance >= -field.DISTANCE_PRECISSION && distance <= field.DISTANCE_PRECISSION)
             dot.collisionUpdateSpeed(active);
         else
             line.collisionUpdateSpeed(active);
@@ -63,6 +57,14 @@ public class GoalPost extends InactiveObject {
             return dotTime;
         else
             return lineTime;
+    }
+
+    @Override
+    public boolean isClose(Circle active) {
+        boolean dotClose = dot.isClose(active);
+        boolean lineClose = line.isClose(active);
+
+        return dotClose || lineClose;
     }
 
     public String toString() {

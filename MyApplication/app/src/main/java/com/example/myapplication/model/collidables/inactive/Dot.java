@@ -54,6 +54,10 @@ public class Dot extends InactiveObject {
         return t;
     }
 
+    @Override
+    public boolean isClose(Circle circle) {
+        return getDistance(circle) <= circle.getCollisionZoneRadius() - circle.getRadius();
+    }
 
     public String toString() {
         return "Dot " + id;
