@@ -1,6 +1,7 @@
 package com.example.myapplication.model.collidables.inactive;
 
 import com.example.myapplication.model.Vector;
+import com.example.myapplication.model.collidables.Field;
 import com.example.myapplication.model.collidables.active.Circle;
 
 import org.jetbrains.annotations.NotNull;
@@ -19,33 +20,67 @@ public class Line extends InactiveObject {
         this.length = length;
     }
 
-    public String toString() {
-        return "Line " + id;
+    private double getAxisDistance(@NotNull Circle active) {
+        switch (orientation) {
+            case VERTICAL:
+                if (active.getCenter().getX() > position.getX())
+                    return active.getCenter().getX() - position.getX() - active.getRadius();
+                else
+                    return position.getX() - active.getCenter().getX() - active.getRadius();
+            case HORIZONTAL:
+                if (active.getCenter().getY() > position.getY())
+                    return active.getCenter().getY() - position.getY() - active.getRadius();
+                else
+                    return position.getY() - active.getCenter().getY() - active.getRadius();
+        }
+        return Double.MAX_VALUE;
     }
 
     @Override
-    public double getDistance(Circle active) {
-        if (active == null) return 1;
+    public double getDistance(@NotNull Circle active)  {
+        double distance = getAxisDistance(active);
 
-        switch(orientation) {
+        if ((orientation.equals(Orientation.VERTICAL)
+                && active.getCenter().getY() < position.getY() + length && active.getCenter().getY() > position.getY())
+            ||
+            (orientation.equals(Orientation.HORIZONTAL)
+                && active.getCenter().getX() < position.getX() + length && active.getCenter().getX() > position.getX())) {
+            return distance;
+        } else
+            return Double.MAX_VALUE;
+    }
+
+    @Override
+    public double nextCollisionTime(@NotNull Circle active) {
+        double distance = getAxisDistance(active);
+        double t = 1;
+        switch (orientation) {
             case VERTICAL:
-                if (active.getCenter().getY() < position.getY() + length && active.getCenter().getY() > position.getY()) {
-                    if (active.getCenter().getX() > position.getX())
-                        return active.getCenter().getX() - position.getX() - active.getRadius();
-                    else
-                        return position.getX() - active.getCenter().getX() - active.getRadius();
+
+                if (active.getCenter().getY() - active.getSpeed().getY() < position.getY() + length
+                        && active.getCenter().getY() + active.getSpeed().getY() > position.getY()) {
+                    if (active.getCenter().getX() > position.getX()) {
+                        t = distance / active.getSpeed().getX();
+                    } else {
+                        t = - distance / active.getSpeed().getX();
+                    }
                 }
                 break;
             case HORIZONTAL:
-                if (active.getCenter().getX() < position.getX() + length && active.getCenter().getX() > position.getX()) {
-                    if (active.getCenter().getY() > position.getY())
-                        return active.getCenter().getY() - position.getY() - active.getRadius();
-                    else
-                        return position.getY() - active.getCenter().getY() - active.getRadius();
+                if (active.getCenter().getX() - active.getSpeed().getX() < position.getX() + length
+                        && active.getCenter().getX() + active.getSpeed().getX() > position.getX()) {
+                    if (active.getCenter().getY() > position.getY()) {
+                        t = - distance / active.getSpeed().getY();
+                    } else {
+                        t = distance / active.getSpeed().getY();
+                    }
                 }
                 break;
         }
-        return Double.MAX_VALUE;
+
+        return t;
+        //if (t > Field.DISTANCE_PRECISSION && t < 1 - Field.DISTANCE_PRECISSION) return t;
+        //else return 1;
     }
 
     @Override
@@ -64,12 +99,9 @@ public class Line extends InactiveObject {
         active.setSpeed(new_speed);
     }
 
-    @Override
+    /*@Override
     public double nextCollisionTime(@NotNull Circle active) {
-        double distance; //= getDistance(active);
-        /*if (distance == Double.MAX_VALUE)               ///////OVO UOPSTE NE MORA DA ZNACI!!!! (nego isClose)
-            return 1;*/
-
+        double distance = 1;
         double t = 1;
         switch (orientation) {
             case VERTICAL:
@@ -101,7 +133,7 @@ public class Line extends InactiveObject {
 
         if (t > 0 && t < 1) return t;
         else return 1;
-    }
+    }*/
 
     @Override
     public boolean isClose(Circle active) {
@@ -129,5 +161,9 @@ public class Line extends InactiveObject {
                 break;
         }
         return false;
+    }
+
+    public String toString() {
+        return "Line " + id;
     }
 }

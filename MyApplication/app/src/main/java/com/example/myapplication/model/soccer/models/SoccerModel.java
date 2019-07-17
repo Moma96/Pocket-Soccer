@@ -25,7 +25,7 @@ public abstract class SoccerModel {
     private Goal[] goals = new Goal[2];
 
     protected Ball ball;
-    protected Player[][] players;// = new Player[2][3];
+    protected Player[][] players;
 
     private double x;
     private double y;
@@ -38,8 +38,14 @@ public abstract class SoccerModel {
         setParameters(x, y, width, height);
         field = new SoccerField(x, y, width, height, friction, this);
         setGoals();
+/*
+        ball = new Ball(new Vector(x + width*BALL_X, y + height*BALL_Y), 1000, this);
 
+        players = new Player[2][1];
+        players[0][0] = new Player(new Vector(x + width/4, y + height/2), 1000, field);
+        players[1][0] = new Player(new Vector(x + 3*(width/4), y + height/2), 1000, field);
 
+ */
         ball = new Ball(new Vector(x + width*BALL_X, y + height*BALL_Y), (int)(Circle.MOVING_DELAY/gamespeed), this);
 
         players = new Player[2][3];

@@ -1,12 +1,8 @@
 package com.example.myapplication.model.soccer.models;
 
-import android.util.Log;
-
 import com.example.myapplication.model.collidables.Field;
 import com.example.myapplication.model.collidables.active.Circle;
 import com.example.myapplication.model.Vector;
-import com.example.myapplication.model.soccer.SoccerFacade;
-import com.example.myapplication.model.soccer.bot.TestingSoccerModel;
 
 import org.jetbrains.annotations.NotNull;
 

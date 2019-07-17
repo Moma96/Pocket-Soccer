@@ -59,6 +59,11 @@ public class Vector {
         y = 0;
     }
 
+    public boolean inRange(double lower, double higher) {
+        return x < higher && x > -lower
+                && y < higher && y > -lower;
+    }
+
     public double dotProduct(Vector v) {
         return x*v.x + y*v.y;
     }

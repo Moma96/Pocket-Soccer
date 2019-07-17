@@ -26,9 +26,9 @@ public abstract class Field {
     protected Wall walls[];
     protected final double friction;
 
+    private ArrayList<Collidable> collidables = new ArrayList<>();
     private ArrayList<InactiveObject> inactives = new ArrayList<>();
     private ArrayList<Circle> circles = new ArrayList<>();
-    private ArrayList<Collidable> collidables = new ArrayList<>();
 
     private HashSet<Circle> moving = new HashSet<>();
     private HashSet<Circle> barrier = new HashSet<>();
@@ -97,31 +97,27 @@ public abstract class Field {
 
     public synchronized void barrier(@NotNull Circle circle) throws InterruptedException {
 
-        if (!circle.getSpeed().isZeroVector()) {
-            if (!moving.contains(circle)) {
-                Log.e(BARRIER_TAG, "Barrier doesn't contain " + circle + ", barrier: " + barrier);
-                return;
-            }
-
-            Log.d(BARRIER_TAG, "E " + circle); //+ " time: " + time);
-            barrier.add(circle);
-            Log.d(BARRIER_TAG, "barrier: " + barrier + " moving: " + moving);
-            if (barrier.size() != moving.size()) {
-                double oldTime = time;
-                while (oldTime == time)
-                    wait();
-            }
+        if (!moving.contains(circle)) {
+            Log.e(BARRIER_TAG, "Barrier doesn't contain " + circle + ", barrier: " + barrier);
+            return;
         }
 
-        //checkStopped(circle);
+        Log.d(BARRIER_TAG,  circle + " entered barrier"); //+ " time: " + time);
+        barrier.add(circle);
+        Log.d(BARRIER_TAG, "barrier: " + barrier + " moving: " + moving);
 
-        if (barrier.size() == moving.size()) {
-            /////
+        if (barrier.size() < moving.size()) {
+            double oldTime = time;
+            while (oldTime == time)
+                wait();
+        } else if (barrier.size() == moving.size()) {
+
             checkCollisions();
             calculateMinTime();
-            /////
+
             barrierRelease();
-        }
+
+        } else Log.e(BARRIER_TAG, "Barrier size bigger than moving size");
     }
 
     private synchronized void checkCollisions() {
@@ -133,19 +129,24 @@ public abstract class Field {
         }
     }
 
+    private boolean timeSpeedInRange(double ts) {
+        return ts < 1 - DISTANCE_PRECISSION && ts > DISTANCE_PRECISSION;
+    }
+
     private synchronized void calculateMinTime() {
         timeSpeed = 1;
-        for (Circle circle: barrier) {
+        for (Circle circle: moving) {
 
-            double stoppingTime = circle.stoppingTime();
-            if (stoppingTime < timeSpeed) timeSpeed = stoppingTime;
+            double st = circle.stoppingTime();
+            if (st < timeSpeed) timeSpeed = st;
 
             for (Collidable collidable: collidables) {
                 if (circle != collidable) {
                     if (collidable.isClose(circle)) {
 
-                        double ttimeSpeed = collidable.nextCollisionTime(circle);
-                        if (ttimeSpeed < timeSpeed) timeSpeed = ttimeSpeed;
+                        double ts = collidable.nextCollisionTime(circle);
+                        if (timeSpeedInRange(ts) && ts < timeSpeed)
+                            timeSpeed = ts;
 
                     }
                 }
@@ -153,11 +154,11 @@ public abstract class Field {
         }
 
         if (timeSpeed < 1)
-            Log.d(STATE_TAG, "time speed in next round will be " + timeSpeed);
+            Log.e(BARRIER_TAG, "time speed in next round will be " + timeSpeed);
     }
 
     public synchronized void checkStarted(@NotNull Circle circle) {
-        if (!circle.getSpeed().isZeroVector() && !moving.contains(circle)) {
+        if (!circle.getSpeed().isZeroVector() && !moving.contains(circle) && circles.contains(circle)) {
             moving.add(circle);
 
             Log.d(BARRIER_TAG, circle + " entered moving");
@@ -171,6 +172,7 @@ public abstract class Field {
                 moving.remove(circle);
                 if (barrier.contains(circle))
                     barrier.remove(circle);
+
                 Log.d(BARRIER_TAG, circle + " left moving");
                 Log.d(STATE_TAG, circle + " stopped");
 

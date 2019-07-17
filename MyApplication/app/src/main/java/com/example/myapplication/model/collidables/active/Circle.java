@@ -8,11 +8,9 @@ import com.example.myapplication.model.Active;
 import com.example.myapplication.model.Vector;
 import com.example.myapplication.model.collidables.Collidable;
 import com.example.myapplication.model.collidables.Field;
-import com.example.myapplication.model.collidables.inactive.InactiveObject;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
 import java.util.HashSet;
 
 public class Circle extends Active implements Collidable {
@@ -121,14 +119,15 @@ public class Circle extends Active implements Collidable {
             synchronized (this) {
                 this.speed = new Vector(speed);
                 friction = speed.invert();
-                friction.scaleIntensity(field.getFrictionCoefficient() * field.getTimeSpeed());
+                friction.scaleIntensity(field.getFrictionCoefficient());
 
-                if (speed.getX() < field.DISTANCE_PRECISSION && speed.getX() > -field.DISTANCE_PRECISSION
-                 && speed.getY() < field.DISTANCE_PRECISSION && speed.getY() > -field.DISTANCE_PRECISSION)
+                if (this.speed.inRange(-field.DISTANCE_PRECISSION, field.DISTANCE_PRECISSION)) {
                     this.speed.clear();
-
-                if (!this.speed.isZeroVector())
+                    field.checkStopped(this);
+                } else {
+                    field.checkStarted(this);
                     notifyAll();
+                }
             }
         }
     }
@@ -199,12 +198,17 @@ public class Circle extends Active implements Collidable {
         double b = 2*(deltaC.getX()*deltaS.getX() + deltaC.getY()*deltaS.getY());
         double c = deltaC.getX()*deltaC.getX() + deltaC.getY()*deltaC.getY() - R*R;
         double d = b*b - 4*a*c;
-        if (d < 0 || a == 0) return 1;
+        if (d < 0 || a == 0)
+            return Double.MAX_VALUE;
 
         double t = (-b - Math.sqrt(d))/(2*a);
-        if (t > 1 || t < 0) return 1;
 
         return t;
+        /*
+        if (t < 1 - Field.DISTANCE_PRECISSION && t > Field.DISTANCE_PRECISSION)
+            return t;
+        else
+            return 1;*/
     }
 
     @Override
@@ -238,12 +242,12 @@ public class Circle extends Active implements Collidable {
             double distance = collided.getDistance(this);
             if (distance >= -Field.DISTANCE_PRECISSION && distance <= Field.DISTANCE_PRECISSION) {
 
-                Log.d(COLLISION_TAG, this + " and " + collided + " collided");
+                Log.e(COLLISION_TAG, this + " and " + collided + " collided");
 
                 collided.collisionHappened(this);
 
             } else if (distance < -Field.DISTANCE_PRECISSION) {
-                Log.e(COLLISION_TAG, this + " went through " + collided);
+                Log.e(COLLISION_TAG, this + " went through " + collided + " distance: " + distance);
             }
         }
     }
@@ -266,8 +270,9 @@ public class Circle extends Active implements Collidable {
     private void move() {
         synchronized (field) {
             setCenter(center.add(speed.mul(field.getTimeSpeed())));
-            friction.scaleIntensity(field.getFrictionCoefficient() * field.getTimeSpeed());
-            setSpeed(speed.add(friction));
+
+            //friction.mul(field.getTimeSpeed());
+            //setSpeed(speed.add(friction));
         }
     }
 
@@ -292,16 +297,16 @@ public class Circle extends Active implements Collidable {
     @Override
     protected void iterate() {
         try {
-            field.checkStopped(this);
-            field.barrier(this);
+            //field.checkStopped(this);
             checkSpeed();
-            field.checkStarted(this);
+            field.barrier(this);
             //checkCollision();
             if (!speed.isZeroVector()) {
                 move();
                 work();
                 delay();
             }
+
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

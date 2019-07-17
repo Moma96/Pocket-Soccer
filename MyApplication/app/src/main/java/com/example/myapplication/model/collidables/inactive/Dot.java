@@ -1,6 +1,7 @@
 package com.example.myapplication.model.collidables.inactive;
 
 import com.example.myapplication.model.Vector;
+import com.example.myapplication.model.collidables.Field;
 import com.example.myapplication.model.collidables.active.Circle;
 
 public class Dot extends InactiveObject {
@@ -49,7 +50,7 @@ public class Dot extends InactiveObject {
         if (d < 0 || a == 0) return 1;
 
         double t = (-b - Math.sqrt(d))/(2*a);
-        if (t > 1 || t < 0) return 1;
+        ///if (t > 1 + Field.DISTANCE_PRECISSION || t < -Field.DISTANCE_PRECISSION) return 1;
 
         return t;
     }

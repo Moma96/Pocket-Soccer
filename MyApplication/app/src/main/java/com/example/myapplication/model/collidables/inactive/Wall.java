@@ -1,6 +1,7 @@
 package com.example.myapplication.model.collidables.inactive;
 
 import com.example.myapplication.model.Vector;
+import com.example.myapplication.model.collidables.Field;
 import com.example.myapplication.model.collidables.active.Circle;
 
 import org.jetbrains.annotations.NotNull;
@@ -73,7 +74,7 @@ public class Wall extends InactiveObject {
                 if (active.getSpeed().getX() > 0) {
                     t = distance / active.getSpeed().getX();
                 } else {
-                    t = - distance / active.getSpeed().getX();
+                    t = -distance / active.getSpeed().getX();
                 }
                 break;
             case NORTH:
@@ -81,13 +82,16 @@ public class Wall extends InactiveObject {
                 if (active.getSpeed().getY() > 0) {
                     t = distance / active.getSpeed().getY();
                 } else {
-                    t = - distance / active.getSpeed().getY();
+                    t = -distance / active.getSpeed().getY();
                 }
                 break;
         }
-
-        if (t > 0 && t < 1) return t;
-        else return 1;
+        return t;
+        /*
+        if (t > -Field.DISTANCE_PRECISSION && t < 1 + Field.DISTANCE_PRECISSION)
+            return t;
+        else
+            return 1;*/
     }
 
     @Override

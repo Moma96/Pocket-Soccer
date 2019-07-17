@@ -32,10 +32,22 @@ public class GoalPost extends InactiveObject {
 
     @Override
     public double getDistance(Circle active) {
-        double distance = line.getDistance(active);
+        /*double distance = line.getDistance(active);
         if (distance == Double.MAX_VALUE)
             distance = dot.getDistance(active);
-        return distance;
+        return distance;*/
+
+        double dotDist = dot.getDistance(active);
+        double lineDist = line.getDistance(active);
+
+        /*if (dotDist < -field.DISTANCE_PRECISSION || lineDist < -field.DISTANCE_PRECISSION ) {
+            int aaaaa = 1;
+        }*/
+
+        if (dotDist < lineDist)
+            return dotDist;
+        else
+            return lineDist;
     }
 
     @Override
