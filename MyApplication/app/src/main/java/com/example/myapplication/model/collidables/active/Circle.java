@@ -118,13 +118,14 @@ public class Circle extends Active implements Collidable {
         synchronized (field) {
             synchronized (this) {
                 this.speed = new Vector(speed);
-                friction = speed.invert();
-                friction.scaleIntensity(field.getFrictionCoefficient());
 
                 if (this.speed.inRange(-field.DISTANCE_PRECISSION, field.DISTANCE_PRECISSION)) {
                     this.speed.clear();
-                    //field.checkStopped(this);
+                    field.checkStopped(this);
                 } else {
+                    friction = speed.invert();
+                    friction.scaleIntensity(field.getFrictionCoefficient());
+
                     field.checkStarted(this);
                     notifyAll();
                 }
@@ -250,8 +251,6 @@ public class Circle extends Active implements Collidable {
     @Override
     public synchronized void collisionUpdateSpeed(@NotNull Circle collided) {
 
-        Log.d(COLLISION_TAG, collided + " speed before collision: " + collided.speed);
-
         collided.setSpeed(collided.speed.sub(
                 collided.center.sub(center).mul(
                         2 * mass / (collided.mass + mass) *
@@ -267,15 +266,17 @@ public class Circle extends Active implements Collidable {
             setCenter(center.add(speed.mul(field.getTimeSpeed())));
 
             //friction.mul(field.getTimeSpeed());
-            //friction.scaleIntensity(field.getFrictionCoefficient() * field.getTimeSpeed());
-            //setSpeed(speed.add(friction));
+            friction.scaleIntensity(field.getFrictionCoefficient() * field.getTimeSpeed());
+           // friction.mul(field.getTimeSpeed()); /// proveri zasto ovako ne radi
+            setSpeed(speed.add(friction));
         }
     }
 
     public double stoppingTime() {
         if (friction.intensity() > speed.intensity()) {
             return speed.intensity() / friction.intensity();
-        } else return 1;
+        } else
+            return 1;
     }
 
     protected void work() {}
@@ -293,8 +294,8 @@ public class Circle extends Active implements Collidable {
     @Override
     protected void iterate() {
         try {
-            field.barrier(this);
             checkSpeed();
+            field.barrier(this);
             //checkCollision();
             if (!speed.isZeroVector()) {
                 move();

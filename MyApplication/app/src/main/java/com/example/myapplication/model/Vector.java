@@ -60,8 +60,8 @@ public class Vector {
     }
 
     public boolean inRange(double lower, double higher) {
-        return x < higher && x > -lower
-                && y < higher && y > -lower;
+        return x < higher && x > lower
+                && y < higher && y > lower;
     }
 
     public double dotProduct(Vector v) {

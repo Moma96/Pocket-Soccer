@@ -100,7 +100,7 @@ public class Line extends InactiveObject {
     }
 
     @Override
-    public boolean isClose(Circle active) {
+    public boolean isClose(Circle active) { // presredi ovo
         if (active == null) return false;
         double speedIntensity = active.getSpeed().intensity();
 

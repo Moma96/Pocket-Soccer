@@ -100,7 +100,7 @@ public abstract class Field {
 
         if (!circle.getSpeed().isZeroVector()) {
             if (!moving.contains(circle)) {
-                Log.e(BARRIER_TAG, "Barrier doesn't contain " + circle + ", barrier: " + barrier);
+                Log.e(BARRIER_TAG, circle + " is not moving, barrier: " + barrier);
                 return;
             }
 
@@ -115,10 +115,10 @@ public abstract class Field {
             }
         }
 
-        checkStopped(circle);
+        //checkStopped(circle);
 
         if (barrier.size() == moving.size()) {
-            /////
+            //////// optimizuj, ovo treba svaki krug pojedinacno da radi
             checkCollisions();
             calculateMinTime();
             /////
