@@ -82,7 +82,7 @@ public class SoccerGameplay extends SoccerModel {
 
     public synchronized void score(final int player) {
         if (!responsive()) return;
-/*
+        /*
         resetResponsiveness();
         resetSelection();
 
@@ -96,7 +96,7 @@ public class SoccerGameplay extends SoccerModel {
 
                 sleepFor(AFTER_GOAL_WAIT);
                 reset();
-                //setActive((player + 1) % 2); OVO PRAVI PROBLEM!!
+                setActive((player + 1) % 2); //OVO PRAVI PROBLEM BOTU!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
                 setResponsiveness();
                 return null;

@@ -17,7 +17,7 @@ public class Circle extends Active implements Collidable {
 
     private static final String COLLISION_TAG = "Circle collision";
 
-    public static final int MOVING_DELAY = 15; //15; //ms
+    public static final int MOVING_DELAY = 15; //15 ms
     protected static final double MOVING_INCREMENT = 0.03; //0.03;
 
     protected double mass;
@@ -123,7 +123,7 @@ public class Circle extends Active implements Collidable {
 
                 if (this.speed.inRange(-field.DISTANCE_PRECISSION, field.DISTANCE_PRECISSION)) {
                     this.speed.clear();
-                    field.checkStopped(this);
+                    //field.checkStopped(this);
                 } else {
                     field.checkStarted(this);
                     notifyAll();
@@ -204,11 +204,6 @@ public class Circle extends Active implements Collidable {
         double t = (-b - Math.sqrt(d))/(2*a);
 
         return t;
-        /*
-        if (t < 1 - Field.DISTANCE_PRECISSION && t > Field.DISTANCE_PRECISSION)
-            return t;
-        else
-            return 1;*/
     }
 
     @Override
@@ -272,6 +267,7 @@ public class Circle extends Active implements Collidable {
             setCenter(center.add(speed.mul(field.getTimeSpeed())));
 
             //friction.mul(field.getTimeSpeed());
+            //friction.scaleIntensity(field.getFrictionCoefficient() * field.getTimeSpeed());
             //setSpeed(speed.add(friction));
         }
     }
@@ -297,9 +293,8 @@ public class Circle extends Active implements Collidable {
     @Override
     protected void iterate() {
         try {
-            //field.checkStopped(this);
-            checkSpeed();
             field.barrier(this);
+            checkSpeed();
             //checkCollision();
             if (!speed.isZeroVector()) {
                 move();

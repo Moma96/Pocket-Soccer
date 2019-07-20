@@ -50,7 +50,6 @@ public class Dot extends InactiveObject {
         if (d < 0 || a == 0) return 1;
 
         double t = (-b - Math.sqrt(d))/(2*a);
-        ///if (t > 1 + Field.DISTANCE_PRECISSION || t < -Field.DISTANCE_PRECISSION) return 1;
 
         return t;
     }

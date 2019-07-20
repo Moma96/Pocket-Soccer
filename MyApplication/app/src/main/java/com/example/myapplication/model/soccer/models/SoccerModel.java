@@ -38,14 +38,7 @@ public abstract class SoccerModel {
         setParameters(x, y, width, height);
         field = new SoccerField(x, y, width, height, friction, this);
         setGoals();
-/*
-        ball = new Ball(new Vector(x + width*BALL_X, y + height*BALL_Y), 1000, this);
 
-        players = new Player[2][1];
-        players[0][0] = new Player(new Vector(x + width/4, y + height/2), 1000, field);
-        players[1][0] = new Player(new Vector(x + 3*(width/4), y + height/2), 1000, field);
-
- */
         ball = new Ball(new Vector(x + width*BALL_X, y + height*BALL_Y), (int)(Circle.MOVING_DELAY/gamespeed), this);
 
         players = new Player[2][3];
@@ -57,32 +50,32 @@ public abstract class SoccerModel {
 //*/
         //////TEST 1
 /*
-        ball = new Ball(new Vector(x + width/2, y + height/2), this);
-        ball.setRadius(150);
+        ball = new Ball(new Vector(x + width/2, y + height/2), Circle.MOVING_DELAY, this);
+        ball.setRadius(100);
 
         players = new Player[2][1];
-        players[0][0] = new Player(new Vector(x + width/4, y + height/2), field);
-        players[1][0] = new Player(new Vector(x + 3*(width/4), y + height/2), field);
+        players[0][0] = new Player(new Vector(x + width/4, y + height/2), Circle.MOVING_DELAY, field);
+        players[1][0] = new Player(new Vector(x + 3*(width/4), y + height/2), Circle.MOVING_DELAY, field);
 
         players[0][0].push(new Vector(100, 0));
         players[1][0].push(new Vector(-100, 0));
 
         for (int p = 0; p <2; p++) {
-            players[p][0].setRadius(200);
-            players[p][0].setMass(200);
+            players[p][0].setRadius(150);
+            players[p][0].setMass(1000);
         }
 //*/
         ///////TEST 2
 /*
-        ball = new Ball(new Vector(x + width/2, y + height/5), this);
+        ball = new Ball(new Vector(x + width/2, y + height/5), Circle.MOVING_DELAY, this);
 
         players = new Player[2][3];
-        players[0][0] = new Player(new Vector(x + width/2, y + height/4), field);
-        players[0][1] = new Player(new Vector(x + width/2, y + 3*(height/4)), field);
-        players[0][2] = new Player(new Vector(x + width/2, y + height/2), field);
-        players[1][0] = new Player(new Vector(x + 1*(width/3), y + height/2), field);
-        players[1][1] = new Player(new Vector(x + 2*(width/3), y + height/2), field);
-        players[1][2] = new Player(new Vector(x + 4*(width/5), y + height/2), field);
+        players[0][0] = new Player(new Vector(x + width/2, y + height/4), Circle.MOVING_DELAY, field);
+        players[0][1] = new Player(new Vector(x + width/2, y + 3*(height/4)), Circle.MOVING_DELAY, field);
+        players[0][2] = new Player(new Vector(x + width/2, y + height/2), Circle.MOVING_DELAY, field);
+        players[1][0] = new Player(new Vector(x + 1*(width/3), y + height/2), Circle.MOVING_DELAY, field);
+        players[1][1] = new Player(new Vector(x + 2*(width/3), y + height/2), Circle.MOVING_DELAY, field);
+        players[1][2] = new Player(new Vector(x + 4*(width/5), y + height/2), Circle.MOVING_DELAY, field);
 
         for (int p = 0; p < 2; p++) {
             for (int i = 0; i < players[p].length; i++) {
@@ -92,22 +85,38 @@ public abstract class SoccerModel {
 //*/
         ///////TEST 3
 /*
-        ball = new Ball(new Vector(x + width/2, y + height/5), this);
+        ball = new Ball(new Vector(x + width/2, y + height/5), Circle.MOVING_DELAY, this);
 
         players = new Player[2][2];
-        players[0][0] = new Player(new Vector(x + width/2, y + height/2), field);
-        players[0][1] = new Player(new Vector(x + 1*(width/3), y + height/2), field);
-        players[1][0] = new Player(new Vector(x + 2*(width/3), y + height/2), field);
-        players[1][1] = new Player(new Vector(x + 4*(width/5), y + height/2), field);
+        players[0][0] = new Player(new Vector(x + width/2, y + height/2), Circle.MOVING_DELAY, field);
+        players[0][1] = new Player(new Vector(x + 1*(width/3), y + height/2), Circle.MOVING_DELAY, field);
+        players[1][0] = new Player(new Vector(x + 2*(width/3), y + height/2), Circle.MOVING_DELAY, field);
+        players[1][1] = new Player(new Vector(x + 4*(width/5), y + height/2), Circle.MOVING_DELAY, field);
 
         for (int p = 0; p < 2; p++) {
             for (int i = 0; i < players[p].length; i++) {
-                players[p][i].setRadius(200);
+                players[p][i].setRadius(150);
             }
         }
 
         players[0][0].push(new Vector(1000, 0));
 //*/
+/*
+        ///////TEST 4 - goalpost collision testing -> GOAL_WIDTH = 120;
+
+        ball = new Ball(new Vector(x + width/2, y + height/2), 300, this);
+
+        players = new Player[2][1];
+        players[0][0] = new Player(new Vector(x + width/4, y + height/2), 300, field);
+        players[1][0] = new Player(new Vector(x + 3*(width/4), y + height/2), 300, field);
+        players[0][0].setRadius(30);
+        players[1][0].setRadius(30);
+
+        players[0][0].push(new Vector(-2000, -700));
+
+
+//*/
+
 
     }
 

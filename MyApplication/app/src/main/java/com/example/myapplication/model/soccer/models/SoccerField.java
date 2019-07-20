@@ -25,10 +25,6 @@ public class SoccerField extends Field {
         }
         this.soccer = soccer;
     }
-/*
-    public SoccerField(double x, double y, double width, double height, @NotNull SoccerModel soccer) {
-        this(x, y, width, height, FRICTION_COEFFICIENT, soccer);
-    }*/
 
     public SoccerModel getSoccer() {
         return soccer;

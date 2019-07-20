@@ -6,6 +6,7 @@ import com.example.myapplication.model.collidables.active.Circle;
 import com.example.myapplication.model.collidables.inactive.InactiveObject;
 import com.example.myapplication.model.collidables.inactive.Wall;
 import com.example.myapplication.model.Vector;
+import com.example.myapplication.model.soccer.models.GoalPost;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -14,7 +15,7 @@ import java.util.HashSet;
 
 public abstract class Field {
 
-    public static final double DISTANCE_PRECISSION = 1.0E-11;
+    public static final double DISTANCE_PRECISSION = 1.0E-12;
 
     private static final String BARRIER_TAG = "Barrier";
     private static final String STATE_TAG = "Circle state";
@@ -97,27 +98,32 @@ public abstract class Field {
 
     public synchronized void barrier(@NotNull Circle circle) throws InterruptedException {
 
-        if (!moving.contains(circle)) {
-            Log.e(BARRIER_TAG, "Barrier doesn't contain " + circle + ", barrier: " + barrier);
-            return;
+        if (!circle.getSpeed().isZeroVector()) {
+            if (!moving.contains(circle)) {
+                Log.e(BARRIER_TAG, "Barrier doesn't contain " + circle + ", barrier: " + barrier);
+                return;
+            }
+
+            Log.d(BARRIER_TAG, circle + " entered barrier"); //+ " time: " + time);
+            barrier.add(circle);
+            Log.d(BARRIER_TAG, "barrier: " + barrier + " moving: " + moving);
+
+            if (barrier.size() < moving.size()) {
+                double oldTime = time;
+                while (oldTime == time)
+                    wait();
+            }
         }
 
-        Log.d(BARRIER_TAG,  circle + " entered barrier"); //+ " time: " + time);
-        barrier.add(circle);
-        Log.d(BARRIER_TAG, "barrier: " + barrier + " moving: " + moving);
+        checkStopped(circle);
 
-        if (barrier.size() < moving.size()) {
-            double oldTime = time;
-            while (oldTime == time)
-                wait();
-        } else if (barrier.size() == moving.size()) {
-
+        if (barrier.size() == moving.size()) {
+            /////
             checkCollisions();
             calculateMinTime();
-
+            /////
             barrierRelease();
-
-        } else Log.e(BARRIER_TAG, "Barrier size bigger than moving size");
+        }
     }
 
     private synchronized void checkCollisions() {
@@ -138,7 +144,8 @@ public abstract class Field {
         for (Circle circle: moving) {
 
             double st = circle.stoppingTime();
-            if (st < timeSpeed) timeSpeed = st;
+            if (timeSpeedInRange(st) && st < timeSpeed)
+                timeSpeed = st;
 
             for (Collidable collidable: collidables) {
                 if (circle != collidable) {
@@ -147,14 +154,13 @@ public abstract class Field {
                         double ts = collidable.nextCollisionTime(circle);
                         if (timeSpeedInRange(ts) && ts < timeSpeed)
                             timeSpeed = ts;
-
                     }
                 }
             }
         }
 
         if (timeSpeed < 1)
-            Log.e(BARRIER_TAG, "time speed in next round will be " + timeSpeed);
+            Log.d(BARRIER_TAG, "time speed in next round will be " + timeSpeed);
     }
 
     public synchronized void checkStarted(@NotNull Circle circle) {
@@ -167,20 +173,17 @@ public abstract class Field {
     }
 
     public synchronized void checkStopped(@NotNull Circle circle) {
-        if (circle.getSpeed().isZeroVector()) {
-            if (moving.contains(circle)) {
-                moving.remove(circle);
-                if (barrier.contains(circle))
-                    barrier.remove(circle);
+        if (circle.getSpeed().isZeroVector() && moving.contains(circle) && circles.contains(circle)) {
+            moving.remove(circle);
+            if (barrier.contains(circle))
+                barrier.remove(circle);
 
-                Log.d(BARRIER_TAG, circle + " left moving");
-                Log.d(STATE_TAG, circle + " stopped");
+            if (moving.size() == 0) {
+                allStopped();
+            }
 
-                if (moving.size() == 0) {
-                    allStopped();
-                }
-            } else
-                Log.e(BARRIER_TAG, "Circle stopped, but was not considered moving");
+            Log.d(BARRIER_TAG, circle + " left moving");
+            Log.d(STATE_TAG, circle + " stopped");
         }
     }
 

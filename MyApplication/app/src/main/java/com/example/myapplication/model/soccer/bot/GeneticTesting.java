@@ -77,7 +77,7 @@ public class GeneticTesting {
         private boolean over = false;
 
         public Unit() {
-            this(new Vector(Math.random()*2 - 1, Math.random()*2 - 1), Double.MAX_VALUE);
+            this(new Vector(Math.random() * 2 - 1, Math.random() * 2 - 1), Double.MAX_VALUE);
             genes.scaleIntensity(SCALED_INTENSITY);
             fitness = Integer.MAX_VALUE;
         }
@@ -120,8 +120,7 @@ public class GeneticTesting {
             if (player == scored) {
                 finished = this;
                 Log.d(GENETIC_TAG, "Unit finished with time " + time);
-            }
-            else {
+            } else {
                 Log.d(GENETIC_TAG, "Bad score with time " + time);
             }
             over = true;

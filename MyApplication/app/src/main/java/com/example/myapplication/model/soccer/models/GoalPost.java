@@ -32,22 +32,12 @@ public class GoalPost extends InactiveObject {
 
     @Override
     public double getDistance(Circle active) {
-        /*double distance = line.getDistance(active);
+        double distance = line.getDistance(active);
+
         if (distance == Double.MAX_VALUE)
             distance = dot.getDistance(active);
-        return distance;*/
+        return distance;
 
-        double dotDist = dot.getDistance(active);
-        double lineDist = line.getDistance(active);
-
-        /*if (dotDist < -field.DISTANCE_PRECISSION || lineDist < -field.DISTANCE_PRECISSION ) {
-            int aaaaa = 1;
-        }*/
-
-        if (dotDist < lineDist)
-            return dotDist;
-        else
-            return lineDist;
     }
 
     @Override
@@ -65,10 +55,14 @@ public class GoalPost extends InactiveObject {
         double dotTime = dot.nextCollisionTime(active);
         double lineTime = line.nextCollisionTime(active);
 
-        if (dotTime < lineTime)
-            return dotTime;
-        else
-            return lineTime;
+        if (dotTime > -Field.DISTANCE_PRECISSION
+        && lineTime > -Field.DISTANCE_PRECISSION) {
+            if (dotTime < lineTime)
+                return dotTime;
+            else
+                return lineTime;
+        }
+        return 1;
     }
 
     @Override

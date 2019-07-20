@@ -87,11 +87,6 @@ public class Wall extends InactiveObject {
                 break;
         }
         return t;
-        /*
-        if (t > -Field.DISTANCE_PRECISSION && t < 1 + Field.DISTANCE_PRECISSION)
-            return t;
-        else
-            return 1;*/
     }
 
     @Override
