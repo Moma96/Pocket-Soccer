@@ -14,6 +14,9 @@ import static java.lang.Thread.sleep;
 
 public class SoccerGameplay extends SoccerModel {
 
+    public static final int DEFAULT_FIELD_IMG = 1;
+
+
     private static final int AFTER_GOAL_WAIT = 2; //s
 
     private Bot[] bots = new Bot[2];
@@ -82,7 +85,7 @@ public class SoccerGameplay extends SoccerModel {
 
     public synchronized void score(final int player) {
         if (!responsive()) return;
-        /*
+
         resetResponsiveness();
         resetSelection();
 

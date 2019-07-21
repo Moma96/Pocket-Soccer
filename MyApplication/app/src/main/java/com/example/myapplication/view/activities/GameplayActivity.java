@@ -1,5 +1,6 @@
 package com.example.myapplication.view.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -27,13 +28,13 @@ public class GameplayActivity extends AppCompatActivity {
 
         final FrameLayout background = findViewById(R.id.background);
 
-        final int[] teamsimg = { 0, 1 };
-        final int fieldimg = 4;
+        Intent intent = getIntent();
 
-        final double friction = 0.1;
-        final double gamespeed = 1;
-
-        final boolean[] botplay = { false, false };
+        final int[] teamsimg = intent.getIntArrayExtra("teamsimg");
+        final int fieldimg = intent.getIntExtra("fieldimg", SoccerGameplay.DEFAULT_FIELD_IMG);
+        final double friction = intent.getDoubleExtra("friction", SoccerModel.DEFAULT_FRICTION);
+        final double gamespeed = intent.getDoubleExtra("gamespeed", SoccerModel.DEFAULT_GAME_SPEED);
+        final boolean[] botplay = intent.getBooleanArrayExtra("botplay");
 
         int field = getResources().getIdentifier("field" + fieldimg, "drawable", getPackageName());
         background.setBackgroundResource(field);

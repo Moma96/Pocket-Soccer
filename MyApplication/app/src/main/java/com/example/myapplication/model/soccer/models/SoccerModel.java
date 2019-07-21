@@ -9,6 +9,9 @@ public abstract class SoccerModel {
 
     protected static final String GOAL_TAG = "Goal";
 
+    public static final double DEFAULT_GAME_SPEED = 1;
+    public static final double DEFAULT_FRICTION = 0.1;
+
     public static final double GOAL_WIDTH = 100;
     public static final double GOAL_HEIGHT = 300;
 
