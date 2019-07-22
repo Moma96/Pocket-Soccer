@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="horizontal"
+    tools:context=".view.activities.SelectPlayers"
+    android:padding="20dp"
+    android:weightSum="7">
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:padding="20dp"
+        android:layout_weight="3"
+        android:weightSum="9">
+
+        <ImageView
+            android:id="@+id/player1_left"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:src="@drawable/arrowleft"
+            android:layout_weight="2"
+            android:onClick="changeTeam" />
+
+        <ImageView
+            android:id="@+id/player1_img"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:layout_weight="5" />
+
+        <ImageView
+            android:id="@+id/player1_right"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:src="@drawable/arrowright"
+            android:layout_weight="2"
+            android:onClick="changeTeam" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/play_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:textColor="@color/play_text_color"
+        android:textSize="30dp"
+        android:text="PLAY"
+        android:gravity="center"
+        android:onClick="play"/>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:padding="20dp"
+        android:layout_weight="3"
+        android:weightSum="9">
+
+        <ImageView
+            android:id="@+id/player2_left"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:src="@drawable/arrowleft"
+            android:layout_weight="2"
+            android:onClick="changeTeam" />
+
+        <ImageView
+            android:id="@+id/player2_img"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:layout_weight="5" />
+
+        <ImageView
+            android:id="@+id/player2_right"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:src="@drawable/arrowright"
+            android:layout_weight="2"
+            android:onClick="changeTeam" />
+    </LinearLayout>
+
+</LinearLayout>

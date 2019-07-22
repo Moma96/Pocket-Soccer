@@ -6,20 +6,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center"
-    android:orientation="vertical"
+    android:orientation="horizontal"
+    android:background="@drawable/background"
     tools:context=".view.activities.MainActivity">
 
-    <Button
-        android:id="@+id/play_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:layout_margin="@dimen/button_margin"
-        android:textSize="@dimen/play_button_size"
-        android:paddingLeft="@dimen/play_button_padding"
-        android:paddingRight="@dimen/play_button_padding"
-        android:textColor="@color/play_text_color"
-        android:text="@string/play_button_text"
-        android:onClick="play"/>
+    <FrameLayout
+        android:id="@+id/fragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        ></FrameLayout>
+
 
 </LinearLayout>

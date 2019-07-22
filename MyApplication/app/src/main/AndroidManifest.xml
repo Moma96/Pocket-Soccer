@@ -22,11 +22,12 @@
             android:name=".view.activities.GameplayActivity"
             android:label="@string/title_activity_gameplay"
             android:parentActivityName=".view.activities.MainActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:screenOrientation="landscape">
+            android:screenOrientation="landscape"
+            android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.myapplication.view.activities.MainActivity" />
         </activity>
     </application>
+
 </manifest>
