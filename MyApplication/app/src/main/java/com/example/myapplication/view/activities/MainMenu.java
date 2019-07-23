@@ -1,12 +1,14 @@
 package com.example.myapplication.view.activities;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.example.myapplication.R;
 
@@ -23,10 +25,13 @@ public class MainMenu extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        Activity activity = getActivity();
-        if (activity instanceof MainActivity) {
-            ((MainActivity)activity).updateMenuFragment();
-        }
+        updateMenuFragment();
+    }
+
+    public void updateMenuFragment() {
+        TextView clg = getActivity().findViewById(R.id.continue_last_game);
+        clg.setClickable(false);
+        clg.setTextColor(Color.GRAY);
     }
 
 }

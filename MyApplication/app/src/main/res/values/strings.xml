@@ -2,10 +2,6 @@
     <string name="app_name">PocketSoccer</string>
     <string name="title_activity_gameplay">GameplayActivity</string>
     <string name="new_game_text">NEW GAME</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="title_activity_select_players">SelectPlayers</string>
     <string name="play">PLAY</string>
     <string name="continue_text">CONTINUE</string>
     <string name="settings_text">SETTINGS</string>

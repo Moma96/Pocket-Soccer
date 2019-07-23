@@ -25,9 +25,10 @@ public class History extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        Activity activity = getActivity();
-        if (activity instanceof MainActivity) {
-            ((MainActivity)activity).updateHistoryFragment();
-        }
+        updateHistoryFragment();
+    }
+
+    public void updateHistoryFragment() {
+
     }
 }
