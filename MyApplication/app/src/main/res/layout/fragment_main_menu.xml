@@ -5,18 +5,53 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center"
-    android:orientation="horizontal"
-    tools:context=".view.activities.MainMenu">
+    android:orientation="vertical"
+    tools:context=".view.activities.MainMenu"
+    android:padding="@dimen/main_menu_padding"
+    android:weightSum="4">
 
     <TextView
-        android:id="@+id/play_button"
+        android:id="@+id/new_game"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:layout_margin="@dimen/button_margin"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:textColor="@color/text_color"
         android:textSize="@dimen/play_button_size"
-        android:textColor="@color/play_text_color"
-        android:text="@string/play_button_text"
-        android:onClick="selectPlayers"/>
+        android:text="@string/new_game_text"
+        android:gravity="center"
+        android:onClick="replaceFragment"/>
+
+    <TextView
+        android:id="@+id/continue_last_game"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/play_button_size"
+        android:text="@string/continue_text"
+        android:gravity="center"
+        android:onClick="continueLastGame"/>
+
+    <TextView
+        android:id="@+id/settings"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/play_button_size"
+        android:text="@string/settings_text"
+        android:gravity="center"
+        android:onClick="replaceFragment"/>
+
+    <TextView
+        android:id="@+id/history"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/play_button_size"
+        android:text="@string/history_text"
+        android:gravity="center"
+        android:onClick="replaceFragment"/>
 
 </LinearLayout>

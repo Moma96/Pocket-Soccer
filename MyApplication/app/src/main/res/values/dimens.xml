@@ -3,5 +3,14 @@
     <dimen name="play_button_size">30sp</dimen>
     <dimen name="button_margin">15sp</dimen>
     <dimen name="play_button_padding">30sp</dimen>
+    <dimen name="play_size">30dp</dimen>
+    <dimen name="team_padding">5dp</dimen>
+    <dimen name="arrow_padding">5dp</dimen>
+
+    <dimen name="select_players_padding">20dp</dimen>
+    <dimen name="main_menu_padding">20dp</dimen>
+    <dimen name="settings_padding">20dp</dimen>
+    <dimen name="setting_wrapper_padding">20dp</dimen>
+    <dimen name="setting_text_size">30dp</dimen>
 
 </resources>

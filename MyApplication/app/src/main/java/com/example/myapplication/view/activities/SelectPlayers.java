@@ -28,7 +28,7 @@ public class SelectPlayers extends Fragment {
 
         Activity activity = getActivity();
         if (activity instanceof MainActivity) {
-            ((MainActivity)activity).updatePlayersImg();
+            ((MainActivity)activity).updatePlayersFragment();
         }
     }
 }

@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    tools:context=".view.activities.Settings"
+    android:padding="@dimen/settings_padding"
+    android:weightSum="3">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:padding="@dimen/setting_wrapper_padding"
+        android:layout_weight="1"
+        android:weightSum="8">
+
+        <TextView
+            android:id="@+id/game_speed_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="4"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/setting_text_size"
+            android:text="@string/game_speed_text"
+            android:gravity="center"/>
+
+        <ImageView
+            android:id="@+id/game_speed_decrease"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/arrow_padding"
+            android:src="@drawable/arrowleft"
+            android:layout_weight="1"
+            android:onClick="changeGameSpeed" />
+
+        <TextView
+            android:id="@+id/game_speed_value"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/play_size"
+            android:gravity="center"/>
+
+        <ImageView
+            android:id="@+id/game_speed_increase"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/arrow_padding"
+            android:src="@drawable/arrowright"
+            android:layout_weight="1"
+            android:onClick="changeGameSpeed" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:padding="@dimen/setting_wrapper_padding"
+        android:layout_weight="1"
+        android:weightSum="8">
+
+        <TextView
+            android:id="@+id/friction_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="4"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/setting_text_size"
+            android:text="@string/friction_text"
+            android:gravity="center"/>
+
+        <ImageView
+            android:id="@+id/friction_decrease"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/arrow_padding"
+            android:src="@drawable/arrowleft"
+            android:layout_weight="1"
+            android:onClick="changeFriction" />
+
+        <TextView
+            android:id="@+id/friction_value"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/play_size"
+            android:gravity="center"/>
+
+        <ImageView
+            android:id="@+id/friction_increase"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/arrow_padding"
+            android:src="@drawable/arrowright"
+            android:layout_weight="1"
+            android:onClick="changeFriction" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:padding="20dp"
+        android:layout_weight="1"
+        android:weightSum="9">
+
+        <ImageView
+            android:id="@+id/field_left"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/arrow_padding"
+            android:src="@drawable/arrowleft"
+            android:layout_weight="2"
+            android:onClick="changeField" />
+
+        <ImageView
+            android:id="@+id/field_img"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/team_padding"
+            android:layout_weight="5" />
+
+        <ImageView
+            android:id="@+id/field_right"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/arrow_padding"
+            android:src="@drawable/arrowright"
+            android:layout_weight="2"
+            android:onClick="changeField" />
+    </LinearLayout>
+
+</LinearLayout>
