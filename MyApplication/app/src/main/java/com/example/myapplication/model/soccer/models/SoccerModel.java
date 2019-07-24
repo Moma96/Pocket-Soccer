@@ -153,7 +153,7 @@ public abstract class SoccerModel {
 
     public void start() {
         ball.start();
-        for (int p = 0; p < 2; p++) {
+        for (int p = 0; p < players.length; p++) {
             for (int i = 0; i < players[p].length; i++)
                 players[p][i].start();
         }
@@ -161,9 +161,25 @@ public abstract class SoccerModel {
 
     public void terminate() {
         ball.terminate();
-        for (int p = 0; p < 2; p++) {
-            for (int i = 0; i < 3; i++)
+        for (int p = 0; p < players.length; p++) {
+            for (int i = 0; i < players[p].length; i++)
                 players[p][i].terminate();
+        }
+    }
+
+    public void pause() {
+        ball.inactive();
+        for (int p = 0; p < players.length; p++) {
+            for (int i = 0; i < players[p].length; i++)
+                players[p][i].inactive();
+        }
+    }
+
+    public void resume() {
+        ball.active();
+        for (int p = 0; p < players.length; p++) {
+            for (int i = 0; i < players[p].length; i++)
+                players[p][i].active();
         }
     }
 
@@ -171,8 +187,8 @@ public abstract class SoccerModel {
         synchronized (field) {
             ball.reset();
             ball.setCenter(new Vector(x + width * BALL_X, y + height * BALL_Y));
-            for (int p = 0; p < 2; p++) {
-                for (int i = 0; i < 3; i++) {
+            for (int p = 0; p < players.length; p++) {
+                for (int i = 0; i < players[p].length; i++) {
                     players[p][i].reset();
                     players[p][i].setCenter(new Vector(x + width * PLAYER_X[p][i], y + height * PLAYER_Y[p][i]));
                 }

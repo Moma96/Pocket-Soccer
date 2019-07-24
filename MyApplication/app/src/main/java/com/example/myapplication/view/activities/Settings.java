@@ -1,8 +1,5 @@
 package com.example.myapplication.view.activities;
 
-import android.app.Activity;
-import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -20,13 +17,15 @@ public class Settings extends Fragment {
     private final static double SMALLEST_GAME_SPEED = 0.5;
     private final static double GAME_SPEED_INCREMENT = 0.1;
 
-    private final static double BIGGEST_FRICTION = 0.5;
-    private final static double SMALLEST_FRICTION = 0.05;
-    private final static double FRICTION_INCREMENT = 0.01;
+    private final static double BIGGEST_FRICTION = 2.0;
+    private final static double SMALLEST_FRICTION = 0.1;
+    private final static double FRICTION_INCREMENT = 0.02;
+    private final static double BIGGER_FRICTION_INCREMENT = 0.1;
+    private final static double FRICTION_INCREMENT_TRANSITION = 0.4;
 
     private final static int FIELDS = 4;
 
-    private double friction = 0.1;
+    private double friction = 0.2;
     private double gamespeed = 1;
     private int fieldimg = 1;
 
@@ -50,14 +49,17 @@ public class Settings extends Fragment {
     private View.OnClickListener changeFriction = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
+            double increment = FRICTION_INCREMENT;
+            if (friction > FRICTION_INCREMENT_TRANSITION)
+                increment = BIGGER_FRICTION_INCREMENT;
             switch(view.getId()) {
                 case R.id.friction_decrease:
                     if (friction > SMALLEST_FRICTION)
-                        friction -= FRICTION_INCREMENT;
+                        friction -= increment;
                     break;
                 case R.id.friction_increase:
                     if (friction < BIGGEST_FRICTION)
-                        friction += FRICTION_INCREMENT;
+                        friction += increment;
                     break;
             }
             updateFrictionValue();
@@ -115,7 +117,7 @@ public class Settings extends Fragment {
 
     private void updateFrictionValue() {
         TextView fv = getActivity().findViewById(R.id.friction_value);
-        fv.setText((int)(friction*1000) + "%");
+        fv.setText((int)(friction*500) + "%");
     }
 
     private void updateFieldImg() {

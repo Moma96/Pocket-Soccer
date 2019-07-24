@@ -4,14 +4,9 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.example.myapplication.R;
 
@@ -46,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, GameplayActivity.class);
         intent.putExtra("teamsimg", selectPlayers.getTeamsimg());
         intent.putExtra("fieldimg", settings.getFieldimg());
+        intent.putExtra("gamespeed", settings.getGamespeed());
         intent.putExtra("friction", settings.getFriction());
         intent.putExtra("botplay", botplay);
 
@@ -79,14 +75,4 @@ public class MainActivity extends AppCompatActivity {
             ft.commit();
         }
     }
-/*
-    @Override
-    public void onBackPressed() {
-        FrameLayout fl = findViewById(R.id.fragment);
-        if (fl != null) {
-            fl.removeAllViews();
-            getFragmentManager().popBackStack();
-        }
-        super.onBackPressed();
-    }*/
 }

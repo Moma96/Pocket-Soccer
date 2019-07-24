@@ -28,21 +28,20 @@ public class GameplayActivity extends AppCompatActivity {
 
         final FrameLayout background = findViewById(R.id.background);
 
-        Intent intent = getIntent();
+        final Intent intent = getIntent();
 
-        final int[] teamsimg = intent.getIntArrayExtra("teamsimg");
         final int fieldimg = intent.getIntExtra("fieldimg", SoccerGameplay.DEFAULT_FIELD_IMG);
-        final double friction = intent.getDoubleExtra("friction", SoccerModel.DEFAULT_FRICTION);
-        final double gamespeed = intent.getDoubleExtra("gamespeed", SoccerModel.DEFAULT_GAME_SPEED);
-        final boolean[] botplay = intent.getBooleanArrayExtra("botplay");
-
         int field = getResources().getIdentifier("field" + fieldimg, "drawable", getPackageName());
         background.setBackgroundResource(field);
 
         background.post(new Runnable() {
             @Override
             public void run() {
-                setup(background, teamsimg, friction, gamespeed, botplay);
+                setup(background,
+                        intent.getIntArrayExtra("teamsimg"),
+                        intent.getDoubleExtra("friction", SoccerModel.DEFAULT_FRICTION),
+                        intent.getDoubleExtra("gamespeed", SoccerModel.DEFAULT_GAME_SPEED),
+                        intent.getBooleanArrayExtra("botplay"));
             }
         });
     }

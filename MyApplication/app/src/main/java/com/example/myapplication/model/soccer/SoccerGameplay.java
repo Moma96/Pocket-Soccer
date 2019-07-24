@@ -75,6 +75,18 @@ public class SoccerGameplay extends SoccerModel {
     }
 
     @Override
+    public synchronized void pause() {
+        resetResponsiveness();
+        super.pause();
+    }
+
+    @Override
+    public synchronized void resume() {
+        super.resume();
+        setResponsiveness();
+    }
+
+    @Override
     public void allStopped() {
         notifyActiveBot();
     }
