@@ -15,10 +15,8 @@
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:textColor="@color/text_color"
-        android:textSize="@dimen/text_size"
         android:text="@string/new_game_text"
-        android:gravity="center"
+        style="@style/Text"
         android:onClick="replaceFragment"/>
 
     <TextView
@@ -26,21 +24,17 @@
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:textColor="@color/text_color"
-        android:textSize="@dimen/text_size"
         android:text="@string/continue_text"
-        android:gravity="center"
-        android:onClick="continueLastGame"/>
+        style="@style/Text"
+        android:onClick="continueLasstyle="/>
 
     <TextView
         android:id="@+id/settings"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:textColor="@color/text_color"
-        android:textSize="@dimen/text_size"
         android:text="@string/settings_text"
-        android:gravity="center"
+        style="@style/Text"
         android:onClick="replaceFragment"/>
 
     <TextView
@@ -48,10 +42,8 @@
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:textColor="@color/text_color"
-        android:textSize="@dimen/text_size"
         android:text="@string/history_text"
-        android:gravity="center"
+        style="@style/Text"
         android:onClick="replaceFragment"/>
 
 </LinearLayout>

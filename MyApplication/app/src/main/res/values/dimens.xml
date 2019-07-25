@@ -1,9 +1,5 @@
 <resources>
-    <dimen name="fab_margin">16dp</dimen>
-    <dimen name="text_padding">30sp</dimen>
-    <dimen name="text_size">30dp</dimen>
-    <dimen name="image_padding">5dp</dimen>
-    <dimen name="arrow_padding">5dp</dimen>
-    <dimen name="wrapper_padding">20dp</dimen>
-
+    <dimen name="img_padding">5dp</dimen>
+    <dimen name="wrapper_padding">30dp</dimen>
+    <dimen name="text_size">25dp</dimen>
 </resources>

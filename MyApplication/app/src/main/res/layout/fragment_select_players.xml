@@ -23,7 +23,7 @@
             android:id="@+id/player1_left"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:padding="@dimen/arrow_padding"
+            android:padding="@dimen/img_padding"
             android:src="@drawable/arrowleft"
             android:layout_weight="2" />
 
@@ -31,14 +31,14 @@
             android:id="@+id/player1_img"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:padding="@dimen/image_padding"
+            android:padding="@dimen/img_padding"
             android:layout_weight="5" />
 
         <ImageView
             android:id="@+id/player1_right"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:padding="@dimen/arrow_padding"
+            android:padding="@dimen/img_padding"
             android:src="@drawable/arrowright"
             android:layout_weight="2" />
     </LinearLayout>
@@ -48,11 +48,9 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:textColor="@color/text_color"
-        android:textSize="@dimen/text_size"
         android:text="@string/play"
-        android:gravity="center"
-        android:onClick="newGame" />
+        android:onClick="newGame"
+        style="@style/Text" />
 
     <LinearLayout
         android:layout_width="0dp"
@@ -67,7 +65,7 @@
             android:id="@+id/player2_left"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:padding="@dimen/arrow_padding"
+            android:padding="@dimen/img_padding"
             android:src="@drawable/arrowleft"
             android:layout_weight="2" />
 
@@ -75,14 +73,14 @@
             android:id="@+id/player2_img"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:padding="@dimen/image_padding"
+            android:padding="@dimen/img_padding"
             android:layout_weight="5" />
 
         <ImageView
             android:id="@+id/player2_right"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:padding="@dimen/arrow_padding"
+            android:padding="@dimen/img_padding"
             android:src="@drawable/arrowright"
             android:layout_weight="2" />
     </LinearLayout>
