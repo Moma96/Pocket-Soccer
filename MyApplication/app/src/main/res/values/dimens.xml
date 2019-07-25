@@ -2,4 +2,5 @@
     <dimen name="img_padding">5dp</dimen>
     <dimen name="wrapper_padding">30dp</dimen>
     <dimen name="text_size">25dp</dimen>
+    <dimen name="score_text_size">50dp</dimen>
 </resources>

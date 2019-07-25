@@ -33,14 +33,11 @@ public class ViewUpdater extends Active {
     private HashMap<Circle, ImageView> imgCircles = new HashMap<>();
     private ImageView imgSelected;
     private ImageView imgGoalposts;
-    //private TextView[] scores = new TextView[2];
     private TextView imgScores;
 
     public ViewUpdater(GameplayActivity gameplay, SoccerGameplay soccer, int[] teams) {
         this.gameplay = gameplay;
         this.soccer = soccer;
-
-        //int[] teams = { 25, 5 };
 
         draw(teams);
     }
@@ -61,7 +58,7 @@ public class ViewUpdater extends Active {
                 drawBall(background);
                 drawPlayers(background, teams);
                 drawGoals(background);
-                drawScores(background);
+                updateScores();
             }
        });
         darkenInactive();
@@ -81,24 +78,6 @@ public class ViewUpdater extends Active {
                 drawCircle(background, player, gameplay.getResources().getIdentifier("t" + teams[p], "drawable", gameplay.getPackageName())).setRotation(rotation);
             }
         }
-    }
-
-    private void drawScores(FrameLayout background) {
-        /*for (int p = 0; p < 2; p++) {
-            scores[p] = new TextView(gameplay);
-            scores[p].setText(soccer.getScores()[p]);
-        }*/
-
-        imgScores = new TextView(gameplay);
-        int[] scores = soccer.getScores();
-        imgScores.setText(scores[0] + ":" + scores[1]);
-        imgScores.setTextSize(40);
-        imgScores.setTextColor(Color.WHITE);
-
-        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        params.topMargin = 0;
-        params.leftMargin = background.getHeight() / 2;
-        background.addView(imgScores, params);
     }
 
     private void drawGoals(FrameLayout background) {
@@ -166,7 +145,8 @@ public class ViewUpdater extends Active {
             @Override
             public void run() {
                 int[] scores = soccer.getScores();
-                imgScores.setText(scores[0] + ":" + scores[1]);
+                TextView score = gameplay.findViewById(R.id.score_text);
+                score.setText(scores[0] + ":" + scores[1]);
             }
         });
     }

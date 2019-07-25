@@ -31,8 +31,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:src="@drawable/arrowleft"
-            android:layout_weight="1"
-            android:onClick="changeGameSpeed" />
+            android:layout_weight="1" />
 
         <TextView
             android:id="@+id/game_speed_value"
@@ -46,8 +45,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:src="@drawable/arrowright"
-            android:layout_weight="1"
-            android:onClick="changeGameSpeed" />
+            android:layout_weight="1" />
     </LinearLayout>
 
     <LinearLayout
