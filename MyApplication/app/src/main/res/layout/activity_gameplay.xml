@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/background"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent"
+    tools:context=".view.activities.GameplayActivity" >
 
     <TextView
         android:id="@+id/score_text"
@@ -22,5 +23,35 @@
         android:layout_gravity="right"
         android:padding="15dp"
         style="@style/Text"
-        android:textSize="30dp" />
+        android:textSize="30dp"/>
+
+    <LinearLayout
+        android:id="@+id/pause_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:weightSum="2">
+
+        <TextView
+            android:id="@+id/resume_text"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="CONTINUE"
+            android:padding="10dp"
+            style="@style/Text"/>
+
+        <TextView
+            android:id="@+id/main_menu_text"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="MAIN MENU"
+            android:padding="10dp"
+            style="@style/Text" />
+
+    </LinearLayout>
+
 </FrameLayout>

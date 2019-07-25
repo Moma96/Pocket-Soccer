@@ -1,7 +1,5 @@
 package com.example.myapplication.view.updaters;
 
-import android.os.Build;
-import android.support.annotation.RequiresApi;
 import android.util.Log;
 import android.widget.ImageView;
 

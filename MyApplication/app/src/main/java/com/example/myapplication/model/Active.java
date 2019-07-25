@@ -18,6 +18,12 @@ public abstract class Active extends Thread {
         notifyAll();
     }
 
+    private synchronized void waitActive() throws InterruptedException {
+        while (!active) {
+            wait();
+        }
+    }
+
     protected abstract void iterate();
 
     protected void before() {
@@ -37,9 +43,7 @@ public abstract class Active extends Thread {
             before();
             while (!terminated) {
                 iterate();
-                while (!active) {
-                    wait();
-                }
+                waitActive();
             }
             after();
         } catch(InterruptedException e) {

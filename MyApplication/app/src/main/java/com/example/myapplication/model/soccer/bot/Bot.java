@@ -2,7 +2,6 @@ package com.example.myapplication.model.soccer.bot;
 
 import com.example.myapplication.model.Active;
 import com.example.myapplication.model.soccer.SoccerGameplay;
-import com.example.myapplication.model.Vector;
 import com.example.myapplication.model.soccer.models.Player;
 
 

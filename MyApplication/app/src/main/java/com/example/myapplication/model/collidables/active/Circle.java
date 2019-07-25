@@ -296,7 +296,7 @@ public class Circle extends Active implements Collidable {
         try {
             checkSpeed();
             field.barrier(this);
-            //checkCollision();
+            //checkCollision(); ///pri koliziji nastao deadlock
             if (!speed.isZeroVector()) {
                 move();
                 work();

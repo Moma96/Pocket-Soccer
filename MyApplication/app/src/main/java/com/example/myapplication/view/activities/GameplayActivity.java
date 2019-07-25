@@ -5,7 +5,10 @@ import android.os.Bundle;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
+import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.example.myapplication.R;
 import com.example.myapplication.model.soccer.SoccerFacade;
@@ -21,6 +24,26 @@ public class GameplayActivity extends AppCompatActivity {
     private SoccerFacade soccerFacade;
     private ViewUpdater viewUpdater;
 
+    private View.OnClickListener pause = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            soccer.pause();
+            TextView p = findViewById(R.id.pause_text);
+            p.setClickable(false);
+            setPauseOptions();
+        }
+    };
+
+    private View.OnClickListener resume = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            resetPauseOptions();
+            TextView p = findViewById(R.id.pause_text);
+            p.setClickable(true);
+            soccer.resume();
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,6 +56,9 @@ public class GameplayActivity extends AppCompatActivity {
         final int fieldimg = intent.getIntExtra("fieldimg", SoccerGameplay.DEFAULT_FIELD_IMG);
         int field = getResources().getIdentifier("field" + fieldimg, "drawable", getPackageName());
         background.setBackgroundResource(field);
+
+        resetPauseOptions();
+        setListener();
 
         background.post(new Runnable() {
             @Override
@@ -59,6 +85,28 @@ public class GameplayActivity extends AppCompatActivity {
         gestureDetectorCompat = new GestureDetectorCompat(this, gestureListener);
     }
 
+    private void resetPauseOptions() {
+        TextView ct = findViewById(R.id.resume_text);
+        ct.setVisibility(View.INVISIBLE);
+        ct.setClickable(false);
+        TextView mmt = findViewById(R.id.main_menu_text);
+        mmt.setVisibility(View.INVISIBLE);
+        mmt.setClickable(false);
+    }
+
+    private void setPauseOptions() {
+        LinearLayout ll = findViewById(R.id.pause_layout);
+        ll.bringToFront();
+
+        TextView ct = findViewById(R.id.resume_text);
+        ct.setVisibility(View.VISIBLE);
+        ct.setClickable(true);
+        TextView mmt = findViewById(R.id.main_menu_text);
+        mmt.setVisibility(View.VISIBLE);
+        mmt.setClickable(true);
+    }
+
+
     public SoccerModel getSoccer() {
         return soccer;
     }
@@ -69,6 +117,11 @@ public class GameplayActivity extends AppCompatActivity {
             gestureDetectorCompat.onTouchEvent(event);
         }
         return true;
+    }
+
+    private void setListener() {
+        findViewById(R.id.pause_text).setOnClickListener(pause);
+        findViewById(R.id.resume_text).setOnClickListener(resume);
     }
 
 }
