@@ -120,8 +120,8 @@ public class Circle extends Active implements Collidable {
                 this.speed = new Vector(speed);
 
                 if (this.speed.inRange(-field.DISTANCE_PRECISSION, field.DISTANCE_PRECISSION)) {
+                   // field.checkStopped(this);
                     this.speed.clear();
-                    field.checkStopped(this);
                 } else {
                     friction = speed.invert();
                     friction.scaleIntensity(field.getFrictionCoefficient());
@@ -286,7 +286,8 @@ public class Circle extends Active implements Collidable {
     }
 
     private synchronized void checkSpeed() throws InterruptedException {
-        if (speed.isZeroVector()) {
+        if (!field.isMoving(this)) {
+            Log.e(COLLISION_TAG, this + "stopped (waiting) Barrier");
             wait();
         }
     }

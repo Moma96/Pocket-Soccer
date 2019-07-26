@@ -15,7 +15,7 @@ import java.util.HashSet;
 
 public abstract class Field {
 
-    public static final double DISTANCE_PRECISSION = 1.0E-12;
+    public static final double DISTANCE_PRECISSION = 1.0E-11;
 
     private static final String BARRIER_TAG = "Barrier";
     private static final String STATE_TAG = "Circle state";
@@ -69,6 +69,10 @@ public abstract class Field {
 
     }
 
+    public synchronized boolean isMoving(Circle circle) {
+        return moving.contains(circle);
+    }
+
     public synchronized Circle getCircle(Vector dot) {
         if (dot == null) return null;
 
@@ -98,15 +102,16 @@ public abstract class Field {
 
     public synchronized void barrier(@NotNull Circle circle) throws InterruptedException {
 
-        if (!circle.getSpeed().isZeroVector()) {
-            if (!moving.contains(circle)) {
+        //if (!circle.getSpeed().isZeroVector()) {
+            if (moving.contains(circle)) {
+            /*if (!moving.contains(circle)) {
                 Log.e(BARRIER_TAG, circle + " is not moving, barrier: " + barrier);
                 return;
-            }
+            }*/
 
-            Log.d(BARRIER_TAG, circle + " entered barrier"); //+ " time: " + time);
+            Log.e(BARRIER_TAG, circle + " entered barrier"); //+ " time: " + time);
             barrier.add(circle);
-            Log.d(BARRIER_TAG, "barrier: " + barrier + " moving: " + moving);
+            Log.e(BARRIER_TAG, "barrier: " + barrier + " moving: " + moving);
 
             if (barrier.size() < moving.size()) {
                 double oldTime = time;
@@ -115,7 +120,7 @@ public abstract class Field {
             }
         }
 
-        //checkStopped(circle);
+        checkStopped(circle);
 
         if (barrier.size() == moving.size()) {
             //////// optimizuj, ovo treba svaki krug pojedinacno da radi
@@ -164,11 +169,11 @@ public abstract class Field {
     }
 
     public synchronized void checkStarted(@NotNull Circle circle) {
-        if (!circle.getSpeed().isZeroVector() && !moving.contains(circle) && circles.contains(circle)) {
+        if (!moving.contains(circle) && circles.contains(circle)) {
             moving.add(circle);
 
             Log.d(BARRIER_TAG, circle + " entered moving");
-            Log.d(STATE_TAG, circle + " is moving");
+            Log.e(STATE_TAG, circle + " is moving");
         }
     }
 
@@ -183,7 +188,7 @@ public abstract class Field {
             }
 
             Log.d(BARRIER_TAG, circle + " left moving");
-            Log.d(STATE_TAG, circle + " stopped");
+            Log.e(STATE_TAG, circle + " stopped");
         }
     }
 

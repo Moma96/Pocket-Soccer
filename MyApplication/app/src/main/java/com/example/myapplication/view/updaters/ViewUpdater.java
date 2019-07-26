@@ -29,7 +29,6 @@ public class ViewUpdater extends Active {
     private HashMap<Circle, ImageView> imgCircles = new HashMap<>();
     private ImageView imgSelected;
     private ImageView imgGoalposts;
-    private TextView imgScores;
 
     public ViewUpdater(GameplayActivity gameplay, SoccerGameplay soccer, int[] teams) {
         this.gameplay = gameplay;
