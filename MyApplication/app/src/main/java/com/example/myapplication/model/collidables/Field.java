@@ -2,6 +2,7 @@ package com.example.myapplication.model.collidables;
 
 import android.util.Log;
 
+import com.example.myapplication.model.Active;
 import com.example.myapplication.model.collidables.active.Circle;
 import com.example.myapplication.model.collidables.inactive.InactiveObject;
 import com.example.myapplication.model.collidables.inactive.Wall;
@@ -13,16 +14,20 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-public abstract class Field {
+public abstract class Field extends Active {
 
     public static final double DISTANCE_PRECISSION = 1.0E-11;
 
     private static final String BARRIER_TAG = "Barrier";
     private static final String STATE_TAG = "Circle state";
 
+    public static final int MOVING_DELAY = 15; //15 ms
+
     private Integer nextCircleId = 0;
     private double time = 0;
     private double timeSpeed = 1;
+
+    protected int moving_delay;
 
     protected Wall walls[];
     protected final double friction;
@@ -32,14 +37,14 @@ public abstract class Field {
     private ArrayList<Circle> circles = new ArrayList<>();
 
     private HashSet<Circle> moving = new HashSet<>();
-    private HashSet<Circle> barrier = new HashSet<>();
 
-    public Field(final double friction) {
-        this.friction = friction;
+    public Field(double friction) {
+        this(friction, MOVING_DELAY);
     }
 
-    public HashSet<Circle> getBarrier() {
-        return barrier;
+    public Field(double friction, int moving_delay) {
+        this.friction = friction;
+        this.moving_delay = moving_delay;
     }
 
     public ArrayList<InactiveObject> getInactives() {
@@ -66,7 +71,6 @@ public abstract class Field {
             circles.add((Circle) collidable);
         else if (collidable instanceof InactiveObject)
             inactives.add((InactiveObject) collidable);
-
     }
 
     public synchronized boolean isMoving(Circle circle) {
@@ -100,48 +104,59 @@ public abstract class Field {
         }
     }
 
-    public synchronized void barrier(@NotNull Circle circle) throws InterruptedException {
+    public double getTime() {
+        return time;
+    }
 
-        //if (!circle.getSpeed().isZeroVector()) {
-            if (moving.contains(circle)) {
-            /*if (!moving.contains(circle)) {
-                Log.e(BARRIER_TAG, circle + " is not moving, barrier: " + barrier);
-                return;
-            }*/
 
-            Log.e(BARRIER_TAG, circle + " entered barrier"); //+ " time: " + time);
-            barrier.add(circle);
-            Log.e(BARRIER_TAG, "barrier: " + barrier + " moving: " + moving);
+    private boolean timeSpeedInRange(double ts) {
+        return ts < 1 - DISTANCE_PRECISSION && ts > DISTANCE_PRECISSION;
+    }
 
-            if (barrier.size() < moving.size()) {
-                double oldTime = time;
-                while (oldTime == time)
-                    wait();
-            }
+    public synchronized void checkStarted(@NotNull Circle circle) {
+        if (!moving.contains(circle) && circles.contains(circle)) {
+            moving.add(circle);
+
+            Log.e(STATE_TAG, circle + " is moving");
         }
+    }
 
-        checkStopped(circle);
+    public synchronized void checkStopped(@NotNull Circle circle) {
+        if (circle.getSpeed().isZeroVector() && moving.contains(circle) && circles.contains(circle)) {
+            moving.remove(circle);
 
-        if (barrier.size() == moving.size()) {
-            //////// optimizuj, ovo treba svaki krug pojedinacno da radi
-            checkCollisions();
-            calculateMinTime();
-            /////
-            barrierRelease();
+            if (moving.size() == 0) {
+                allStopped();
+            }
+
+            Log.e(STATE_TAG, circle + " stopped");
+        }
+    }
+
+    public synchronized boolean allNotMoving() {
+        return moving.size() == 0;
+    }
+
+    protected void allStopped() {
+        Log.d(BARRIER_TAG, "All stopped!");
+    }
+
+
+    private synchronized void waitAtLeastOne() throws InterruptedException {
+        while(allNotMoving()) {
+            wait();
         }
     }
 
     private synchronized void checkCollisions() {
-        for (Circle circle: barrier) {
+        ArrayList<Circle> tmoving = new ArrayList<>(moving);
+
+        for (Circle circle: tmoving) {
             for (Collidable collidable: collidables) {
                 if (circle != collidable)
                     circle.collision(collidable);
             }
         }
-    }
-
-    private boolean timeSpeedInRange(double ts) {
-        return ts < 1 - DISTANCE_PRECISSION && ts > DISTANCE_PRECISSION;
     }
 
     private synchronized void calculateMinTime() {
@@ -168,58 +183,33 @@ public abstract class Field {
             Log.d(BARRIER_TAG, "time speed in next round will be " + timeSpeed);
     }
 
-    public synchronized void checkStarted(@NotNull Circle circle) {
-        if (!moving.contains(circle) && circles.contains(circle)) {
-            moving.add(circle);
+    private void move() {
+        ArrayList<Circle> tmoving = new ArrayList<>(moving);
 
-            Log.d(BARRIER_TAG, circle + " entered moving");
-            Log.e(STATE_TAG, circle + " is moving");
+        for (Circle circle: tmoving) {
+            circle.move();
         }
-    }
-
-    public synchronized void checkStopped(@NotNull Circle circle) {
-        if (circle.getSpeed().isZeroVector() && moving.contains(circle) && circles.contains(circle)) {
-            moving.remove(circle);
-            if (barrier.contains(circle))
-                barrier.remove(circle);
-
-            if (moving.size() == 0) {
-                allStopped();
-            }
-
-            Log.d(BARRIER_TAG, circle + " left moving");
-            Log.e(STATE_TAG, circle + " stopped");
-        }
-    }
-
-    public synchronized void barrierRelease() {
-        time += timeSpeed;
-        Log.d(BARRIER_TAG, "Released, time: " + time);
-        checkTime();
-        barrier.clear();
-        notifyAll();
-    }
-
-    public synchronized void reset() {
-        barrierRelease();
-    }
-
-    public double getTime() {
-        return time;
     }
 
     protected void checkTime() {}
 
-    public synchronized boolean allNotMoving() {
-        for (Circle circle : circles) {
-            if (!circle.getSpeed().isZeroVector()) {
-                return false;
-            }
-        }
-        return true;
+    protected void delay() throws InterruptedException {
+        sleep((int)((double)moving_delay * timeSpeed));
     }
 
-    protected void allStopped() {
-        Log.d(BARRIER_TAG, "All stopped!");
+
+    @Override
+    public void iterate() {
+        try {
+            waitAtLeastOne();
+            checkCollisions();
+            calculateMinTime();
+            move();
+            time += timeSpeed;
+            checkTime();
+            delay();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }

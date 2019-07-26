@@ -39,15 +39,17 @@ public abstract class SoccerModel {
 
     public SoccerModel(double x, double y, double width, double height, final double friction, final double gamespeed) {
         setParameters(x, y, width, height);
-        field = new SoccerField(x, y, width, height, friction, this);
+        field = new SoccerField(x, y, width, height, friction,  gamespeed, this);
         setGoals();
 
-        ball = new Ball(new Vector(x + width*BALL_X, y + height*BALL_Y), (int)(Circle.MOVING_DELAY/gamespeed), this);
+        ball = new Ball(new Vector(x + width*BALL_X, y + height*BALL_Y), this);
 
-        players = new Player[2][3];
-        for (int p = 0; p < 2; p++) {
-            for (int i = 0; i < 3; i++)
-                players[p][i] = new Player(new Vector(x + width * PLAYER_X[p][i], y + height * PLAYER_Y[p][i]), (int)(Circle.MOVING_DELAY/gamespeed), field);
+        int p1ength = PLAYER_X.length;
+        int pperp = PLAYER_X[0].length;
+        players = new Player[p1ength][pperp];
+        for (int p = 0; p < p1ength; p++) {
+            for (int i = 0; i < pperp; i++)
+                players[p][i] = new Player(new Vector(x + width * PLAYER_X[p][i], y + height * PLAYER_Y[p][i]), field);
         }
 
 //*/
@@ -116,11 +118,7 @@ public abstract class SoccerModel {
         players[1][0].setRadius(30);
 
         players[0][0].push(new Vector(-2000, -700));
-
-
 //*/
-
-
     }
 
     public double getX() {
@@ -152,35 +150,19 @@ public abstract class SoccerModel {
     }
 
     public void start() {
-        ball.start();
-        for (int p = 0; p < players.length; p++) {
-            for (int i = 0; i < players[p].length; i++)
-                players[p][i].start();
-        }
+        field.start();
     }
 
     public void terminate() {
-        ball.terminate();
-        for (int p = 0; p < players.length; p++) {
-            for (int i = 0; i < players[p].length; i++)
-                players[p][i].terminate();
-        }
+        field.terminate();
     }
 
     public void pause() {
-        ball.inactive();
-        for (int p = 0; p < players.length; p++) {
-            for (int i = 0; i < players[p].length; i++)
-                players[p][i].inactive();
-        }
+        field.inactive();
     }
 
     public void resume() {
-        ball.active();
-        for (int p = 0; p < players.length; p++) {
-            for (int i = 0; i < players[p].length; i++)
-                players[p][i].active();
-        }
+        field.active();
     }
 
     public void reset() {   //OVO ISPRAVI LEPO SABANE :)))
@@ -193,8 +175,6 @@ public abstract class SoccerModel {
                     players[p][i].setCenter(new Vector(x + width * PLAYER_X[p][i], y + height * PLAYER_Y[p][i]));
                 }
             }
-
-            field.reset();
         }
     }
 

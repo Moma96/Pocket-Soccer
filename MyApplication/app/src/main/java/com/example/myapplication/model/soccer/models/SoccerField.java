@@ -11,8 +11,8 @@ public class SoccerField extends Field {
 
     private SoccerModel soccer;
 
-    public SoccerField(final double x, final double y, final double width, final double height, final double friction, @NotNull SoccerModel soccer) {
-        super(friction);
+    public SoccerField(double x, double y, double width, double height, double friction, double gamespeed, @NotNull SoccerModel soccer) {
+        super(friction, (int)(MOVING_DELAY/gamespeed));
 
         walls = new Wall[4];
         walls[0] = new Wall(Wall.Direction.NORTH, y);

@@ -1,5 +1,6 @@
 package com.example.myapplication.model.soccer.bot;
 
+import com.example.myapplication.model.soccer.models.Ball;
 import com.example.myapplication.model.soccer.models.Player;
 import com.example.myapplication.model.soccer.models.SoccerModel;
 
@@ -16,12 +17,12 @@ public class TestingSoccerModel extends SoccerModel {
         field = new TestingField(soccer.getX(), soccer.getY(), soccer.getWidth(), soccer.getHeight(), soccer.getField().getFrictionCoefficient(), genUnit, this);
         setGoals();
 
-        ball = new TestingBall(soccer.getBall(), field, this); /// da li je dobro ovo?
+        ball = new Ball(soccer.getBall(), field, this); /// da li je dobro ovo?
 
         players = new Player[2][3];
         for (int p = 0; p < 2; p++) {
             for (int i = 0; i < 3; i++)
-                players[p][i] = new TestingPlayer(soccer.getPlayers()[p][i], field); // da li je dobro ovo?
+                players[p][i] = new Player(soccer.getPlayers()[p][i], field); // da li je dobro ovo?
         }
         this.genUnit = genUnit;
     }

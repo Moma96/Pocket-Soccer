@@ -16,8 +16,8 @@ public class Ball extends Circle {
     private int goal_in_process = -1;
     private int goal_distance_measured = -1;
 
-    public Ball(Vector center, final int moving_delay, SoccerModel soccer) {
-        super(MASS, RADIUS, IMG_RADIUS_COEFFICIENT, moving_delay, center, soccer.getField());
+    public Ball(Vector center, SoccerModel soccer) {
+        super(MASS, RADIUS, IMG_RADIUS_COEFFICIENT, center, soccer.getField());
         this.soccer = soccer;
     }
 

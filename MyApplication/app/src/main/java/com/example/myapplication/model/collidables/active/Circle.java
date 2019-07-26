@@ -13,11 +13,10 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
 
-public class Circle extends Active implements Collidable {
+public class Circle implements Collidable {
 
     private static final String COLLISION_TAG = "Circle collision";
 
-    public static final int MOVING_DELAY = 15; //15 ms
     protected static final double MOVING_INCREMENT = 0.03; //0.03;
 
     protected double mass;
@@ -25,8 +24,6 @@ public class Circle extends Active implements Collidable {
 
     protected Vector speed;
     private Vector friction;
-
-    protected int moving_delay;
 
     private double radius;
     private double img_radius_coefficient;
@@ -38,31 +35,30 @@ public class Circle extends Active implements Collidable {
 
     private int id;
 
-    public Circle(double mass, double radius, double img_radius_coefficient, int moving_delay, Vector center, Vector speed, @NotNull Field field) {
-        this(mass, radius, img_radius_coefficient, moving_delay, center, speed, field, true);
+    public Circle(double mass, double radius, double img_radius_coefficient, Vector center, Vector speed, @NotNull Field field) {
+        this(mass, radius, img_radius_coefficient, center, speed, field, true);
     }
 
     public Circle(@NotNull Circle circle) {
         this(circle, true);
     }
 
-    public Circle(double mass, double radius, double img_radius_coefficient, int moving_delay, @NotNull Vector center, @NotNull Field field) {
-        this(mass, radius, img_radius_coefficient, moving_delay, center, new Vector(0, 0), field);
+    public Circle(double mass, double radius, double img_radius_coefficient, @NotNull Vector center, @NotNull Field field) {
+        this(mass, radius, img_radius_coefficient, center, new Vector(0, 0), field);
     }
 
     public Circle(@NotNull Circle circle, @NotNull Field field) {
-        this(circle.mass, circle.radius, circle.img_radius_coefficient, circle.moving_delay, circle.center, circle.speed, field);
+        this(circle.mass, circle.radius, circle.img_radius_coefficient, circle.center, circle.speed, field);
     }
 
     protected Circle(@NotNull Circle circle, boolean include) {
-        this(circle.mass, circle.radius, circle.img_radius_coefficient, circle.moving_delay, circle.center, circle.speed, circle.field, include);
+        this(circle.mass, circle.radius, circle.img_radius_coefficient, circle.center, circle.speed, circle.field, include);
     }
 
-    protected Circle(double mass, double radius, double img_radius_coefficient, int moving_delay, @NotNull Vector center, Vector speed, @NotNull Field field, boolean include) {
+    protected Circle(double mass, double radius, double img_radius_coefficient, @NotNull Vector center, Vector speed, @NotNull Field field, boolean include) {
         setField(field);
         setMass(mass);
         this.img_radius_coefficient = img_radius_coefficient;
-        this.moving_delay = moving_delay;
         setRadius(radius);
         setCenter(center);
         id = field.getNextId();
@@ -120,13 +116,15 @@ public class Circle extends Active implements Collidable {
                 this.speed = new Vector(speed);
 
                 if (this.speed.inRange(-field.DISTANCE_PRECISSION, field.DISTANCE_PRECISSION)) {
-                   // field.checkStopped(this);
+                    field.checkStopped(this);
                     this.speed.clear();
                 } else {
                     friction = speed.invert();
                     friction.scaleIntensity(field.getFrictionCoefficient());
 
                     field.checkStarted(this);
+
+                    field.notifyAll();
                     notifyAll();
                 }
             }
@@ -174,7 +172,6 @@ public class Circle extends Active implements Collidable {
 
     public void reset() {
         clearSpeed();
-       // collision_in_process.clear();
         //collision_processed.clear(); --- DA LI IMA POTREBE ZA OVIM?
     }
 
@@ -261,7 +258,7 @@ public class Circle extends Active implements Collidable {
 
     }
 
-    private void move() {
+    public void move() {
         synchronized (field) {
             setCenter(center.add(speed.mul(field.getTimeSpeed())));
 
@@ -269,6 +266,8 @@ public class Circle extends Active implements Collidable {
             friction.scaleIntensity(field.getFrictionCoefficient() * field.getTimeSpeed());
            // friction.mul(field.getTimeSpeed()); /// proveri zasto ovako ne radi
             setSpeed(speed.add(friction));
+
+            work();
         }
     }
 
@@ -280,34 +279,6 @@ public class Circle extends Active implements Collidable {
     }
 
     protected void work() {}
-
-    protected void delay() throws InterruptedException {
-        sleep((int)((double)moving_delay*field.getTimeSpeed()));
-    }
-
-    private synchronized void checkSpeed() throws InterruptedException {
-        if (!field.isMoving(this)) {
-            Log.e(COLLISION_TAG, this + "stopped (waiting) Barrier");
-            wait();
-        }
-    }
-
-    @Override
-    protected void iterate() {
-        try {
-            checkSpeed();
-            field.barrier(this);
-            //checkCollision(); ///pri koliziji nastao deadlock
-            if (!speed.isZeroVector()) {
-                move();
-                work();
-                delay();
-            }
-
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
 
     @Override
     public String toString() {
