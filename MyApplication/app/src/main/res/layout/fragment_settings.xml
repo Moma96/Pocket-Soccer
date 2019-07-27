@@ -37,8 +37,8 @@
             android:id="@+id/game_speed_value"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="2"
-            style="@style/Text" />
+            style="@style/Text"
+            android:layout_weight="2" />
 
         <ImageView
             android:id="@+id/game_speed_increase"
@@ -60,9 +60,9 @@
             android:id="@+id/friction_text"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="4"
             android:text="@string/friction_text"
-            style="@style/Text" />
+            style="@style/Text"
+            android:layout_weight="1" />
 
         <ImageView
             android:id="@+id/friction_decrease"
@@ -75,8 +75,8 @@
             android:id="@+id/friction_value"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="2"
-            style="@style/Text" />
+            style="@style/Text"
+            android:layout_weight="2" />
 
         <ImageView
             android:id="@+id/friction_increase"
@@ -87,6 +87,44 @@
     </LinearLayout>
 
     <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_weight="1"
+        android:weightSum="8">
+
+        <TextView
+            android:id="@+id/ball_mass_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/ball_mass_text"
+            style="@style/Text"
+            android:layout_weight="4" />
+
+        <ImageView
+            android:id="@+id/ball_mass_decrease"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:src="@drawable/arrowleft"
+            android:layout_weight="1" />
+
+        <TextView
+            android:id="@+id/ball_mass_value"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            style="@style/Text"
+            android:layout_weight="2" />
+
+        <ImageView
+            android:id="@+id/ball_mass_increase"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:src="@drawable/arrowright"
+            android:layout_weight="1" />
+    </LinearLayout>
+
+    <!--<LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:orientation="horizontal"
@@ -113,6 +151,6 @@
             android:layout_height="wrap_content"
             android:src="@drawable/arrowright"
             android:layout_weight="1"/>
-    </LinearLayout>
+    </LinearLayout>-->
 
 </LinearLayout>

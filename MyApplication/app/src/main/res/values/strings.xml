@@ -8,4 +8,5 @@
     <string name="history_text">HISTORY</string>
     <string name="friction_text">FRICTION</string>
     <string name="game_speed_text">GAME SPEED</string>
+    <string name="ball_mass_text">BALL MASS</string>
 </resources>

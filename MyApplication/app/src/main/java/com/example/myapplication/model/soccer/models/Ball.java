@@ -8,7 +8,6 @@ import org.jetbrains.annotations.NotNull;
 
 public class Ball extends Circle {
 
-    private static final double MASS = 0.5; //0.5
     private static final double RADIUS = 30; //30
     private static final double IMG_RADIUS_COEFFICIENT = 2.5;
 
@@ -16,8 +15,8 @@ public class Ball extends Circle {
     private int goal_in_process = -1;
     private int goal_distance_measured = -1;
 
-    public Ball(Vector center, SoccerModel soccer) {
-        super(MASS, RADIUS, IMG_RADIUS_COEFFICIENT, center, soccer.getField());
+    public Ball(Vector center, double mass, SoccerModel soccer) {
+        super(mass, RADIUS, IMG_RADIUS_COEFFICIENT, center, soccer.getField());
         this.soccer = soccer;
     }
 

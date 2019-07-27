@@ -23,10 +23,16 @@ public class Settings extends Fragment {
     private final static double BIGGER_FRICTION_INCREMENT = 0.1;
     private final static double FRICTION_INCREMENT_TRANSITION = 0.4;
 
+    private final static double BIGGEST_BALL_MASS = 2.0;
+    private final static double SMALLEST_BALL_MASS = 0.1;
+    private final static double BALL_MASS_INCREMENT = 0.1;
+
+
     private final static int FIELDS = 4;
 
     private double friction = 0.2;
     private double gamespeed = 1;
+    private double ballMass = 0.4;
     private int fieldimg = 0;
 
     private View.OnClickListener changeGameSpeed = new View.OnClickListener() {
@@ -66,7 +72,7 @@ public class Settings extends Fragment {
         }
     };
 
-    private View.OnClickListener changeField = new View.OnClickListener() {
+    /*private View.OnClickListener changeField = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
             switch(view.getId()) {
@@ -78,6 +84,23 @@ public class Settings extends Fragment {
                     break;
             }
             updateFieldImg();
+        }
+    };*/
+
+    private View.OnClickListener changeBallWeight = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            switch(view.getId()) {
+                case R.id.ball_mass_decrease:
+                    if (ballMass > SMALLEST_BALL_MASS)
+                        ballMass -= BALL_MASS_INCREMENT;
+                    break;
+                case R.id.ball_mass_increase:
+                    if (ballMass < BIGGEST_BALL_MASS)
+                        ballMass += BALL_MASS_INCREMENT;
+                    break;
+            }
+            updateBallMass();
         }
     };
 
@@ -94,7 +117,8 @@ public class Settings extends Fragment {
 
         updateGameSpeedValue();
         updateFrictionValue();
-        updateFieldImg();
+        updateBallMass();
+        //updateFieldImg();
         setListener();
     }
 
@@ -104,6 +128,10 @@ public class Settings extends Fragment {
 
     public double getGamespeed() {
         return gamespeed;
+    }
+
+    public double getBallMass() {
+        return ballMass;
     }
 
     public int getFieldimg() {
@@ -120,17 +148,24 @@ public class Settings extends Fragment {
         fv.setText((int)(friction*500) + "%");
     }
 
-    private void updateFieldImg() {
+    private void updateBallMass() {
+        TextView bm = getActivity().findViewById(R.id.ball_mass_value);
+        bm.setText((int)(ballMass*250) + "%");
+    }
+
+    /*private void updateFieldImg() {
         ImageView fimg = getActivity().findViewById(R.id.field_img);
         fimg.setImageResource(getResources().getIdentifier("field" + fieldimg, "drawable", getActivity().getPackageName()));
-    }
+    }*/
 
     private void setListener() {
         getActivity().findViewById(R.id.game_speed_decrease).setOnClickListener(changeGameSpeed);
         getActivity().findViewById(R.id.game_speed_increase).setOnClickListener(changeGameSpeed);
         getActivity().findViewById(R.id.friction_decrease).setOnClickListener(changeFriction);
         getActivity().findViewById(R.id.friction_increase).setOnClickListener(changeFriction);
-        getActivity().findViewById(R.id.field_left).setOnClickListener(changeField);
-        getActivity().findViewById(R.id.field_right).setOnClickListener(changeField);
+        //getActivity().findViewById(R.id.field_left).setOnClickListener(changeField);
+        //getActivity().findViewById(R.id.field_right).setOnClickListener(changeField);
+        getActivity().findViewById(R.id.ball_mass_decrease).setOnClickListener(changeBallWeight);
+        getActivity().findViewById(R.id.ball_mass_increase).setOnClickListener(changeBallWeight);
     }
 }

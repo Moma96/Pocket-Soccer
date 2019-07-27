@@ -11,6 +11,7 @@ public abstract class SoccerModel {
 
     public static final double DEFAULT_GAME_SPEED = 1;
     public static final double DEFAULT_FRICTION = 0.1;
+    public static final double DEFAULT_BALL_MASS = 0.4;
 
     public static final double GOAL_WIDTH = 100;
     public static final double GOAL_HEIGHT = 300;
@@ -37,12 +38,12 @@ public abstract class SoccerModel {
 
     public SoccerModel() {}
 
-    public SoccerModel(double x, double y, double width, double height, final double friction, final double gamespeed) {
+    public SoccerModel(double x, double y, double width, double height, double friction, double gamespeed, double ballMass) {
         setParameters(x, y, width, height);
         field = new SoccerField(x, y, width, height, friction,  gamespeed, this);
         setGoals();
 
-        ball = new Ball(new Vector(x + width*BALL_X, y + height*BALL_Y), this);
+        ball = new Ball(new Vector(x + width*BALL_X, y + height*BALL_Y), ballMass, this);
 
         int p1ength = PLAYER_X.length;
         int pperp = PLAYER_X[0].length;

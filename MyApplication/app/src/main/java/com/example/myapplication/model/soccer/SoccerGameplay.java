@@ -31,8 +31,8 @@ public class SoccerGameplay extends SoccerModel {
     private Boolean responsiveness = false;
     private Boolean botPlaying = false;
 
-    public SoccerGameplay(double x, double y, double width, double height, final double friction, final double gamespeed, final boolean[] botplay) {
-        super(x, y, width, height, friction, gamespeed);
+    public SoccerGameplay(double x, double y, double width, double height, double friction, double gamespeed, double ballMass, boolean[] botplay) {
+        super(x, y, width, height, friction, gamespeed, ballMass);
 
         bots[0] = new Bot(this, 0);
         bots[1] = new Bot(this, 1);

@@ -43,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra("fieldimg", settings.getFieldimg());
         intent.putExtra("gamespeed", settings.getGamespeed());
         intent.putExtra("friction", settings.getFriction());
+        intent.putExtra("ballmass", settings.getBallMass());
         intent.putExtra("botplay", botplay);
 
         startActivityForResult(intent, PLAY);

@@ -67,14 +67,15 @@ public class GameplayActivity extends AppCompatActivity {
                         intent.getIntArrayExtra("teamsimg"),
                         intent.getDoubleExtra("friction", SoccerModel.DEFAULT_FRICTION),
                         intent.getDoubleExtra("gamespeed", SoccerModel.DEFAULT_GAME_SPEED),
+                        intent.getDoubleExtra("ballmass", SoccerModel.DEFAULT_BALL_MASS),
                         intent.getBooleanArrayExtra("botplay"));
             }
         });
     }
 
-    private void setup(FrameLayout background, final int[] teams, final double friction, final double gamespeed, final boolean[] botplay) {
+    private void setup(FrameLayout background, int[] teams, double friction, double gamespeed, double ballMass, boolean[] botplay) {
 
-        soccer = new SoccerGameplay(0, 0, background.getWidth(), background.getHeight(), friction, gamespeed, botplay);
+        soccer = new SoccerGameplay(0, 0, background.getWidth(), background.getHeight(), friction, gamespeed, ballMass, botplay);
         viewUpdater = new ViewUpdater(this, soccer, teams);
         soccerFacade = new SoccerFacade(this, soccer, viewUpdater);
 
