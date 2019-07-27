@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class Player extends Circle {
 
-    private static final double MASS = 10; //10
+    private static final double MASS = 1;
     private static final double RADIUS = 80; //80
     public static final double IMG_RADIUS_COEFFICIENT = 1.05;
     public static final double SELECTION_RADIUS_COEFFICIENT = 1.5;

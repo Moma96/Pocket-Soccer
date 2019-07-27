@@ -27,7 +27,7 @@ public class Settings extends Fragment {
 
     private double friction = 0.2;
     private double gamespeed = 1;
-    private int fieldimg = 1;
+    private int fieldimg = 0;
 
     private View.OnClickListener changeGameSpeed = new View.OnClickListener() {
         @Override

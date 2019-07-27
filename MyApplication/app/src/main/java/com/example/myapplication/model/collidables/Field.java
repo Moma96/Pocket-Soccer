@@ -18,7 +18,7 @@ public abstract class Field extends Active {
 
     public static final double DISTANCE_PRECISSION = 1.0E-11;
 
-    private static final String BARRIER_TAG = "Barrier";
+    private static final String FIELD_TAG = "Field";
     private static final String STATE_TAG = "Circle state";
 
     public static final int MOVING_DELAY = 15; //15 ms
@@ -138,7 +138,7 @@ public abstract class Field extends Active {
     }
 
     protected void allStopped() {
-        Log.d(BARRIER_TAG, "All stopped!");
+        Log.d(FIELD_TAG, "All stopped!");
     }
 
 
@@ -172,6 +172,7 @@ public abstract class Field extends Active {
                     if (collidable.isClose(circle)) {
 
                         double ts = collidable.nextCollisionTime(circle);
+                        //Log.e(FIELD_TAG, "Collision time between " + circle + " and " + collidable + " is " + ts);
                         if (timeSpeedInRange(ts) && ts < timeSpeed)
                             timeSpeed = ts;
                     }
@@ -180,7 +181,7 @@ public abstract class Field extends Active {
         }
 
         if (timeSpeed < 1)
-            Log.d(BARRIER_TAG, "time speed in next round will be " + timeSpeed);
+            Log.d(FIELD_TAG, "time speed is " + timeSpeed);
     }
 
     private void move() {
@@ -189,6 +190,11 @@ public abstract class Field extends Active {
         for (Circle circle: tmoving) {
             circle.move();
         }
+    }
+
+    private void updateTime() {
+        time += timeSpeed;
+        checkTime();
     }
 
     protected void checkTime() {}
@@ -205,8 +211,7 @@ public abstract class Field extends Active {
             checkCollisions();
             calculateMinTime();
             move();
-            time += timeSpeed;
-            checkTime();
+            updateTime();
             delay();
         } catch (InterruptedException e) {
             e.printStackTrace();

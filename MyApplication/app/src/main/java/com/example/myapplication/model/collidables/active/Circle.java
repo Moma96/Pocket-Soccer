@@ -235,8 +235,7 @@ public class Circle implements Collidable {
             double distance = collided.getDistance(this);
             if (distance >= -Field.DISTANCE_PRECISSION && distance <= Field.DISTANCE_PRECISSION) {
 
-                Log.e(COLLISION_TAG, this + " and " + collided + " collided");
-
+                Log.e(COLLISION_TAG, this + " and " + collided + " collided with distance " + distance);
                 collided.collisionHappened(this);
 
             } else if (distance < -Field.DISTANCE_PRECISSION) {
@@ -272,7 +271,7 @@ public class Circle implements Collidable {
     }
 
     public double stoppingTime() {
-        if (friction.intensity() > speed.intensity()) {
+        if (friction != null && friction.intensity() > speed.intensity()) {
             return speed.intensity() / friction.intensity();
         } else
             return 1;

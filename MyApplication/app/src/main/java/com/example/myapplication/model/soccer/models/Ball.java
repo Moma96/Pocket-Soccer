@@ -8,8 +8,8 @@ import org.jetbrains.annotations.NotNull;
 
 public class Ball extends Circle {
 
-    private static final double MASS = 1;
-    private static final double RADIUS = 30;
+    private static final double MASS = 0.5; //0.5
+    private static final double RADIUS = 30; //30
     private static final double IMG_RADIUS_COEFFICIENT = 2.5;
 
     protected SoccerModel soccer;
