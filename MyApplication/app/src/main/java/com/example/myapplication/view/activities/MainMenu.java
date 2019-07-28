@@ -1,6 +1,6 @@
 package com.example.myapplication.view.activities;
 
-import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -63,9 +63,12 @@ public class MainMenu extends Fragment {
     }
 
     public void updateMenuFragment() {
-        TextView clg = getActivity().findViewById(R.id.last_game);
-        clg.setClickable(false);
-        clg.setTextColor(Color.GRAY);
+        MainActivity activity = (MainActivity)getActivity();
+        if (activity.soccer == null) {
+            TextView clg = getActivity().findViewById(R.id.last_game);
+            clg.setClickable(false);
+            clg.setTextColor(Color.GRAY);
+        }
     }
 
     private void setListener() {

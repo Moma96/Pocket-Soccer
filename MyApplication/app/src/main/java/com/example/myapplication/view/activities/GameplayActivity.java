@@ -44,6 +44,26 @@ public class GameplayActivity extends AppCompatActivity {
         }
     };
 
+    private View.OnClickListener mainMenu = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            Intent data = new Intent();
+            data.putExtra("soccer", soccer);
+            /*data.putExtra("ballXCenter",soccer.deserializeBall("centerX"));
+            data.putExtra("ballYCenter",soccer.deserializeBall("centerY"));
+            data.putExtra("playersXCenter",soccer.deserializePlayers("centerX"));
+            data.putExtra("playersYCenter",soccer.deserializePlayers("centerY"));
+
+            data.putExtra("ballXSpeed",soccer.deserializeBall("speedX"));
+            data.putExtra("ballYSpeed",soccer.deserializeBall("speedY"));
+            data.putExtra("playersXSpeed",soccer.deserializePlayers("speedX"));
+            data.putExtra("playersYSpeed",soccer.deserializePlayers("speedY"));*/
+
+            setResult(2, data);
+            finish();
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,12 +83,19 @@ public class GameplayActivity extends AppCompatActivity {
         background.post(new Runnable() {
             @Override
             public void run() {
-                setup(background,
-                        intent.getIntArrayExtra("teamsimg"),
-                        intent.getDoubleExtra("friction", SoccerModel.DEFAULT_FRICTION),
-                        intent.getDoubleExtra("gamespeed", SoccerModel.DEFAULT_GAME_SPEED),
-                        intent.getDoubleExtra("ballmass", SoccerModel.DEFAULT_BALL_MASS),
-                        intent.getBooleanArrayExtra("botplay"));
+                switch (intent.getStringExtra("mode")) {
+                    case "new game":
+                        setup(background,
+                                intent.getIntArrayExtra("teamsimg"),
+                                intent.getDoubleExtra("friction", SoccerModel.DEFAULT_FRICTION),
+                                intent.getDoubleExtra("gamespeed", SoccerModel.DEFAULT_GAME_SPEED),
+                                intent.getDoubleExtra("ballmass", SoccerModel.DEFAULT_BALL_MASS),
+                                intent.getBooleanArrayExtra("botplay"));
+                        break;
+                    case "last game":
+                        setup((SoccerGameplay) intent.getSerializableExtra("soccer"),
+                                intent.getIntArrayExtra("teamsimg"));
+                }
             }
         });
     }
@@ -76,6 +103,19 @@ public class GameplayActivity extends AppCompatActivity {
     private void setup(FrameLayout background, int[] teams, double friction, double gamespeed, double ballMass, boolean[] botplay) {
 
         soccer = new SoccerGameplay(0, 0, background.getWidth(), background.getHeight(), friction, gamespeed, ballMass, botplay);
+        viewUpdater = new ViewUpdater(this, soccer, teams);
+        soccerFacade = new SoccerFacade(this, soccer, viewUpdater);
+
+        soccer.start();
+        viewUpdater.start();
+
+        GestureListener gestureListener = new GestureListener(soccerFacade);
+        gestureDetectorCompat = new GestureDetectorCompat(this, gestureListener);
+    }
+
+    private void setup(SoccerGameplay s, int[] teams) {
+
+        soccer = s;
         viewUpdater = new ViewUpdater(this, soccer, teams);
         soccerFacade = new SoccerFacade(this, soccer, viewUpdater);
 
@@ -123,6 +163,7 @@ public class GameplayActivity extends AppCompatActivity {
     private void setListener() {
         findViewById(R.id.pause_text).setOnClickListener(pause);
         findViewById(R.id.resume_text).setOnClickListener(resume);
+        findViewById(R.id.main_menu_text).setOnClickListener(mainMenu);
     }
 
 }

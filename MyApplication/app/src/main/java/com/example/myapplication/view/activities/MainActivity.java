@@ -6,18 +6,26 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 
 import com.example.myapplication.R;
+import com.example.myapplication.model.soccer.SoccerGameplay;
 
 public class MainActivity extends AppCompatActivity {
+
+    private final static int PLAY = 1;
+    private final static int GAME_FINISHED_CODE = 1;
+    private final static int MAIN_MENU_CODE = 2;
 
     private MainMenu mainMenu;
     private SelectPlayers selectPlayers;
     private Settings settings;
     private History history;
 
-    private final static int PLAY = 1;
+    public SoccerGameplay soccer = null;//////////////////////////////////////////////
+    public int[] savedteams;
+    public int savedfield;
 
     private boolean[] botplay = { false, false };
 
@@ -34,6 +42,23 @@ public class MainActivity extends AppCompatActivity {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.add(R.id.fragment, mainMenu);
         ft.commit();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch(requestCode) {
+            case PLAY:
+                switch (resultCode) {
+                    case GAME_FINISHED_CODE:
+
+                        break;
+                    case MAIN_MENU_CODE:
+                        soccer = (SoccerGameplay)data.getSerializableExtra("soccer");
+                        replaceFragment(mainMenu);
+                        break;
+                }
+                break;
+        }
     }
 
     public MainMenu getMainMenu() {
@@ -54,6 +79,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void newGame() {
         Intent intent = new Intent(this, GameplayActivity.class);
+        intent.putExtra("mode", "new game");
         intent.putExtra("teamsimg", selectPlayers.getTeamsimg());
         intent.putExtra("fieldimg", settings.getFieldimg());
         intent.putExtra("gamespeed", settings.getGamespeed());
@@ -66,12 +92,10 @@ public class MainActivity extends AppCompatActivity {
 
     public void continueLastGame() {
         Intent intent = new Intent(this, GameplayActivity.class);
-        intent.putExtra("teamsimg", selectPlayers.getTeamsimg());
-        intent.putExtra("fieldimg", settings.getFieldimg());
-        intent.putExtra("gamespeed", settings.getGamespeed());
-        intent.putExtra("friction", settings.getFriction());
-        intent.putExtra("ballmass", settings.getBallMass());
-        intent.putExtra("botplay", botplay);
+        intent.putExtra("mode", "last game");
+        intent.putExtra("soccer", soccer);
+        intent.putExtra("fieldimg", savedfield);
+        intent.putExtra("teamsimg", savedteams);
 
         startActivityForResult(intent, PLAY);
     }

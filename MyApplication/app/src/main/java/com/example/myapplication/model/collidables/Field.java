@@ -108,6 +108,9 @@ public abstract class Field extends Active {
         return time;
     }
 
+    public double getFriction() {
+        return friction;
+    }
 
     private boolean timeSpeedInRange(double ts) {
         return ts < 1 - DISTANCE_PRECISSION && ts > DISTANCE_PRECISSION;
@@ -172,7 +175,6 @@ public abstract class Field extends Active {
                     if (collidable.isClose(circle)) {
 
                         double ts = collidable.nextCollisionTime(circle);
-                        //Log.e(FIELD_TAG, "Collision time between " + circle + " and " + collidable + " is " + ts);
                         if (timeSpeedInRange(ts) && ts < timeSpeed)
                             timeSpeed = ts;
                     }

@@ -6,14 +6,22 @@ import com.example.myapplication.model.Vector;
 
 import org.jetbrains.annotations.NotNull;
 
-public class Ball extends Circle {
+import java.io.Serializable;
+
+public class Ball extends Circle implements Serializable {
 
     private static final double RADIUS = 30; //30
     private static final double IMG_RADIUS_COEFFICIENT = 2.5;
 
-    protected SoccerModel soccer;
+    transient protected SoccerModel soccer;
+
     private int goal_in_process = -1;
     private int goal_distance_measured = -1;
+
+    public Ball(Vector center, Vector speed, double mass, SoccerModel soccer) {
+        super(mass, RADIUS, IMG_RADIUS_COEFFICIENT, center, speed, soccer.getField());
+        this.soccer = soccer;
+    }
 
     public Ball(Vector center, double mass, SoccerModel soccer) {
         super(mass, RADIUS, IMG_RADIUS_COEFFICIENT, center, soccer.getField());

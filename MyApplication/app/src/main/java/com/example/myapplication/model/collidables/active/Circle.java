@@ -11,9 +11,10 @@ import com.example.myapplication.model.collidables.Field;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.Serializable;
 import java.util.HashSet;
 
-public class Circle implements Collidable {
+public class Circle implements Collidable, Serializable {
 
     private static final String COLLISION_TAG = "Circle collision";
 
@@ -29,7 +30,7 @@ public class Circle implements Collidable {
     private double img_radius_coefficient;
     private double img_radius;
 
-    private Field field;
+    transient private Field field;
 
     private HashSet<Circle> collision_processed;
 
@@ -43,8 +44,8 @@ public class Circle implements Collidable {
         this(circle, true);
     }
 
-    public Circle(double mass, double radius, double img_radius_coefficient, @NotNull Vector center, @NotNull Field field) {
-        this(mass, radius, img_radius_coefficient, center, new Vector(0, 0), field);
+    public Circle(double mass, double radius, double img_radius_coefficient, Vector center, @NotNull Field field) {
+        this(mass, radius, img_radius_coefficient, center, null, field);
     }
 
     public Circle(@NotNull Circle circle, @NotNull Field field) {
@@ -55,7 +56,7 @@ public class Circle implements Collidable {
         this(circle.mass, circle.radius, circle.img_radius_coefficient, circle.center, circle.speed, circle.field, include);
     }
 
-    protected Circle(double mass, double radius, double img_radius_coefficient, @NotNull Vector center, Vector speed, @NotNull Field field, boolean include) {
+    protected Circle(double mass, double radius, double img_radius_coefficient, Vector center, Vector speed, @NotNull Field field, boolean include) {
         setField(field);
         setMass(mass);
         this.img_radius_coefficient = img_radius_coefficient;
@@ -170,13 +171,8 @@ public class Circle implements Collidable {
         }
     }
 
-    public void reset() {
-        clearSpeed();
-        //collision_processed.clear(); --- DA LI IMA POTREBE ZA OVIM?
-    }
-
     public void clearSpeed() {
-        setSpeed(new Vector(0, 0));
+        setSpeed(null);
     }
 
     @Override

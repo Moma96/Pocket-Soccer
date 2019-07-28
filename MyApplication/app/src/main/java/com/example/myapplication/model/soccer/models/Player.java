@@ -8,7 +8,9 @@ import com.example.myapplication.model.Vector;
 
 import org.jetbrains.annotations.NotNull;
 
-public class Player extends Circle {
+import java.io.Serializable;
+
+public class Player extends Circle implements Serializable {
 
     private static final double MASS = 1;
     private static final double RADIUS = 80; //80
@@ -17,7 +19,11 @@ public class Player extends Circle {
 
     private double selectionRadius;
 
-    public Player(@NotNull Vector center, SoccerField field) {
+    public Player(Vector center, Vector speed, SoccerField field) {
+        super(MASS, RADIUS, IMG_RADIUS_COEFFICIENT, center, speed, field);
+    }
+
+    public Player(Vector center, SoccerField field) {
         super(MASS, RADIUS, IMG_RADIUS_COEFFICIENT, center, field);
     }
 

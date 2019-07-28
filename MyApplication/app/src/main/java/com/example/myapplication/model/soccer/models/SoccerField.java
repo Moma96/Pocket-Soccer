@@ -10,6 +10,7 @@ public class SoccerField extends Field {
     private static final double FRICTION_COEFFICIENT = 0.01;// 0.01;
 
     private SoccerModel soccer;
+    private double gamespeed;
 
     public SoccerField(double x, double y, double width, double height, double friction, double gamespeed, @NotNull SoccerModel soccer) {
         super(friction, (int)(MOVING_DELAY/gamespeed));
@@ -24,10 +25,15 @@ public class SoccerField extends Field {
             addCollidable(wall);
         }
         this.soccer = soccer;
+        this.gamespeed = gamespeed;
     }
 
     public SoccerModel getSoccer() {
         return soccer;
+    }
+
+    public double getGamespeed() {
+        return gamespeed;
     }
 
     protected void allStopped() {

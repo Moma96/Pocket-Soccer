@@ -1,6 +1,9 @@
 package com.example.myapplication.model;
 
-public class Vector {
+import java.io.Serializable;
+
+public class Vector implements Serializable {
+
     private double x;
     private double y;
 
@@ -10,7 +13,8 @@ public class Vector {
     }
 
     public Vector(Vector v) {
-        if (v == null) return;
+        if (v == null)
+            v = new Vector(0, 0);
         x = v.x;
         y = v.y;
      }

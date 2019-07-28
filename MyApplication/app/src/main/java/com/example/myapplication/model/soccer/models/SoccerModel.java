@@ -5,7 +5,11 @@ import android.util.Log;
 import com.example.myapplication.model.Vector;
 import com.example.myapplication.model.collidables.active.Circle;
 
-public abstract class SoccerModel {
+import org.jetbrains.annotations.NotNull;
+
+import java.io.Serializable;
+
+public abstract class SoccerModel implements Serializable {
 
     protected static final String GOAL_TAG = "Goal";
 
@@ -16,17 +20,17 @@ public abstract class SoccerModel {
     public static final double GOAL_WIDTH = 100;
     public static final double GOAL_HEIGHT = 300;
 
-    public static final double BALL_X = 1.0/2;
-    public static final double BALL_Y = 1.0/2;
+    public static final double BALL_POSITION_X = 1.0/2;
+    public static final double BALL_POSITION_Y = 1.0/2;
 
-    public static final double[][] PLAYER_X = {{ 1.0/4, 1.0/8, 1.0/8 },
-                                               { 3.0/4, 7.0/8, 7.0/8 }};
+    public static final double[][] PLAYER_POSITION_X = {{ 1.0/4, 1.0/8, 1.0/8 },
+                                                      { 3.0/4, 7.0/8, 7.0/8 }};
 
-    public static final double[][] PLAYER_Y = {{ 1.0/2, 1.0/5, 4.0/5 },
-                                               { 1.0/2, 1.0/5, 4.0/5 }};
+    public static final double[][] PLAYER_POSITION_Y = {{ 1.0/2, 1.0/5, 4.0/5 },
+                                                      { 1.0/2, 1.0/5, 4.0/5 }};
 
-    protected SoccerField field;
-    private Goal[] goals = new Goal[2];
+    transient protected SoccerField field;
+    transient private Goal[] goals = new Goal[2];
 
     protected Ball ball;
     protected Player[][] players;
@@ -39,18 +43,38 @@ public abstract class SoccerModel {
     public SoccerModel() {}
 
     public SoccerModel(double x, double y, double width, double height, double friction, double gamespeed, double ballMass) {
+        this(x, y, width, height, friction, gamespeed, ballMass, null, null);
+    }
+
+    public SoccerModel(@NotNull SoccerModel soccer) {
+        this(soccer.x, soccer.y, soccer.width, soccer.height, soccer.getField().getFriction(),
+                soccer.getField().getGamespeed(), soccer.getBall().getMass(), soccer.getBall(), soccer.players);
+    }
+
+    public SoccerModel(double x, double y, double width, double height, double friction, double gamespeed, double ballMass, Ball ball, Player[][] players) {
         setParameters(x, y, width, height);
         field = new SoccerField(x, y, width, height, friction,  gamespeed, this);
         setGoals();
 
-        ball = new Ball(new Vector(x + width*BALL_X, y + height*BALL_Y), ballMass, this);
+        int length1 = (players == null ? PLAYER_POSITION_X.length : players.length);
+        int length2 = (players == null ? PLAYER_POSITION_X[0].length : players[0].length);
 
-        int p1ength = PLAYER_X.length;
-        int pperp = PLAYER_X[0].length;
-        players = new Player[p1ength][pperp];
-        for (int p = 0; p < p1ength; p++) {
-            for (int i = 0; i < pperp; i++)
-                players[p][i] = new Player(new Vector(x + width * PLAYER_X[p][i], y + height * PLAYER_Y[p][i]), field);
+
+        if (ball == null) {
+            this.ball = new Ball(new Vector(x + width*BALL_POSITION_X, y + height*BALL_POSITION_Y), ballMass, this);
+        } else {
+            this.ball = new Ball(ball, this);
+        }
+
+        this.players = new Player[length1][length2];
+        for (int p = 0; p < length1; p++) {
+            for (int i = 0; i < length2; i++) {
+                if (players == null) {
+                    this.players[p][i] = new Player(new Vector(x + width * PLAYER_POSITION_X[p][i], y + height * PLAYER_POSITION_Y[p][i]), field);
+                } else {
+                    this.players[p][i] = new Player(players[p][i], field);
+                }
+            }
         }
 
 //*/
@@ -166,14 +190,54 @@ public abstract class SoccerModel {
         field.active();
     }
 
+    //DESERIALIZATION
+    /*public double deserializeBall(String identificator) {
+        switch(identificator) {
+            case "centerX":
+                return ball.getCenter().getX();
+            case "centerY":
+                return ball.getCenter().getY();
+            case "speedX":
+                return ball.getSpeed().getX();
+            case "speedY":
+                return ball.getSpeed().getY();
+        }
+        return 0;
+    }
+    public double[][] deserializePlayers(String identificator) {
+        int length1 = players.length;
+        int length2 = players[0].length;
+
+        double[][] des = new double[length1][length2];
+        for (int p = 0; p < length1; p++) {
+            for (int i = 0; i < length2; i++) {
+                switch(identificator) {
+                    case "centerX":
+                        des[p][i] = players[p][i].getCenter().getX();
+                        break;
+                    case "centerY":
+                        des[p][i] = players[p][i].getCenter().getY();
+                        break;
+                    case "speedX":
+                        des[p][i] = players[p][i].getSpeed().getX();
+                        break;
+                    case "speedY":
+                        des[p][i] = players[p][i].getSpeed().getY();
+                        break;
+                }
+            }
+        }
+        return des;
+    }*/
+
     public void reset() {   //OVO ISPRAVI LEPO SABANE :)))
         synchronized (field) {
-            ball.reset();
-            ball.setCenter(new Vector(x + width * BALL_X, y + height * BALL_Y));
+            ball.clearSpeed();
+            ball.setCenter(new Vector(x + width * BALL_POSITION_X, y + height * BALL_POSITION_Y));
             for (int p = 0; p < players.length; p++) {
                 for (int i = 0; i < players[p].length; i++) {
-                    players[p][i].reset();
-                    players[p][i].setCenter(new Vector(x + width * PLAYER_X[p][i], y + height * PLAYER_Y[p][i]));
+                    players[p][i].clearSpeed();
+                    players[p][i].setCenter(new Vector(x + width * PLAYER_POSITION_X[p][i], y + height * PLAYER_POSITION_Y[p][i]));
                 }
             }
         }

@@ -10,22 +10,24 @@ import com.example.myapplication.model.soccer.models.SoccerModel;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.Serializable;
+
 import static java.lang.Thread.sleep;
 
-public class SoccerGameplay extends SoccerModel {
+public class SoccerGameplay extends SoccerModel implements Serializable {
 
     public static final int DEFAULT_FIELD_IMG = 0;
 
     private static final int AFTER_GOAL_WAIT = 2; //s
 
-    private Bot[] bots = new Bot[2];
+    transient private Bot[] bots = new Bot[2];
     final private boolean[] botplay;
 
     private Integer active = 0;
     private Player selected = null;
     private int[] scores = {0, 0};
 
-    SoccerFacade facade;
+    transient SoccerFacade facade;
 
     private Boolean responsiveness = false;
     private Boolean botPlaying = false;
