@@ -11,7 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:padding="7dp"
+        android:padding="@dimen/score_text_padding"
         style="@style/Text"
         android:textSize="@dimen/score_text_size"/>
 
@@ -19,11 +19,11 @@
         android:id="@+id/pause_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="I I"
+        android:text="@string/pause_button_text"
         android:layout_gravity="right"
-        android:padding="15dp"
+        android:padding="@dimen/pause_text_padding"
         style="@style/Text"
-        android:textSize="30dp"/>
+        android:textSize="@dimen/pause_text_size"/>
 
     <LinearLayout
         android:id="@+id/pause_layout"
@@ -39,7 +39,7 @@
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:text="CONTINUE"
+            android:text="@string/pause_continue_text"
             android:padding="10dp"
             style="@style/Text"/>
 
@@ -48,7 +48,7 @@
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:text="MAIN MENU"
+            android:text="@string/pause_main_menu_text"
             android:padding="10dp"
             style="@style/Text" />
 

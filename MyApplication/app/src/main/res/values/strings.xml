@@ -9,4 +9,7 @@
     <string name="friction_text">FRICTION</string>
     <string name="game_speed_text">GAME SPEED</string>
     <string name="ball_mass_text">BALL MASS</string>
+    <string name="pause_continue_text">CONTINUE</string>
+    <string name="pause_main_menu_text">MAIN MENU</string>
+    <string name="pause_button_text">I I</string>
 </resources>

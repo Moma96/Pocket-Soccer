@@ -27,7 +27,7 @@ public class GameplayActivity extends AppCompatActivity {
     private View.OnClickListener pause = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            soccer.pause();
+            soccerFacade.pause();
             TextView p = findViewById(R.id.pause_text);
             p.setClickable(false);
             setPauseOptions();
@@ -40,7 +40,7 @@ public class GameplayActivity extends AppCompatActivity {
             resetPauseOptions();
             TextView p = findViewById(R.id.pause_text);
             p.setClickable(true);
-            soccer.resume();
+            soccerFacade.resume();
         }
     };
 

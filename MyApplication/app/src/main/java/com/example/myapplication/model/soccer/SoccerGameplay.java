@@ -14,8 +14,7 @@ import static java.lang.Thread.sleep;
 
 public class SoccerGameplay extends SoccerModel {
 
-    public static final int DEFAULT_FIELD_IMG = 1;
-
+    public static final int DEFAULT_FIELD_IMG = 0;
 
     private static final int AFTER_GOAL_WAIT = 2; //s
 
@@ -78,6 +77,7 @@ public class SoccerGameplay extends SoccerModel {
     public synchronized void pause() {
         resetResponsiveness();
         super.pause();
+
     }
 
     @Override
@@ -117,7 +117,6 @@ public class SoccerGameplay extends SoccerModel {
                 return null;
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-        //*/
     }
 
     public synchronized boolean push(final Vector speed) {

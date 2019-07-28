@@ -24,6 +24,16 @@ public class SoccerFacade {
         darkenInactive();
     }
 
+    public void pause() {
+        soccer.pause();
+        updater.inactive();
+    }
+
+    public void resume() {
+        updater.active();
+        soccer.resume();
+    }
+
     public void darkenInactive() {
         updater.darkenInactive();
     }

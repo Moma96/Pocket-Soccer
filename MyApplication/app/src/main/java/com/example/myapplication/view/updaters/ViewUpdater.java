@@ -207,4 +207,16 @@ public class ViewUpdater extends Active {
     protected void after() {
         Log.d(STATE_TAG, "View updater finished");
     }
+
+    @Override
+    public void active() {
+        super.active();
+        ballImageUpdater.active();
+    }
+
+    @Override
+    public void inactive() {
+        super.inactive();
+        ballImageUpdater.inactive();
+    }
 }
