@@ -36,8 +36,23 @@ public class MainActivity extends AppCompatActivity {
         ft.commit();
     }
 
-    public void newGame(View view) {
+    public MainMenu getMainMenu() {
+        return mainMenu;
+    }
 
+    public SelectPlayers getSelectPlayers() {
+        return selectPlayers;
+    }
+
+    public Settings getSettings() {
+        return settings;
+    }
+
+    public History getHistory() {
+        return history;
+    }
+
+    public void newGame() {
         Intent intent = new Intent(this, GameplayActivity.class);
         intent.putExtra("teamsimg", selectPlayers.getTeamsimg());
         intent.putExtra("fieldimg", settings.getFieldimg());
@@ -49,26 +64,19 @@ public class MainActivity extends AppCompatActivity {
         startActivityForResult(intent, PLAY);
     }
 
-    public void continueLastGame(View view) {
+    public void continueLastGame() {
+        Intent intent = new Intent(this, GameplayActivity.class);
+        intent.putExtra("teamsimg", selectPlayers.getTeamsimg());
+        intent.putExtra("fieldimg", settings.getFieldimg());
+        intent.putExtra("gamespeed", settings.getGamespeed());
+        intent.putExtra("friction", settings.getFriction());
+        intent.putExtra("ballmass", settings.getBallMass());
+        intent.putExtra("botplay", botplay);
 
-
+        startActivityForResult(intent, PLAY);
     }
 
-    public void replaceFragment(View view) {
-        Fragment frag = null;
-
-        switch (view.getId()) {
-            case R.id.new_game:
-                frag = selectPlayers;
-                break;
-            case R.id.settings:
-                frag = settings;
-                break;
-            case R.id.history:
-                frag = history;
-                break;
-        }
-
+    public void replaceFragment(Fragment frag) {
         if (frag != null) {
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.addToBackStack(null);

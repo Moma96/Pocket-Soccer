@@ -8,82 +8,39 @@
     android:orientation="vertical"
     tools:context=".view.activities.Settings"
     android:padding="@dimen/wrapper_padding"
-    android:weightSum="3">
+    android:weightSum="5">
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:orientation="horizontal"
         android:gravity="center"
-        android:layout_weight="1"
-        android:weightSum="8">
-
-        <TextView
-            android:id="@+id/game_speed_text"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="4"
-            android:text="@string/game_speed_text"
-            style="@style/Text"/>
-
-        <ImageView
-            android:id="@+id/game_speed_decrease"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:src="@drawable/arrowleft"
-            android:layout_weight="1" />
-
-        <TextView
-            android:id="@+id/game_speed_value"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            style="@style/Text"
-            android:layout_weight="2" />
-
-        <ImageView
-            android:id="@+id/game_speed_increase"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:src="@drawable/arrowright"
-            android:layout_weight="1" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:layout_weight="1"
-        android:weightSum="8">
+        android:layout_weight="1">
 
         <TextView
             android:id="@+id/friction_text"
-            android:layout_width="0dp"
+            android:layout_width="@dimen/setting_text_width"
             android:layout_height="wrap_content"
             android:text="@string/friction_text"
-            style="@style/Text"
-            android:layout_weight="1" />
+            style="@style/Text" />
 
         <ImageView
             android:id="@+id/friction_decrease"
-            android:layout_width="0dp"
+            android:layout_width="@dimen/setting_arrow_width"
             android:layout_height="wrap_content"
-            android:src="@drawable/arrowleft"
-            android:layout_weight="1" />
+            android:src="@drawable/arrowleft" />
 
         <TextView
             android:id="@+id/friction_value"
-            android:layout_width="0dp"
+            android:layout_width="@dimen/setting_value_width"
             android:layout_height="wrap_content"
-            style="@style/Text"
-            android:layout_weight="2" />
+            style="@style/Text" />
 
         <ImageView
             android:id="@+id/friction_increase"
-            android:layout_width="0dp"
+            android:layout_width="@dimen/setting_arrow_width"
             android:layout_height="wrap_content"
-            android:src="@drawable/arrowright"
-            android:layout_weight="1" />
+            android:src="@drawable/arrowright" />
     </LinearLayout>
 
     <LinearLayout
@@ -91,46 +48,74 @@
         android:layout_height="0dp"
         android:orientation="horizontal"
         android:gravity="center"
-        android:layout_weight="1"
-        android:weightSum="8">
+        android:layout_weight="1">
 
         <TextView
-            android:id="@+id/ball_mass_text"
-            android:layout_width="0dp"
+            android:id="@+id/game_speed_text"
+            android:layout_width="@dimen/setting_text_width"
             android:layout_height="wrap_content"
-            android:text="@string/ball_mass_text"
-            style="@style/Text"
-            android:layout_weight="4" />
+            android:text="@string/game_speed_text"
+            style="@style/Text" />
 
         <ImageView
-            android:id="@+id/ball_mass_decrease"
-            android:layout_width="0dp"
+            android:id="@+id/game_speed_decrease"
+            android:layout_width="@dimen/setting_arrow_width"
             android:layout_height="wrap_content"
-            android:src="@drawable/arrowleft"
-            android:layout_weight="1" />
+            android:src="@drawable/arrowleft" />
 
         <TextView
-            android:id="@+id/ball_mass_value"
-            android:layout_width="0dp"
+            android:id="@+id/game_speed_value"
+            android:layout_width="@dimen/setting_value_width"
             android:layout_height="wrap_content"
-            style="@style/Text"
-            android:layout_weight="2" />
+            style="@style/Text" />
 
         <ImageView
-            android:id="@+id/ball_mass_increase"
-            android:layout_width="0dp"
+            android:id="@+id/game_speed_increase"
+            android:layout_width="@dimen/setting_arrow_width"
             android:layout_height="wrap_content"
-            android:src="@drawable/arrowright"
-            android:layout_weight="1" />
+            android:src="@drawable/arrowright" />
     </LinearLayout>
 
-    <!--<LinearLayout
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:orientation="horizontal"
         android:gravity="center"
-        android:layout_weight="1"
-        android:weightSum="7">
+        android:layout_weight="1">
+
+        <TextView
+            android:id="@+id/ball_mass_text"
+            android:layout_width="@dimen/setting_text_width"
+            android:layout_height="wrap_content"
+            android:text="@string/ball_mass_text"
+            style="@style/Text" />
+
+        <ImageView
+            android:id="@+id/ball_mass_decrease"
+            android:layout_width="@dimen/setting_arrow_width"
+            android:layout_height="wrap_content"
+            android:src="@drawable/arrowleft" />
+
+        <TextView
+            android:id="@+id/ball_mass_value"
+            android:layout_width="@dimen/setting_value_width"
+            android:layout_height="wrap_content"
+            style="@style/Text" />
+
+        <ImageView
+            android:id="@+id/ball_mass_increase"
+            android:layout_width="@dimen/setting_arrow_width"
+            android:layout_height="wrap_content"
+            android:src="@drawable/arrowright" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="@dimen/field_setting_width"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_weight="2"
+        android:weightSum="9">
 
         <ImageView
             android:id="@+id/field_left"
@@ -143,7 +128,8 @@
             android:id="@+id/field_img"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="5" />
+            android:layout_margin="@dimen/field_image_margin"
+            android:layout_weight="7" />
 
         <ImageView
             android:id="@+id/field_right"
@@ -151,6 +137,6 @@
             android:layout_height="wrap_content"
             android:src="@drawable/arrowright"
             android:layout_weight="1"/>
-    </LinearLayout>-->
+    </LinearLayout>
 
 </LinearLayout>

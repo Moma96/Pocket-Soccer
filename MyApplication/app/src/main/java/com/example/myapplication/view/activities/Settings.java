@@ -23,7 +23,7 @@ public class Settings extends Fragment {
     private final static double BIGGER_FRICTION_INCREMENT = 0.1;
     private final static double FRICTION_INCREMENT_TRANSITION = 0.4;
 
-    private final static double BIGGEST_BALL_MASS = 2.0;
+    private final static double BIGGEST_BALL_MASS = 4.0;
     private final static double SMALLEST_BALL_MASS = 0.1;
     private final static double BALL_MASS_INCREMENT = 0.1;
 
@@ -72,21 +72,6 @@ public class Settings extends Fragment {
         }
     };
 
-    /*private View.OnClickListener changeField = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            switch(view.getId()) {
-                case R.id.field_left:
-                    fieldimg = (fieldimg - 1 + FIELDS) % FIELDS;
-                    break;
-                case R.id.field_right:
-                    fieldimg = (fieldimg + 1) % FIELDS;
-                    break;
-            }
-            updateFieldImg();
-        }
-    };*/
-
     private View.OnClickListener changeBallWeight = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -104,6 +89,21 @@ public class Settings extends Fragment {
         }
     };
 
+    private View.OnClickListener changeField = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            switch(view.getId()) {
+                case R.id.field_left:
+                    fieldimg = (fieldimg - 1 + FIELDS) % FIELDS;
+                    break;
+                case R.id.field_right:
+                    fieldimg = (fieldimg + 1) % FIELDS;
+                    break;
+            }
+            updateFieldImg();
+        }
+    };
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -115,11 +115,11 @@ public class Settings extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        setListener();
         updateGameSpeedValue();
         updateFrictionValue();
         updateBallMass();
-        //updateFieldImg();
-        setListener();
+        updateFieldImg();
     }
 
     public double getFriction() {
@@ -153,19 +153,19 @@ public class Settings extends Fragment {
         bm.setText((int)(ballMass*250) + "%");
     }
 
-    /*private void updateFieldImg() {
+    private void updateFieldImg() {
         ImageView fimg = getActivity().findViewById(R.id.field_img);
         fimg.setImageResource(getResources().getIdentifier("field" + fieldimg, "drawable", getActivity().getPackageName()));
-    }*/
+    }
 
     private void setListener() {
         getActivity().findViewById(R.id.game_speed_decrease).setOnClickListener(changeGameSpeed);
         getActivity().findViewById(R.id.game_speed_increase).setOnClickListener(changeGameSpeed);
         getActivity().findViewById(R.id.friction_decrease).setOnClickListener(changeFriction);
         getActivity().findViewById(R.id.friction_increase).setOnClickListener(changeFriction);
-        //getActivity().findViewById(R.id.field_left).setOnClickListener(changeField);
-        //getActivity().findViewById(R.id.field_right).setOnClickListener(changeField);
         getActivity().findViewById(R.id.ball_mass_decrease).setOnClickListener(changeBallWeight);
         getActivity().findViewById(R.id.ball_mass_increase).setOnClickListener(changeBallWeight);
+        getActivity().findViewById(R.id.field_left).setOnClickListener(changeField);
+        getActivity().findViewById(R.id.field_right).setOnClickListener(changeField);
     }
 }

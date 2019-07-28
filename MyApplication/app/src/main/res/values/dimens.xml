@@ -3,4 +3,9 @@
     <dimen name="wrapper_padding">30dp</dimen>
     <dimen name="text_size">25dp</dimen>
     <dimen name="score_text_size">50dp</dimen>
+    <dimen name="setting_text_width">200dp</dimen>
+    <dimen name="setting_arrow_width">20dp</dimen>
+    <dimen name="setting_value_width">80dp</dimen>
+    <dimen name="field_setting_width">250dp</dimen>
+    <dimen name="field_image_margin">10dp</dimen>
 </resources>

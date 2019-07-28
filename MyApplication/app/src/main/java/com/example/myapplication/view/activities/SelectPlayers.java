@@ -1,8 +1,5 @@
 package com.example.myapplication.view.activities;
 
-import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -42,6 +39,16 @@ public class SelectPlayers extends Fragment {
         }
     };
 
+    private View.OnClickListener newGame = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            if (getActivity() instanceof MainActivity) {
+                MainActivity activity = (MainActivity)getActivity();
+                activity.newGame();
+            }
+        }
+    };
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -54,8 +61,8 @@ public class SelectPlayers extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        updatePlayersImg();
         setListener();
+        updatePlayersImg();
     }
 
     public int[] getTeamsimg() {
@@ -67,6 +74,7 @@ public class SelectPlayers extends Fragment {
         getActivity().findViewById(R.id.player1_right).setOnClickListener(changeTeam);
         getActivity().findViewById(R.id.player2_left).setOnClickListener(changeTeam);
         getActivity().findViewById(R.id.player2_right).setOnClickListener(changeTeam);
+        getActivity().findViewById(R.id.play_text).setOnClickListener(newGame);
     }
 
     private void updatePlayersImg() {

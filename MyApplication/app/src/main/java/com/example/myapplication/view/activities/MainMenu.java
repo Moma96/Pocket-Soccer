@@ -14,6 +14,39 @@ import com.example.myapplication.R;
 
 public class MainMenu extends Fragment {
 
+    private View.OnClickListener changeFragment = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            Fragment frag = null;
+            if (getActivity() instanceof MainActivity) {
+                MainActivity activity = (MainActivity)getActivity();
+                switch (view.getId()) {
+                    case R.id.new_game:
+                        frag = activity.getSelectPlayers();
+                        break;
+                    case R.id.settings:
+                        frag = activity.getSettings();
+                        break;
+                    case R.id.history:
+                        frag = activity.getHistory();
+                        break;
+                }
+
+                activity.replaceFragment(frag);
+            }
+        }
+    };
+
+    private View.OnClickListener lastGame = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            if (getActivity() instanceof MainActivity) {
+                MainActivity activity = (MainActivity)getActivity();
+                activity.continueLastGame();
+            }
+        }
+    };
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -25,13 +58,20 @@ public class MainMenu extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        setListener();
         updateMenuFragment();
     }
 
     public void updateMenuFragment() {
-        TextView clg = getActivity().findViewById(R.id.continue_last_game);
+        TextView clg = getActivity().findViewById(R.id.last_game);
         clg.setClickable(false);
         clg.setTextColor(Color.GRAY);
     }
 
+    private void setListener() {
+        getActivity().findViewById(R.id.new_game).setOnClickListener(changeFragment);
+        getActivity().findViewById(R.id.last_game).setOnClickListener(lastGame);
+        getActivity().findViewById(R.id.settings).setOnClickListener(changeFragment);
+        getActivity().findViewById(R.id.history).setOnClickListener(changeFragment);
+    }
 }

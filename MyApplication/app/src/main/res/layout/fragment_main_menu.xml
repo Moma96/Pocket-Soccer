@@ -16,17 +16,15 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:text="@string/new_game_text"
-        style="@style/Text"
-        android:onClick="replaceFragment"/>
+        style="@style/Text"/>
 
     <TextView
-        android:id="@+id/continue_last_game"
+        android:id="@+id/last_game"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:text="@string/continue_text"
-        style="@style/Text"
-        android:onClick="continueLasstyle="/>
+        style="@style/Text"/>
 
     <TextView
         android:id="@+id/settings"
@@ -34,8 +32,7 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:text="@string/settings_text"
-        style="@style/Text"
-        android:onClick="replaceFragment"/>
+        style="@style/Text"/>
 
     <TextView
         android:id="@+id/history"
@@ -43,7 +40,6 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:text="@string/history_text"
-        style="@style/Text"
-        android:onClick="replaceFragment"/>
+        style="@style/Text"/>
 
 </LinearLayout>
