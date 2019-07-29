@@ -46,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         switch(requestCode) {
             case PLAY:
                 switch (resultCode) {
@@ -54,6 +55,8 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case MAIN_MENU_CODE:
                         soccer = (SoccerGameplay)data.getSerializableExtra("soccer");
+                        savedteams = data.getIntArrayExtra("teamsimg");
+                        savedfield = data.getIntExtra("fieldimg", SoccerGameplay.DEFAULT_FIELD_IMG);
                         replaceFragment(mainMenu);
                         break;
                 }

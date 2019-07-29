@@ -21,6 +21,9 @@ public class GameplayActivity extends AppCompatActivity {
 
     private GestureDetectorCompat gestureDetectorCompat;
     private SoccerGameplay soccer;
+    private int[] teams;
+    private int field;
+
     private SoccerFacade soccerFacade;
     private ViewUpdater viewUpdater;
 
@@ -49,15 +52,8 @@ public class GameplayActivity extends AppCompatActivity {
         public void onClick(View view) {
             Intent data = new Intent();
             data.putExtra("soccer", soccer);
-            /*data.putExtra("ballXCenter",soccer.deserializeBall("centerX"));
-            data.putExtra("ballYCenter",soccer.deserializeBall("centerY"));
-            data.putExtra("playersXCenter",soccer.deserializePlayers("centerX"));
-            data.putExtra("playersYCenter",soccer.deserializePlayers("centerY"));
-
-            data.putExtra("ballXSpeed",soccer.deserializeBall("speedX"));
-            data.putExtra("ballYSpeed",soccer.deserializeBall("speedY"));
-            data.putExtra("playersXSpeed",soccer.deserializePlayers("speedX"));
-            data.putExtra("playersYSpeed",soccer.deserializePlayers("speedY"));*/
+            data.putExtra("teamsimg", teams);
+            data.putExtra("fieldimg", field);
 
             setResult(2, data);
             finish();
@@ -73,9 +69,10 @@ public class GameplayActivity extends AppCompatActivity {
 
         final Intent intent = getIntent();
 
-        final int fieldimg = intent.getIntExtra("fieldimg", SoccerGameplay.DEFAULT_FIELD_IMG);
-        int field = getResources().getIdentifier("field" + fieldimg, "drawable", getPackageName());
-        background.setBackgroundResource(field);
+        teams = intent.getIntArrayExtra("teamsimg");
+        field = intent.getIntExtra("fieldimg", SoccerGameplay.DEFAULT_FIELD_IMG);
+        int fieldimg = getResources().getIdentifier("field" + field, "drawable", getPackageName());
+        background.setBackgroundResource(fieldimg);
 
         resetPauseOptions();
         setListener();
@@ -86,7 +83,7 @@ public class GameplayActivity extends AppCompatActivity {
                 switch (intent.getStringExtra("mode")) {
                     case "new game":
                         setup(background,
-                                intent.getIntArrayExtra("teamsimg"),
+                                teams,
                                 intent.getDoubleExtra("friction", SoccerModel.DEFAULT_FRICTION),
                                 intent.getDoubleExtra("gamespeed", SoccerModel.DEFAULT_GAME_SPEED),
                                 intent.getDoubleExtra("ballmass", SoccerModel.DEFAULT_BALL_MASS),
@@ -94,7 +91,7 @@ public class GameplayActivity extends AppCompatActivity {
                         break;
                     case "last game":
                         setup((SoccerGameplay) intent.getSerializableExtra("soccer"),
-                                intent.getIntArrayExtra("teamsimg"));
+                                teams);
                 }
             }
         });
@@ -115,7 +112,7 @@ public class GameplayActivity extends AppCompatActivity {
 
     private void setup(SoccerGameplay s, int[] teams) {
 
-        soccer = s;
+        soccer = new SoccerGameplay(s);
         viewUpdater = new ViewUpdater(this, soccer, teams);
         soccerFacade = new SoccerFacade(this, soccer, viewUpdater);
 

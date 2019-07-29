@@ -11,10 +11,11 @@ import com.example.myapplication.model.soccer.models.GoalPost;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-public abstract class Field extends Active {
+public abstract class Field extends Active implements Serializable {
 
     public static final double DISTANCE_PRECISSION = 1.0E-11;
 
@@ -29,14 +30,14 @@ public abstract class Field extends Active {
 
     protected int moving_delay;
 
-    protected Wall walls[];
+    transient protected Wall walls[];
     protected final double friction;
 
-    private ArrayList<Collidable> collidables = new ArrayList<>();
-    private ArrayList<InactiveObject> inactives = new ArrayList<>();
-    private ArrayList<Circle> circles = new ArrayList<>();
+    transient private ArrayList<Collidable> collidables = new ArrayList<>();
+    transient private ArrayList<InactiveObject> inactives = new ArrayList<>();
+    transient private ArrayList<Circle> circles = new ArrayList<>();
 
-    private HashSet<Circle> moving = new HashSet<>();
+    transient private HashSet<Circle> moving = new HashSet<>();
 
     public Field(double friction) {
         this(friction, MOVING_DELAY);

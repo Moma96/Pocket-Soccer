@@ -5,11 +5,11 @@ import com.example.myapplication.model.collidables.inactive.Wall;
 
 import org.jetbrains.annotations.NotNull;
 
-public class SoccerField extends Field {
+import java.io.Serializable;
 
-    private static final double FRICTION_COEFFICIENT = 0.01;// 0.01;
+public class SoccerField extends Field implements Serializable {
 
-    private SoccerModel soccer;
+    transient private SoccerModel soccer;
     private double gamespeed;
 
     public SoccerField(double x, double y, double width, double height, double friction, double gamespeed, @NotNull SoccerModel soccer) {

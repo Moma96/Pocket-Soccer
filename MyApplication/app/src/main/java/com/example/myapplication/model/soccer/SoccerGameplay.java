@@ -24,13 +24,13 @@ public class SoccerGameplay extends SoccerModel implements Serializable {
     final private boolean[] botplay;
 
     private Integer active = 0;
-    private Player selected = null;
+    transient private Player selected = null;
     private int[] scores = {0, 0};
 
     transient SoccerFacade facade;
 
-    private Boolean responsiveness = false;
-    private Boolean botPlaying = false;
+    transient private Boolean responsiveness = false;
+    transient private Boolean botPlaying = false;
 
     public SoccerGameplay(double x, double y, double width, double height, double friction, double gamespeed, double ballMass, boolean[] botplay) {
         super(x, y, width, height, friction, gamespeed, ballMass);
@@ -39,6 +39,16 @@ public class SoccerGameplay extends SoccerModel implements Serializable {
         bots[1] = new Bot(this, 1);
 
         this.botplay = botplay;
+    }
+
+    public SoccerGameplay(@NotNull SoccerGameplay soccer) {
+        super(soccer);
+        this.botplay = soccer.botplay;
+        this.scores = soccer.scores;
+        this.active = soccer.active;
+
+        bots[0] = new Bot(this, 0);
+        bots[1] = new Bot(this, 1);
     }
 
     public synchronized void setFacade(@NotNull SoccerFacade facade) {

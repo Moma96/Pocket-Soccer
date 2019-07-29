@@ -29,7 +29,7 @@ public abstract class SoccerModel implements Serializable {
     public static final double[][] PLAYER_POSITION_Y = {{ 1.0/2, 1.0/5, 4.0/5 },
                                                       { 1.0/2, 1.0/5, 4.0/5 }};
 
-    transient protected SoccerField field;
+    protected SoccerField field;
     transient private Goal[] goals = new Goal[2];
 
     protected Ball ball;
@@ -63,7 +63,7 @@ public abstract class SoccerModel implements Serializable {
         if (ball == null) {
             this.ball = new Ball(new Vector(x + width*BALL_POSITION_X, y + height*BALL_POSITION_Y), ballMass, this);
         } else {
-            this.ball = new Ball(ball, this);
+            this.ball = new Ball(ball, field,this);
         }
 
         this.players = new Player[length1][length2];
@@ -189,46 +189,6 @@ public abstract class SoccerModel implements Serializable {
     public void resume() {
         field.active();
     }
-
-    //DESERIALIZATION
-    /*public double deserializeBall(String identificator) {
-        switch(identificator) {
-            case "centerX":
-                return ball.getCenter().getX();
-            case "centerY":
-                return ball.getCenter().getY();
-            case "speedX":
-                return ball.getSpeed().getX();
-            case "speedY":
-                return ball.getSpeed().getY();
-        }
-        return 0;
-    }
-    public double[][] deserializePlayers(String identificator) {
-        int length1 = players.length;
-        int length2 = players[0].length;
-
-        double[][] des = new double[length1][length2];
-        for (int p = 0; p < length1; p++) {
-            for (int i = 0; i < length2; i++) {
-                switch(identificator) {
-                    case "centerX":
-                        des[p][i] = players[p][i].getCenter().getX();
-                        break;
-                    case "centerY":
-                        des[p][i] = players[p][i].getCenter().getY();
-                        break;
-                    case "speedX":
-                        des[p][i] = players[p][i].getSpeed().getX();
-                        break;
-                    case "speedY":
-                        des[p][i] = players[p][i].getSpeed().getY();
-                        break;
-                }
-            }
-        }
-        return des;
-    }*/
 
     public void reset() {   //OVO ISPRAVI LEPO SABANE :)))
         synchronized (field) {
