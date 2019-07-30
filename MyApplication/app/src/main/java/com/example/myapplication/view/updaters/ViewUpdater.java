@@ -1,26 +1,23 @@
 package com.example.myapplication.view.updaters;
 
-import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.myapplication.R;
-import com.example.myapplication.model.Active;
 import com.example.myapplication.model.collidables.active.Circle;
 import com.example.myapplication.model.soccer.SoccerGameplay;
+import com.example.myapplication.model.soccer.SoccerTimer;
 import com.example.myapplication.model.soccer.models.Ball;
 import com.example.myapplication.model.soccer.models.Player;
 import com.example.myapplication.view.activities.GameplayActivity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
-public class ViewUpdater extends Active {
-
-   // private static final int FPS = 60;
-    private static final String STATE_TAG = "View updater";
+public class ViewUpdater {
 
     private GameplayActivity gameplay;
     private SoccerGameplay soccer;
@@ -54,9 +51,19 @@ public class ViewUpdater extends Active {
                 drawPlayers(background, teams);
                 drawGoals(background);
                 updateScores();
+                reorderViews();
             }
        });
         darkenInactive();
+    }
+
+    private void reorderViews() {
+        imgGoalposts.bringToFront();
+        gameplay.findViewById(R.id.pause_text).bringToFront();
+        gameplay.findViewById(R.id.score_text).bringToFront();
+        gameplay.findViewById(R.id.time_text).bringToFront();
+        gameplay.findViewById(R.id.pause_text).bringToFront();
+        gameplay.findViewById(R.id.main_menu_text).bringToFront();
     }
 
     private void drawBall(FrameLayout background) {
@@ -98,50 +105,83 @@ public class ViewUpdater extends Active {
     }
 
     public void refreshSelection() {
-        Player selected = soccer.getSelected();
-        if (selected != null) {
-            if (imgSelected != null) {
-                selected.drawSelection(imgSelected);
-            } else {
-                FrameLayout background = gameplay.findViewById(R.id.background);
-                imgSelected = new ImageView(gameplay);
-                imgSelected.setBackgroundResource(R.drawable.selectplayer);
-
-                FrameLayout.LayoutParams params = new FrameLayout.LayoutParams((int)(selected.getSelectionRadius()*2), (int)(selected.getSelectionRadius()*2));
-                params.leftMargin = (int) (selected.getCenter().getX() - selected.getSelectionRadius());
-                params.topMargin = (int) (selected.getCenter().getY() - selected.getSelectionRadius());
-                background.addView(imgSelected, params);
-            }
-        } else {
-            setOffSelection();
-        }
-    }
-
-    public void refreshGoals() {
-        imgGoalposts.setBackgroundResource(R.drawable.goals);
-    }
-
-    public void refresh() {
+        final Player selected = soccer.getSelected();
         gameplay.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                ArrayList<Circle> activeObjects = soccer.getField().getCircles();
-                for (Circle active : activeObjects)
-                    active.draw(imgCircles.get(active));
 
-                refreshSelection();
-                refreshGoals();
+                if (selected != null) {
+                    if (imgSelected != null) {
+                        selected.drawSelection(imgSelected);
+                        imgGoalposts.bringToFront();
+                    } else {
+                        FrameLayout background = gameplay.findViewById(R.id.background);
+                        imgSelected = new ImageView(gameplay);
+                        imgSelected.setBackgroundResource(R.drawable.selectplayer);
+
+                        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams((int) (selected.getSelectionRadius() * 2), (int) (selected.getSelectionRadius() * 2));
+                        params.leftMargin = (int) (selected.getCenter().getX() - selected.getSelectionRadius());
+                        params.topMargin = (int) (selected.getCenter().getY() - selected.getSelectionRadius());
+                        background.addView(imgSelected, params);
+                    }
+                } else {
+                    setOffSelection();
+                }
+
             }
         });
     }
 
-    public void updateScores() {
+    public void refreshCircles() {
         gameplay.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                int[] scores = soccer.getScores();
-                TextView score = gameplay.findViewById(R.id.score_text);
-                score.setText(scores[0] + ":" + scores[1]);
+                ArrayList<Circle> circles = soccer.getField().getCircles();
+                for (Circle circle : circles)
+                    circle.draw(imgCircles.get(circle));
+            }
+        });
+
+        refreshSelection();
+    }
+
+    public void refreshMovingCircles() {
+        gameplay.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                HashSet<Circle> moving = soccer.getField().getMoving();
+                for (Circle circle : moving)
+                    circle.draw(imgCircles.get(circle));
+            }
+        });
+
+        refreshSelection();
+    }
+
+    public void updateScores() {
+        final int[] scores = soccer.getScores();
+
+        gameplay.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                TextView textScores = gameplay.findViewById(R.id.score_text);
+                textScores.setText(scores[0] + ":" + scores[1]);
+            }
+        });
+    }
+
+    public void updateTime() {
+        final SoccerTimer timer = soccer.getTimer();
+        if (timer == null)
+            return;
+
+        gameplay.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                //TextView textTime = gameplay.findViewById(R.id.time_text);
+               // textTime.setText(timer.toString());
+           //     TextView textScores = gameplay.findViewById(R.id.score_text);
+             //   textScores.setText(timer.toString());
             }
         });
     }
@@ -177,46 +217,19 @@ public class ViewUpdater extends Active {
         background.removeView(view);
     }
 
-    private synchronized void waitMoving() throws InterruptedException {
-        while (soccer.allNotMoving()) {
-            wait();
-        }
-    }
-
-    @Override
-    protected void iterate() {
-        try {
-            //waitMoving();
-            //sleep( 1000 / FPS);
-            sleep(15);
-            //((int)(15.0*soccer.getField().getTimeSpeed()));
-            refresh();
-
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    protected void before() {
-        Log.d(STATE_TAG, "View updater started");
+    public void start() {
         ballImageUpdater.start();
     }
 
-    @Override
-    protected void after() {
-        Log.d(STATE_TAG, "View updater finished");
-    }
-
-    @Override
     public void active() {
-        super.active();
         ballImageUpdater.active();
     }
 
-    @Override
     public void inactive() {
-        super.inactive();
         ballImageUpdater.inactive();
+    }
+
+    public void terminate() {
+        ballImageUpdater.terminate();
     }
 }

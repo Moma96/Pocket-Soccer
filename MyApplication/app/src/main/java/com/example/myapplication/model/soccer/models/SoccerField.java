@@ -36,8 +36,14 @@ public class SoccerField extends Field implements Serializable {
         return gamespeed;
     }
 
+    @Override
     protected void allStopped() {
         super.allStopped();
         soccer.allStopped();
+    }
+
+    @Override
+    protected void iterationOver() {
+        soccer.circlesMoved();
     }
 }

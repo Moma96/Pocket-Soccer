@@ -1,12 +1,16 @@
 package com.example.myapplication.model.soccer;
 
+import android.app.Activity;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.example.myapplication.model.Active;
+import com.example.myapplication.model.Timer;
 import com.example.myapplication.model.Vector;
 import com.example.myapplication.model.soccer.bot.Bot;
 import com.example.myapplication.model.soccer.models.Player;
 import com.example.myapplication.model.soccer.models.SoccerModel;
+import com.example.myapplication.view.activities.GameplayActivity;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -16,44 +20,66 @@ import static java.lang.Thread.sleep;
 
 public class SoccerGameplay extends SoccerModel implements Serializable {
 
-    public static final int DEFAULT_FIELD_IMG = 0;
+    public enum FinishCriteria { GOALS, TIME };
+    public enum PlayingCriteria { MOTION, STATIC };
 
+    public static final int DEFAULT_FIELD_IMG = 0;
     private static final int AFTER_GOAL_WAIT = 2; //s
 
+    private FinishCriteria finishCriteria;
+    private PlayingCriteria playingCriteria;
+    int limit;
+    private SoccerTimer timer = null;
+
     transient private Bot[] bots = new Bot[2];
-    final private boolean[] botplay;
+    private boolean[] botplay;
 
     private Integer active = 0;
     transient private Player selected = null;
     private int[] scores = {0, 0};
 
-    transient SoccerFacade facade;
+    transient private SoccerFacade facade;
 
     transient private Boolean responsiveness = false;
     transient private Boolean botPlaying = false;
 
-    public SoccerGameplay(double x, double y, double width, double height, double friction, double gamespeed, double ballMass, boolean[] botplay) {
+    public SoccerGameplay(double x, double y, double width, double height, double friction, double gamespeed, double ballMass, boolean[] botplay, FinishCriteria fc, int limit, PlayingCriteria pc) {
         super(x, y, width, height, friction, gamespeed, ballMass);
 
-        bots[0] = new Bot(this, 0);
-        bots[1] = new Bot(this, 1);
-
-        this.botplay = botplay;
+        initBots(botplay);
+        initCriterias(fc, limit, pc);
     }
 
     public SoccerGameplay(@NotNull SoccerGameplay soccer) {
         super(soccer);
-        this.botplay = soccer.botplay;
         this.scores = soccer.scores;
         this.active = soccer.active;
 
+        initBots(soccer.botplay);
+        initCriterias(soccer.finishCriteria, soccer.timer.getTime(), soccer.playingCriteria);
+    }
+
+    private void initBots(boolean[] botplay) {
         bots[0] = new Bot(this, 0);
         bots[1] = new Bot(this, 1);
+        this.botplay = botplay;
+    }
+
+    private void initCriterias(FinishCriteria fc, int l, PlayingCriteria pc) {
+        finishCriteria = fc;
+        limit = l;
+        playingCriteria = pc;
+        if (finishCriteria == FinishCriteria.TIME)
+            timer = new SoccerTimer(limit*60, this);
     }
 
     public synchronized void setFacade(@NotNull SoccerFacade facade) {
         this.facade = facade;
         notifyAll();
+    }
+
+    public synchronized SoccerFacade getFacade() {
+        return facade;
     }
 
     public synchronized void waitFacade() {
@@ -76,6 +102,8 @@ public class SoccerGameplay extends SoccerModel implements Serializable {
                 bots[i].start();
         }
 
+        if (timer != null)
+            timer.start();
         setResponsiveness();
     }
 
@@ -83,18 +111,24 @@ public class SoccerGameplay extends SoccerModel implements Serializable {
     public synchronized void terminate() {
         resetResponsiveness();
         super.terminate();
+        if (timer != null)
+            timer.terminate();
     }
 
     @Override
     public synchronized void pause() {
         resetResponsiveness();
         super.pause();
+        if (timer != null)
+            timer.inactive();
 
     }
 
     @Override
     public synchronized void resume() {
         super.resume();
+        if (timer != null)
+            timer.active();
         setResponsiveness();
     }
 
@@ -122,10 +156,15 @@ public class SoccerGameplay extends SoccerModel implements Serializable {
                 Log.d(GOAL_TAG, "PLayer " + player + " scored! result: " + scores[0] + ":" + scores[1]);
 
                 sleepFor(AFTER_GOAL_WAIT);
-                reset();
-                setActive((player + 1) % 2); //OVO PRAVI PROBLEM BOTU!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-                setResponsiveness();
+                if (finishCriteria == FinishCriteria.GOALS && scores[player] == limit) {
+                     lastGoalScored(player);
+                } else {
+                    reset();
+                    setActive((player + 1) % 2); //OVO PRAVI PROBLEM BOTU!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                    facade.circlesReset();
+                    setResponsiveness();
+                }
                 return null;
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -170,6 +209,10 @@ public class SoccerGameplay extends SoccerModel implements Serializable {
 
     public synchronized Integer getActive() {
         return active;
+    }
+
+    public SoccerTimer getTimer() {
+        return timer;
     }
 
     public int[] getScores() {
@@ -237,7 +280,7 @@ public class SoccerGameplay extends SoccerModel implements Serializable {
     public synchronized void setActive(int player) {
         active = player;
         notifyActiveBot();
-        facade.darkenInactive();
+        facade.refreshActive();
     }
 
     private void notifyActiveBot() {
@@ -252,5 +295,23 @@ public class SoccerGameplay extends SoccerModel implements Serializable {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    public void lastGoalScored(int player) {
+        facade.gameFinished(player);
+    }
+
+    public void timerFinished() {
+        int winner = 0;
+        if (scores[1] > scores[0])
+            winner = 1;
+        else if (scores[1] == scores[0])
+            winner = -1;
+        facade.gameFinished(winner);
+    }
+
+    @Override
+    public void circlesMoved() {
+        facade.circlesMoved();
     }
 }

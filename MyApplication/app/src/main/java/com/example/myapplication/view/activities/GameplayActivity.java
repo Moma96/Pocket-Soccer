@@ -55,6 +55,7 @@ public class GameplayActivity extends AppCompatActivity {
             data.putExtra("teamsimg", teams);
             data.putExtra("fieldimg", field);
 
+            soccerFacade.terminate();
             setResult(2, data);
             finish();
         }
@@ -99,7 +100,8 @@ public class GameplayActivity extends AppCompatActivity {
 
     private void setup(FrameLayout background, int[] teams, double friction, double gamespeed, double ballMass, boolean[] botplay) {
 
-        soccer = new SoccerGameplay(0, 0, background.getWidth(), background.getHeight(), friction, gamespeed, ballMass, botplay);
+        soccer = new SoccerGameplay(0, 0, background.getWidth(), background.getHeight(), friction, gamespeed, ballMass, botplay,
+                SoccerGameplay.FinishCriteria.TIME, 2, SoccerGameplay.PlayingCriteria.MOTION);
         viewUpdater = new ViewUpdater(this, soccer, teams);
         soccerFacade = new SoccerFacade(this, soccer, viewUpdater);
 
@@ -161,6 +163,17 @@ public class GameplayActivity extends AppCompatActivity {
         findViewById(R.id.pause_text).setOnClickListener(pause);
         findViewById(R.id.resume_text).setOnClickListener(resume);
         findViewById(R.id.main_menu_text).setOnClickListener(mainMenu);
+    }
+
+    public void gameFinished(int winner) {
+        Intent data = new Intent();
+        data.putExtra("soccer", soccer);
+        data.putExtra("teamsimg", teams);
+        data.putExtra("fieldimg", field);
+        data.putExtra("winner", winner);
+
+        setResult(2, data);
+        finish();
     }
 
 }

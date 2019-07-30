@@ -52,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
                 switch (resultCode) {
                     case GAME_FINISHED_CODE:
 
+                        replaceFragment(mainMenu);
                         break;
                     case MAIN_MENU_CODE:
                         soccer = (SoccerGameplay)data.getSerializableExtra("soccer");

@@ -56,6 +56,8 @@ public abstract class Field extends Active implements Serializable {
         return circles;
     }
 
+    public HashSet<Circle> getMoving() { return moving; }
+
     public Wall[] getWalls() {
         return walls;
     }
@@ -206,6 +208,7 @@ public abstract class Field extends Active implements Serializable {
         sleep((int)((double)moving_delay * timeSpeed));
     }
 
+    protected void iterationOver() {}
 
     @Override
     public void iterate() {
@@ -215,6 +218,7 @@ public abstract class Field extends Active implements Serializable {
             calculateMinTime();
             move();
             updateTime();
+            iterationOver();
             delay();
         } catch (InterruptedException e) {
             e.printStackTrace();
