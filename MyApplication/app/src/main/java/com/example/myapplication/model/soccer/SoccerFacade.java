@@ -8,9 +8,6 @@ import com.example.myapplication.view.updaters.ViewUpdater;
 public class SoccerFacade {
 
     public GameplayActivity gameplay;
-
-
-
     private ViewUpdater updater;
     private SoccerGameplay soccer;
 

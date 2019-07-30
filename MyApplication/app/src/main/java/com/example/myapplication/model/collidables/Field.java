@@ -145,6 +145,7 @@ public abstract class Field extends Active implements Serializable {
 
     protected void allStopped() {
         Log.d(FIELD_TAG, "All stopped!");
+        notifyAll();
     }
 
 
@@ -189,7 +190,7 @@ public abstract class Field extends Active implements Serializable {
             Log.d(FIELD_TAG, "time speed is " + timeSpeed);
     }
 
-    private void move() {
+    private synchronized void move() {
         ArrayList<Circle> tmoving = new ArrayList<>(moving);
 
         for (Circle circle: tmoving) {

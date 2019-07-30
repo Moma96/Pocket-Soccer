@@ -101,7 +101,7 @@ public class GameplayActivity extends AppCompatActivity {
     private void setup(FrameLayout background, int[] teams, double friction, double gamespeed, double ballMass, boolean[] botplay) {
 
         soccer = new SoccerGameplay(0, 0, background.getWidth(), background.getHeight(), friction, gamespeed, ballMass, botplay,
-                SoccerGameplay.FinishCriteria.TIME, 2, SoccerGameplay.PlayingCriteria.MOTION);
+                SoccerGameplay.FinishCriteria.TIME, 2*60, SoccerGameplay.PlayingCriteria.STATIC);
         viewUpdater = new ViewUpdater(this, soccer, teams);
         soccerFacade = new SoccerFacade(this, soccer, viewUpdater);
 

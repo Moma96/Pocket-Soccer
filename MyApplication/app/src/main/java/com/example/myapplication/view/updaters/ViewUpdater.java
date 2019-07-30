@@ -8,7 +8,6 @@ import android.widget.TextView;
 import com.example.myapplication.R;
 import com.example.myapplication.model.collidables.active.Circle;
 import com.example.myapplication.model.soccer.SoccerGameplay;
-import com.example.myapplication.model.soccer.SoccerTimer;
 import com.example.myapplication.model.soccer.models.Ball;
 import com.example.myapplication.model.soccer.models.Player;
 import com.example.myapplication.view.activities.GameplayActivity;
@@ -149,9 +148,11 @@ public class ViewUpdater {
         gameplay.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                HashSet<Circle> moving = soccer.getField().getMoving();
-                for (Circle circle : moving)
-                    circle.draw(imgCircles.get(circle));
+                synchronized (soccer.getField()) {
+                    HashSet<Circle> moving = soccer.getField().getMoving();
+                    for (Circle circle : moving)
+                        circle.draw(imgCircles.get(circle));
+                }
             }
         });
 
@@ -171,17 +172,13 @@ public class ViewUpdater {
     }
 
     public void updateTime() {
-        final SoccerTimer timer = soccer.getTimer();
-        if (timer == null)
-            return;
+        final int time = soccer.getLimit();
 
         gameplay.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                //TextView textTime = gameplay.findViewById(R.id.time_text);
-               // textTime.setText(timer.toString());
-           //     TextView textScores = gameplay.findViewById(R.id.score_text);
-             //   textScores.setText(timer.toString());
+                TextView textTime = gameplay.findViewById(R.id.time_text);
+                textTime.setText(time/60 + ":" + time%60);
             }
         });
     }

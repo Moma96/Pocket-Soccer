@@ -3,9 +3,9 @@ package com.example.myapplication.model.soccer;
 import android.app.Activity;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.example.myapplication.model.Active;
-import com.example.myapplication.model.Timer;
 import com.example.myapplication.model.Vector;
 import com.example.myapplication.model.soccer.bot.Bot;
 import com.example.myapplication.model.soccer.models.Player;
@@ -15,6 +15,8 @@ import com.example.myapplication.view.activities.GameplayActivity;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import static java.lang.Thread.sleep;
 
@@ -28,8 +30,8 @@ public class SoccerGameplay extends SoccerModel implements Serializable {
 
     private FinishCriteria finishCriteria;
     private PlayingCriteria playingCriteria;
-    int limit;
-    private SoccerTimer timer = null;
+    private int limit;
+    transient private Timer timer = null;
 
     transient private Bot[] bots = new Bot[2];
     private boolean[] botplay;
@@ -56,7 +58,7 @@ public class SoccerGameplay extends SoccerModel implements Serializable {
         this.active = soccer.active;
 
         initBots(soccer.botplay);
-        initCriterias(soccer.finishCriteria, soccer.timer.getTime(), soccer.playingCriteria);
+        initCriterias(soccer.finishCriteria, soccer.limit, soccer.playingCriteria);
     }
 
     private void initBots(boolean[] botplay) {
@@ -67,10 +69,9 @@ public class SoccerGameplay extends SoccerModel implements Serializable {
 
     private void initCriterias(FinishCriteria fc, int l, PlayingCriteria pc) {
         finishCriteria = fc;
-        limit = l;
         playingCriteria = pc;
-        if (finishCriteria == FinishCriteria.TIME)
-            timer = new SoccerTimer(limit*60, this);
+        if (finishCriteria == FinishCriteria.TIME) limit = l;
+        else limit = l;
     }
 
     public synchronized void setFacade(@NotNull SoccerFacade facade) {
@@ -92,6 +93,24 @@ public class SoccerGameplay extends SoccerModel implements Serializable {
         }
     }
 
+    private void setTimer() {
+        timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                facade.refreshTime();
+                if (limit-- == 0) {
+                    timer.cancel();
+                    timerFinished();
+                }
+            }
+        }, 0, 1000);
+    }
+
+    public int getLimit() {
+        return limit;
+    }
+
     @Override
     public synchronized void start() {
         waitFacade();
@@ -102,8 +121,8 @@ public class SoccerGameplay extends SoccerModel implements Serializable {
                 bots[i].start();
         }
 
-        if (timer != null)
-            timer.start();
+        if (finishCriteria == FinishCriteria.TIME)
+            setTimer();
         setResponsiveness();
     }
 
@@ -111,16 +130,18 @@ public class SoccerGameplay extends SoccerModel implements Serializable {
     public synchronized void terminate() {
         resetResponsiveness();
         super.terminate();
-        if (timer != null)
-            timer.terminate();
+        if (timer != null) {
+            timer.cancel();
+        }
     }
 
     @Override
     public synchronized void pause() {
         resetResponsiveness();
         super.pause();
-        if (timer != null)
-            timer.inactive();
+        if (timer != null) {
+            timer.cancel();
+        }
 
     }
 
@@ -128,7 +149,7 @@ public class SoccerGameplay extends SoccerModel implements Serializable {
     public synchronized void resume() {
         super.resume();
         if (timer != null)
-            timer.active();
+            setTimer();
         setResponsiveness();
     }
 
@@ -142,7 +163,7 @@ public class SoccerGameplay extends SoccerModel implements Serializable {
     }
 
     public synchronized void score(final int player) {
-        if (!responsive()) return;
+       // if (!responsive()) return;
 
         resetResponsiveness();
         resetSelection();
@@ -176,6 +197,7 @@ public class SoccerGameplay extends SoccerModel implements Serializable {
         if (selected != null) {
             selected.push(speed);
             selected = null;
+
             changeActive();
         }
         return true;
@@ -209,10 +231,6 @@ public class SoccerGameplay extends SoccerModel implements Serializable {
 
     public synchronized Integer getActive() {
         return active;
-    }
-
-    public SoccerTimer getTimer() {
-        return timer;
     }
 
     public int[] getScores() {
@@ -274,7 +292,26 @@ public class SoccerGameplay extends SoccerModel implements Serializable {
     }
 
     public synchronized void changeActive() {
-        setActive((active + 1) % 2);
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(final Void... params) {
+                synchronized (field) {
+                    resetResponsiveness();
+                    if (playingCriteria == PlayingCriteria.STATIC) {
+                        while (!field.allNotMoving()) {
+                            try {
+                                field.wait();
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                    setActive((active + 1) % 2);
+                    setResponsiveness();
+                }
+                return null;
+            }
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     public synchronized void setActive(int player) {
