@@ -22,8 +22,8 @@ import static java.lang.Thread.sleep;
 
 public class SoccerGameplay extends SoccerModel implements Serializable {
 
-    public enum FinishCriteria { GOALS, TIME };
-    public enum PlayingCriteria { MOTION, STATIC };
+    public enum FinishCriteria { GOALS, TIME }
+    public enum PlayingCriteria { MOTION, STATIC }
 
     public static final int DEFAULT_FIELD_IMG = 0;
     private static final int AFTER_GOAL_WAIT = 2; //s
@@ -42,8 +42,9 @@ public class SoccerGameplay extends SoccerModel implements Serializable {
 
     transient private SoccerFacade facade;
 
-    transient private Boolean responsiveness = false;
-    transient private Boolean botPlaying = false;
+    transient private boolean responsiveness = false;
+    private boolean scoringInProcess = false;
+    transient private boolean botPlaying = false;
 
     public SoccerGameplay(double x, double y, double width, double height, double friction, double gamespeed, double ballMass, boolean[] botplay, FinishCriteria fc, int limit, PlayingCriteria pc) {
         super(x, y, width, height, friction, gamespeed, ballMass);
@@ -70,8 +71,15 @@ public class SoccerGameplay extends SoccerModel implements Serializable {
     private void initCriterias(FinishCriteria fc, int l, PlayingCriteria pc) {
         finishCriteria = fc;
         playingCriteria = pc;
-        if (finishCriteria == FinishCriteria.TIME) limit = l;
-        else limit = l;
+        limit = l;
+    }
+
+    public FinishCriteria getFinishCriteria() {
+        return finishCriteria;
+    }
+
+    public PlayingCriteria getPlayingCriteria() {
+        return playingCriteria;
     }
 
     public synchronized void setFacade(@NotNull SoccerFacade facade) {
@@ -98,13 +106,14 @@ public class SoccerGameplay extends SoccerModel implements Serializable {
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                facade.refreshTime();
+                if (limit%10 == 0)
+                    facade.refreshTime();
                 if (limit-- == 0) {
                     timer.cancel();
                     timerFinished();
                 }
             }
-        }, 0, 1000);
+        }, 0, 100);
     }
 
     public int getLimit() {
@@ -123,7 +132,12 @@ public class SoccerGameplay extends SoccerModel implements Serializable {
 
         if (finishCriteria == FinishCriteria.TIME)
             setTimer();
-        setResponsiveness();
+        //////sinhronizuj
+        if (playingCriteria == PlayingCriteria.MOTION || allNotMoving()) {
+            setResponsiveness();
+        } else {
+            changeActive();
+        }
     }
 
     @Override
@@ -163,8 +177,9 @@ public class SoccerGameplay extends SoccerModel implements Serializable {
     }
 
     public synchronized void score(final int player) {
-       // if (!responsive()) return;
+        if (scoringInProcess) return;
 
+        scoringInProcess = true;
         resetResponsiveness();
         resetSelection();
 
@@ -185,6 +200,7 @@ public class SoccerGameplay extends SoccerModel implements Serializable {
                     setActive((player + 1) % 2); //OVO PRAVI PROBLEM BOTU!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                     facade.circlesReset();
                     setResponsiveness();
+                    scoringInProcess = false;
                 }
                 return null;
             }

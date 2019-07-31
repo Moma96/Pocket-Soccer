@@ -59,8 +59,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:padding="@dimen/score_text_padding"
+        android:padding="@dimen/time_text_padding"
         style="@style/Text"
-        android:textSize="@dimen/score_text_size"/>
+        android:textSize="@dimen/time_text_size"/>
 
 </FrameLayout>

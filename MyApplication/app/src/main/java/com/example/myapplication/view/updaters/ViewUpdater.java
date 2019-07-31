@@ -50,6 +50,7 @@ public class ViewUpdater {
                 drawPlayers(background, teams);
                 drawGoals(background);
                 updateScores();
+                updateTime();
                 reorderViews();
             }
        });
@@ -166,19 +167,20 @@ public class ViewUpdater {
             @Override
             public void run() {
                 TextView textScores = gameplay.findViewById(R.id.score_text);
-                textScores.setText(scores[0] + ":" + scores[1]);
+                textScores.setText(String.format("%d:%d", scores[0] , scores[1]));
             }
         });
     }
 
     public void updateTime() {
-        final int time = soccer.getLimit();
+        if (soccer.getFinishCriteria() != SoccerGameplay.FinishCriteria.TIME) return;
+        final int time = soccer.getLimit()/10;
 
         gameplay.runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 TextView textTime = gameplay.findViewById(R.id.time_text);
-                textTime.setText(time/60 + ":" + time%60);
+                textTime.setText(String.format("%d:%d", time/60 , time%60));
             }
         });
     }
