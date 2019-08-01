@@ -12,4 +12,9 @@
     <string name="pause_continue_text">CONTINUE</string>
     <string name="pause_main_menu_text">MAIN MENU</string>
     <string name="pause_button_text">I I</string>
+    <string name="next_text">NEXT</string>
+    <string name="static_text">STATIC</string>
+    <string name="motion_text">MOTION</string>
+    <string name="goals_text">GOALS</string>
+    <string name="minutes_text">MINUTES</string>
 </resources>

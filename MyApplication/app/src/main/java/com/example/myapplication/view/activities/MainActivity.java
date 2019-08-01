@@ -19,11 +19,12 @@ public class MainActivity extends AppCompatActivity {
     private final static int MAIN_MENU_CODE = 2;
 
     private MainMenu mainMenu;
+    private GameTypeSelection gameTypeSelection;
     private SelectPlayers selectPlayers;
     private Settings settings;
     private History history;
 
-    public SoccerGameplay soccer = null;//////////////////////////////////////////////
+    public SoccerGameplay soccer = null;///////////
     public int[] savedteams;
     public int savedfield;
 
@@ -35,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         mainMenu = new MainMenu();
+        gameTypeSelection = new GameTypeSelection();
         selectPlayers = new SelectPlayers();
         settings = new Settings();
         history = new History();
@@ -69,6 +71,10 @@ public class MainActivity extends AppCompatActivity {
         return mainMenu;
     }
 
+    public GameTypeSelection getGameTypeSelection() {
+        return gameTypeSelection;
+    }
+
     public SelectPlayers getSelectPlayers() {
         return selectPlayers;
     }
@@ -89,19 +95,24 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra("gamespeed", settings.getGamespeed());
         intent.putExtra("friction", settings.getFriction());
         intent.putExtra("ballmass", settings.getBallMass());
+        intent.putExtra("finish criteria", gameTypeSelection.getFinishCriteria());
+        intent.putExtra("limit", gameTypeSelection.getLimit());
+        intent.putExtra("playing criteria", gameTypeSelection.getPlayingCriteria());
         intent.putExtra("botplay", botplay);
 
         startActivityForResult(intent, PLAY);
     }
 
     public void continueLastGame() {
-        Intent intent = new Intent(this, GameplayActivity.class);
-        intent.putExtra("mode", "last game");
-        intent.putExtra("soccer", soccer);
-        intent.putExtra("fieldimg", savedfield);
-        intent.putExtra("teamsimg", savedteams);
+        if (soccer != null) {
+            Intent intent = new Intent(this, GameplayActivity.class);
+            intent.putExtra("mode", "last game");
+            intent.putExtra("soccer", soccer);
+            intent.putExtra("fieldimg", savedfield);
+            intent.putExtra("teamsimg", savedteams);
 
-        startActivityForResult(intent, PLAY);
+            startActivityForResult(intent, PLAY);
+        }
     }
 
     public void replaceFragment(Fragment frag) {

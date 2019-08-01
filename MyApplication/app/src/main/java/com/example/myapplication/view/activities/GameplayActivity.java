@@ -88,6 +88,9 @@ public class GameplayActivity extends AppCompatActivity {
                                 intent.getDoubleExtra("friction", SoccerModel.DEFAULT_FRICTION),
                                 intent.getDoubleExtra("gamespeed", SoccerModel.DEFAULT_GAME_SPEED),
                                 intent.getDoubleExtra("ballmass", SoccerModel.DEFAULT_BALL_MASS),
+                                (SoccerGameplay.FinishCriteria)intent.getSerializableExtra("finish criteria"),
+                                intent.getDoubleExtra("limit", SoccerGameplay.DEFAULT_LIMIT),
+                                (SoccerGameplay.PlayingCriteria)intent.getSerializableExtra("playing criteria"),
                                 intent.getBooleanArrayExtra("botplay"));
                         break;
                     case "last game":
@@ -98,10 +101,10 @@ public class GameplayActivity extends AppCompatActivity {
         });
     }
 
-    private void setup(FrameLayout background, int[] teams, double friction, double gamespeed, double ballMass, boolean[] botplay) {
+    private void setup(FrameLayout background, int[] teams, double friction, double gamespeed, double ballMass,
+                       SoccerGameplay.FinishCriteria fc, double limit, SoccerGameplay.PlayingCriteria pc, boolean[] botplay) {
 
-        soccer = new SoccerGameplay(0, 0, background.getWidth(), background.getHeight(), friction, gamespeed, ballMass, botplay,
-                SoccerGameplay.FinishCriteria.TIME, 2*600, SoccerGameplay.PlayingCriteria.MOTION);
+        soccer = new SoccerGameplay(0, 0, background.getWidth(), background.getHeight(), friction, gamespeed, ballMass, fc, limit, pc, botplay);
         viewUpdater = new ViewUpdater(this, soccer, teams);
         soccerFacade = new SoccerFacade(this, soccer, viewUpdater);
 
@@ -172,7 +175,7 @@ public class GameplayActivity extends AppCompatActivity {
         data.putExtra("fieldimg", field);
         data.putExtra("winner", winner);
 
-        setResult(2, data);
+        setResult(1, data);
         finish();
     }
 

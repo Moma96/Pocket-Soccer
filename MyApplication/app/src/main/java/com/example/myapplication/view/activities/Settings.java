@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.example.myapplication.R;
 
 public class Settings extends Fragment {
+    //ovde dodaj defaults
 
     private final static double BIGGEST_GAME_SPEED = 2;
     private final static double SMALLEST_GAME_SPEED = 0.5;
@@ -26,7 +27,6 @@ public class Settings extends Fragment {
     private final static double BIGGEST_BALL_MASS = 4.0;
     private final static double SMALLEST_BALL_MASS = 0.1;
     private final static double BALL_MASS_INCREMENT = 0.1;
-
 
     private final static int FIELDS = 4;
 

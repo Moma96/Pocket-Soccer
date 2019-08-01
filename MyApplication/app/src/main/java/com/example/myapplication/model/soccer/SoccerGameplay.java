@@ -26,11 +26,13 @@ public class SoccerGameplay extends SoccerModel implements Serializable {
     public enum PlayingCriteria { MOTION, STATIC }
 
     public static final int DEFAULT_FIELD_IMG = 0;
-    private static final int AFTER_GOAL_WAIT = 2; //s
+    public static final int DEFAULT_LIMIT = 3;
+
+    private static final int AFTER_GOAL_WAIT = 2;
 
     private FinishCriteria finishCriteria;
     private PlayingCriteria playingCriteria;
-    private int limit;
+    private double limit;
     transient private Timer timer = null;
 
     transient private Bot[] bots = new Bot[2];
@@ -46,11 +48,11 @@ public class SoccerGameplay extends SoccerModel implements Serializable {
     private boolean scoringInProcess = false;
     transient private boolean botPlaying = false;
 
-    public SoccerGameplay(double x, double y, double width, double height, double friction, double gamespeed, double ballMass, boolean[] botplay, FinishCriteria fc, int limit, PlayingCriteria pc) {
+    public SoccerGameplay(double x, double y, double width, double height, double friction, double gamespeed, double ballMass, FinishCriteria fc, double limit, PlayingCriteria pc, boolean[] botplay) {
         super(x, y, width, height, friction, gamespeed, ballMass);
 
         initBots(botplay);
-        initCriterias(fc, limit, pc);
+        initCriterias(fc, limit, pc, true);
     }
 
     public SoccerGameplay(@NotNull SoccerGameplay soccer) {
@@ -59,7 +61,7 @@ public class SoccerGameplay extends SoccerModel implements Serializable {
         this.active = soccer.active;
 
         initBots(soccer.botplay);
-        initCriterias(soccer.finishCriteria, soccer.limit, soccer.playingCriteria);
+        initCriterias(soccer.finishCriteria, soccer.limit, soccer.playingCriteria, false);
     }
 
     private void initBots(boolean[] botplay) {
@@ -68,10 +70,14 @@ public class SoccerGameplay extends SoccerModel implements Serializable {
         this.botplay = botplay;
     }
 
-    private void initCriterias(FinishCriteria fc, int l, PlayingCriteria pc) {
+    private void initCriterias(FinishCriteria fc, double l, PlayingCriteria pc, boolean mul) {
         finishCriteria = fc;
         playingCriteria = pc;
         limit = l;
+
+        if (fc == FinishCriteria.TIME && mul) {
+            limit *= 600;
+        }
     }
 
     public FinishCriteria getFinishCriteria() {
@@ -116,7 +122,7 @@ public class SoccerGameplay extends SoccerModel implements Serializable {
         }, 0, 100);
     }
 
-    public int getLimit() {
+    public double getLimit() {
         return limit;
     }
 

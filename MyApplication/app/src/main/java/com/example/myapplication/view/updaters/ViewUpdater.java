@@ -174,7 +174,7 @@ public class ViewUpdater {
 
     public void updateTime() {
         if (soccer.getFinishCriteria() != SoccerGameplay.FinishCriteria.TIME) return;
-        final int time = soccer.getLimit()/10;
+        final int time = (int)(soccer.getLimit()/10);
 
         gameplay.runOnUiThread(new Runnable() {
             @Override

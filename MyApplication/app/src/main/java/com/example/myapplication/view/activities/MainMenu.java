@@ -1,6 +1,5 @@
 package com.example.myapplication.view.activities;
 
-import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -22,7 +21,7 @@ public class MainMenu extends Fragment {
                 MainActivity activity = (MainActivity)getActivity();
                 switch (view.getId()) {
                     case R.id.new_game:
-                        frag = activity.getSelectPlayers();
+                        frag = activity.getGameTypeSelection();
                         break;
                     case R.id.settings:
                         frag = activity.getSettings();
