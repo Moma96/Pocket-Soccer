@@ -236,4 +236,6 @@ public abstract class SoccerModel implements Serializable {
     public abstract void score(int player);
 
     public void circlesMoved() {}
+
+    public void collisionHappened() {}
 }

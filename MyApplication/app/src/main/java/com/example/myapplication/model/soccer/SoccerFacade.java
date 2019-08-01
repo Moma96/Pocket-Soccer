@@ -1,7 +1,9 @@
 package com.example.myapplication.model.soccer;
 
+import android.media.MediaPlayer;
 import android.os.AsyncTask;
 
+import com.example.myapplication.R;
 import com.example.myapplication.view.activities.GameplayActivity;
 import com.example.myapplication.view.updaters.ViewUpdater;
 
@@ -17,6 +19,9 @@ public class SoccerFacade {
         this.updater = updater;
 
         soccer.setFacade(this);
+
+        collision = MediaPlayer.create(gameplay, R.raw.collision_sound);
+        goal = MediaPlayer.create(gameplay, R.raw.goal_sound);
     }
 
     public void pause() {
@@ -58,6 +63,46 @@ public class SoccerFacade {
     public void gameFinished(int winner) {
         terminate();
         gameplay.gameFinished(winner);
+    }
+
+
+    private MediaPlayer collision;
+    private MediaPlayer goal;
+
+    public void collisionHappened() {
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(final Void... params) {
+                try {
+                    if (collision.isPlaying()) {
+                        collision.stop();
+                        collision.release();
+                        collision = MediaPlayer.create(gameplay, R.raw.collision_sound);
+                    }
+                    collision.start();
+                } catch (Exception e) {
+                }
+                return null;
+            }
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    public void goalHappened() {
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(final Void... params) {
+                try {
+                    if (goal.isPlaying()) {
+                        goal.stop();
+                        goal.release();
+                        goal = MediaPlayer.create(gameplay, R.raw.goal_sound);
+                    }
+                    goal.start();
+                } catch (Exception e) {
+                }
+                return null;
+            }
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     public void respondOnSwipe(final float x1, final float y1, final float x2, final float y2) {

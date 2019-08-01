@@ -46,4 +46,9 @@ public class SoccerField extends Field implements Serializable {
     protected void iterationOver() {
         soccer.circlesMoved();
     }
+
+    @Override
+    protected void collisionHappened() {
+        soccer.collisionHappened();
+    }
 }

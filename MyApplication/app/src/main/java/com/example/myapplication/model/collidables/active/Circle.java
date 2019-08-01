@@ -222,21 +222,23 @@ public class Circle implements Collidable, Serializable {
         return getDistance(circle) <= getCollisionZoneRadius() + circle.getCollisionZoneRadius() - (getRadius() + circle.getRadius());
     }
 
-    public void collision(@NotNull Collidable collided) {
+    public boolean collision(@NotNull Collidable collided) {
         synchronized (field) {
 
             if (collided.checkCollisionProcessed(this))
-                return;
+                return false;
 
             double distance = collided.getDistance(this);
             if (distance >= -Field.DISTANCE_PRECISSION && distance <= Field.DISTANCE_PRECISSION) {
 
                 Log.e(COLLISION_TAG, this + " and " + collided + " collided with distance " + distance);
                 collided.collisionHappened(this);
+                return true;
 
             } else if (distance < -Field.DISTANCE_PRECISSION) {
                 Log.e(COLLISION_TAG, this + " went through " + collided + " distance: " + distance);
             }
+            return false;
         }
     }
 

@@ -1,16 +1,12 @@
 package com.example.myapplication.model.soccer;
 
-import android.app.Activity;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.Toast;
 
-import com.example.myapplication.model.Active;
 import com.example.myapplication.model.Vector;
 import com.example.myapplication.model.soccer.bot.Bot;
 import com.example.myapplication.model.soccer.models.Player;
 import com.example.myapplication.model.soccer.models.SoccerModel;
-import com.example.myapplication.view.activities.GameplayActivity;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -194,6 +190,7 @@ public class SoccerGameplay extends SoccerModel implements Serializable {
             protected Void doInBackground(final Void... params) {
                 scores[player]++;
                 facade.refreshScores();
+                facade.goalHappened();
 
                 Log.d(GOAL_TAG, "PLayer " + player + " scored! result: " + scores[0] + ":" + scores[1]);
 
@@ -373,4 +370,10 @@ public class SoccerGameplay extends SoccerModel implements Serializable {
     public void circlesMoved() {
         facade.circlesMoved();
     }
+
+    @Override
+    public void collisionHappened() {
+        facade.collisionHappened();
+    }
+
 }

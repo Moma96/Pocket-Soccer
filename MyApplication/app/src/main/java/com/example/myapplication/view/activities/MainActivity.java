@@ -15,8 +15,8 @@ import com.example.myapplication.model.soccer.SoccerGameplay;
 public class MainActivity extends AppCompatActivity {
 
     private final static int PLAY = 1;
-    private final static int GAME_FINISHED_CODE = 1;
-    private final static int MAIN_MENU_CODE = 2;
+    public final static int GAME_FINISHED_CODE = 1;
+    public final static int MAIN_MENU_CODE = 2;
 
     private MainMenu mainMenu;
     private GameTypeSelection gameTypeSelection;

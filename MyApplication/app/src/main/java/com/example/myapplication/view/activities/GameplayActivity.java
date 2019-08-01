@@ -1,6 +1,7 @@
 package com.example.myapplication.view.activities;
 
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -56,7 +57,7 @@ public class GameplayActivity extends AppCompatActivity {
             data.putExtra("fieldimg", field);
 
             soccerFacade.terminate();
-            setResult(2, data);
+            setResult(MainActivity.MAIN_MENU_CODE, data);
             finish();
         }
     };
@@ -175,7 +176,7 @@ public class GameplayActivity extends AppCompatActivity {
         data.putExtra("fieldimg", field);
         data.putExtra("winner", winner);
 
-        setResult(1, data);
+        setResult(MainActivity.GAME_FINISHED_CODE, data);
         finish();
     }
 

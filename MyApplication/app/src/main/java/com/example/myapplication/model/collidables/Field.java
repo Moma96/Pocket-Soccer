@@ -17,7 +17,7 @@ import java.util.HashSet;
 
 public abstract class Field extends Active implements Serializable {
 
-    public static final double DISTANCE_PRECISSION = 1.0E-10;
+    public static final double DISTANCE_PRECISSION = 1.0E-9;
 
     private static final String FIELD_TAG = "Field";
     private static final String STATE_TAG = "Circle state";
@@ -160,8 +160,10 @@ public abstract class Field extends Active implements Serializable {
 
         for (Circle circle: tmoving) {
             for (Collidable collidable: collidables) {
-                if (circle != collidable)
-                    circle.collision(collidable);
+                if (circle != collidable) {
+                    if (circle.collision(collidable))
+                        collisionHappened();
+                }
             }
         }
     }
@@ -210,6 +212,8 @@ public abstract class Field extends Active implements Serializable {
     }
 
     protected void iterationOver() {}
+
+    protected void collisionHappened() {}
 
     @Override
     public void iterate() {
