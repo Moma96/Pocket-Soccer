@@ -5,59 +5,62 @@ import android.os.AsyncTask;
 
 import com.example.myapplication.R;
 import com.example.myapplication.view.activities.GameplayActivity;
+import com.example.myapplication.view.updaters.SoundUpdater;
 import com.example.myapplication.view.updaters.ViewUpdater;
 
 public class SoccerFacade {
 
     public GameplayActivity gameplay;
-    private ViewUpdater updater;
     private SoccerGameplay soccer;
+    private ViewUpdater viewUpdater;
+    private SoundUpdater soundUpdater;
 
-    public SoccerFacade(GameplayActivity gameplay, SoccerGameplay soccer, ViewUpdater updater) {
+    public SoccerFacade(GameplayActivity gameplay, SoccerGameplay soccer, ViewUpdater viewUpdater, SoundUpdater soundUpdater) {
         this.gameplay = gameplay;
         this.soccer = soccer;
-        this.updater = updater;
+        this.viewUpdater = viewUpdater;
+        this.soundUpdater = soundUpdater;
 
         soccer.setFacade(this);
 
-        collision = MediaPlayer.create(gameplay, R.raw.collision_sound);
-        goal = MediaPlayer.create(gameplay, R.raw.goal_sound);
+        //collision = MediaPlayer.create(gameplay, R.raw.collision_sound);
+        //goal = MediaPlayer.create(gameplay, R.raw.goal_sound);
     }
 
     public void pause() {
         soccer.pause();
-        updater.inactive();
+        viewUpdater.inactive();
     }
 
     public void resume() {
-        updater.active();
+        viewUpdater.active();
         soccer.resume();
     }
 
     public void terminate() {
         soccer.terminate();
-        updater.terminate();
+        viewUpdater.terminate();
     }
 
     public void refreshScores() {
-        updater.updateScores();
+        viewUpdater.updateScores();
         refreshActive();
     }
 
     public void refreshTime() {
-        updater.updateTime();
+        viewUpdater.updateTime();
     }
 
     public void refreshActive() {
-        updater.darkenInactive();
+        viewUpdater.darkenInactive();
     }
 
     public void circlesReset() {
-        updater.refreshCircles();
+        viewUpdater.refreshCircles();
     }
 
     public void circlesMoved() {
-        updater.refreshMovingCircles();
+        viewUpdater.refreshMovingCircles();
     }
 
     public void gameFinished(int winner) {
@@ -65,7 +68,7 @@ public class SoccerFacade {
         gameplay.gameFinished(winner);
     }
 
-
+/*
     private MediaPlayer collision;
     private MediaPlayer goal;
 
@@ -104,6 +107,15 @@ public class SoccerFacade {
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
+*/
+
+    public void collisionHappened() {
+        soundUpdater.collision();
+    }
+
+    public void goalHappened() {
+        soundUpdater.goal();
+    }
 
     public void respondOnSwipe(final float x1, final float y1, final float x2, final float y2) {
         new AsyncTask<Void, Void, Void>() {
@@ -112,7 +124,7 @@ public class SoccerFacade {
                 if (!soccer.botPlaying()) {
                     soccer.push(x1, y1, x2, y2);
                 }
-                updater.refreshSelection();
+                viewUpdater.refreshSelection();
                 return null;
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -125,7 +137,7 @@ public class SoccerFacade {
                 if (!soccer.botPlaying()) {
                     soccer.select(x, y);
                 }
-                updater.refreshSelection();
+                viewUpdater.refreshSelection();
                 return null;
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -138,7 +150,7 @@ public class SoccerFacade {
                 if (!soccer.botPlaying()) {
                     soccer.selectIfNothingSelected(x, y);
                 }
-                updater.refreshSelection();
+                viewUpdater.refreshSelection();
                 return null;
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);

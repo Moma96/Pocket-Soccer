@@ -16,6 +16,7 @@ import com.example.myapplication.model.soccer.SoccerFacade;
 import com.example.myapplication.model.soccer.SoccerGameplay;
 import com.example.myapplication.model.soccer.models.SoccerModel;
 import com.example.myapplication.view.GestureListener;
+import com.example.myapplication.view.updaters.SoundUpdater;
 import com.example.myapplication.view.updaters.ViewUpdater;
 
 public class GameplayActivity extends AppCompatActivity {
@@ -27,6 +28,7 @@ public class GameplayActivity extends AppCompatActivity {
 
     private SoccerFacade soccerFacade;
     private ViewUpdater viewUpdater;
+    private SoundUpdater soundUpdater;
 
     private View.OnClickListener pause = new View.OnClickListener() {
         @Override
@@ -85,7 +87,6 @@ public class GameplayActivity extends AppCompatActivity {
                 switch (intent.getStringExtra("mode")) {
                     case "new game":
                         setup(background,
-                                teams,
                                 intent.getDoubleExtra("friction", SoccerModel.DEFAULT_FRICTION),
                                 intent.getDoubleExtra("gamespeed", SoccerModel.DEFAULT_GAME_SPEED),
                                 intent.getDoubleExtra("ballmass", SoccerModel.DEFAULT_BALL_MASS),
@@ -95,32 +96,30 @@ public class GameplayActivity extends AppCompatActivity {
                                 intent.getBooleanArrayExtra("botplay"));
                         break;
                     case "last game":
-                        setup((SoccerGameplay) intent.getSerializableExtra("soccer"),
-                                teams);
+                        setup((SoccerGameplay) intent.getSerializableExtra("soccer"));
                 }
             }
         });
     }
 
-    private void setup(FrameLayout background, int[] teams, double friction, double gamespeed, double ballMass,
+    private void setup(FrameLayout background, double friction, double gamespeed, double ballMass,
                        SoccerGameplay.FinishCriteria fc, double limit, SoccerGameplay.PlayingCriteria pc, boolean[] botplay) {
 
         soccer = new SoccerGameplay(0, 0, background.getWidth(), background.getHeight(), friction, gamespeed, ballMass, fc, limit, pc, botplay);
-        viewUpdater = new ViewUpdater(this, soccer, teams);
-        soccerFacade = new SoccerFacade(this, soccer, viewUpdater);
-
-        soccer.start();
-        viewUpdater.start();
-
-        GestureListener gestureListener = new GestureListener(soccerFacade);
-        gestureDetectorCompat = new GestureDetectorCompat(this, gestureListener);
+        setupUpdaters();
     }
 
-    private void setup(SoccerGameplay s, int[] teams) {
+    private void setup(SoccerGameplay s) {
 
         soccer = new SoccerGameplay(s);
+        setupUpdaters();
+    }
+
+    private void setupUpdaters() {
+
         viewUpdater = new ViewUpdater(this, soccer, teams);
-        soccerFacade = new SoccerFacade(this, soccer, viewUpdater);
+        soundUpdater = new SoundUpdater(this);
+        soccerFacade = new SoccerFacade(this, soccer, viewUpdater, soundUpdater);
 
         soccer.start();
         viewUpdater.start();
