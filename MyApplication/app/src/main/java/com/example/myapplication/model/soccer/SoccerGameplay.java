@@ -411,9 +411,10 @@ public class SoccerGameplay extends SoccerModel implements Serializable {
 
         if (playingTimer != null) {
             playingTimer.cancel();
-            playingLimit = PLAYING_LIMIT * TIMER_COEFFICIENT;
-            setPlayingTimer();
         }
+        playingLimit = PLAYING_LIMIT * TIMER_COEFFICIENT;
+        setPlayingTimer();
+
 
         notifyActiveBot();
         facade.refreshActive();
