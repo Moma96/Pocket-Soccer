@@ -14,22 +14,33 @@ import java.io.Serializable;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import static java.lang.Thread.sleep;
-
 public class SoccerGameplay extends SoccerModel implements Serializable {
 
     public enum FinishCriteria { GOALS, TIME }
     public enum PlayingCriteria { MOTION, STATIC }
 
     public static final int DEFAULT_FIELD_IMG = 0;
-    public static final int DEFAULT_LIMIT = 3;
 
-    private static final int AFTER_GOAL_WAIT = 2;
+    public static final int DEFAULT_LIMIT = 3; //(m)
+    public static final int PLAYING_LIMIT = 5; // (s)
+    private static final int AFTER_GOAL_WAIT = 2; // (s)
+    private static final int TIMER_COEFFICIENT = 10; // (s/10)
+    private static final int TIMER_PERIOD = 100; // (ms)
 
     private FinishCriteria finishCriteria;
     private PlayingCriteria playingCriteria;
+
     private double limit;
     transient private Timer timer = null;
+
+    private int playingLimit = PLAYING_LIMIT * TIMER_COEFFICIENT;
+    transient private Timer playingTimer = null;
+
+    private int afterGoalLimit = 0;
+    private int playerLastScored = 0;
+    transient private Timer afterGoalReset = null;
+
+    transient AsyncTask<Void, Void, Void> changeActive = null;
 
     transient private Bot[] bots = new Bot[2];
     private boolean[] botplay;
@@ -41,7 +52,6 @@ public class SoccerGameplay extends SoccerModel implements Serializable {
     transient private SoccerFacade facade;
 
     transient private boolean responsiveness = false;
-    private boolean scoringInProcess = false;
     transient private boolean botPlaying = false;
 
     public SoccerGameplay(double x, double y, double width, double height, double friction, double gamespeed, double ballMass, FinishCriteria fc, double limit, PlayingCriteria pc, boolean[] botplay) {
@@ -58,6 +68,8 @@ public class SoccerGameplay extends SoccerModel implements Serializable {
 
         initBots(soccer.botplay);
         initCriterias(soccer.finishCriteria, soccer.limit, soccer.playingCriteria, false);
+        initPlayerTimer(soccer.playingLimit);
+        initAfterGoalWait(soccer.afterGoalLimit, soccer.playerLastScored);
     }
 
     private void initBots(boolean[] botplay) {
@@ -72,8 +84,17 @@ public class SoccerGameplay extends SoccerModel implements Serializable {
         limit = l;
 
         if (fc == FinishCriteria.TIME && mul) {
-            limit *= 600;
+            limit *= 60*TIMER_COEFFICIENT;
         }
+    }
+
+    private void initPlayerTimer(int pl) {
+        playingLimit = pl;
+    }
+
+    private void initAfterGoalWait(int agl, int pls) {
+        playerLastScored = pls;
+        afterGoalLimit = agl;
     }
 
     public FinishCriteria getFinishCriteria() {
@@ -87,10 +108,6 @@ public class SoccerGameplay extends SoccerModel implements Serializable {
     public synchronized void setFacade(@NotNull SoccerFacade facade) {
         this.facade = facade;
         notifyAll();
-    }
-
-    public synchronized SoccerFacade getFacade() {
-        return facade;
     }
 
     public synchronized void waitFacade() {
@@ -110,12 +127,46 @@ public class SoccerGameplay extends SoccerModel implements Serializable {
             public void run() {
                 if (limit%10 == 0)
                     facade.refreshTime();
-                if (limit-- == 0) {
+                if (--limit < 0) {
                     timer.cancel();
                     timerFinished();
                 }
             }
-        }, 0, 100);
+        }, 0, TIMER_PERIOD);
+    }
+
+    private void setPlayingTimer() {
+        playingTimer = new Timer();
+        playingTimer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                if (--playingLimit < 0) {
+                    playingTimer.cancel();
+                    changeActive();
+                }
+            }
+        }, 0, TIMER_PERIOD);
+    }
+
+    private void setAfterGoalTimer() {
+        afterGoalReset = new Timer();
+        afterGoalReset.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                if (--afterGoalLimit < 0) {
+                    afterGoalReset.cancel();
+                    afterGoalReset = null;
+                    if (finishCriteria == FinishCriteria.GOALS && scores[playerLastScored] == limit) {
+                        lastGoalScored(playerLastScored);
+                    } else {
+                        reset();
+                        setActive((playerLastScored + 1) % 2); //OVO PRAVI PROBLEM BOTU!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                        facade.circlesReset();
+                        setResponsiveness();
+                    }
+                }
+            }
+        }, 0, TIMER_PERIOD);
     }
 
     public double getLimit() {
@@ -134,12 +185,20 @@ public class SoccerGameplay extends SoccerModel implements Serializable {
 
         if (finishCriteria == FinishCriteria.TIME)
             setTimer();
-        //////sinhronizuj
-        if (playingCriteria == PlayingCriteria.MOTION || allNotMoving()) {
-            setResponsiveness();
-        } else {
-            changeActive();
+
+        setResponsiveness();
+
+        if (afterGoalLimit > 0) {
+            resetResponsiveness();
+            resetSelection();
+            setAfterGoalTimer();
         }
+
+        if (playingCriteria == PlayingCriteria.STATIC && !allNotMoving()) {
+            resetResponsiveness();
+            changeActive();
+        } else if (playingLimit > 0)
+            setPlayingTimer();
     }
 
     @Override
@@ -155,17 +214,36 @@ public class SoccerGameplay extends SoccerModel implements Serializable {
     public synchronized void pause() {
         resetResponsiveness();
         super.pause();
-        if (timer != null) {
+
+        if (timer != null)
             timer.cancel();
+
+        if (afterGoalReset != null)
+            afterGoalReset.cancel();
+
+        if (playingTimer != null) {
+            playingTimer.cancel();
         }
 
+        if (changeActive != null)
+            changeActive.cancel(true);
     }
 
     @Override
     public synchronized void resume() {
-        super.resume();
         if (timer != null)
             setTimer();
+
+        if (afterGoalLimit > 0)
+            setAfterGoalTimer();
+
+        if (playingCriteria == PlayingCriteria.STATIC && !allNotMoving()) {
+            resetResponsiveness();
+            changeActive();
+        } else if (playingLimit > 0)
+            setPlayingTimer();
+
+        super.resume();
         setResponsiveness();
     }
 
@@ -179,9 +257,11 @@ public class SoccerGameplay extends SoccerModel implements Serializable {
     }
 
     public synchronized void score(final int player) {
-        if (scoringInProcess) return;
+        if (afterGoalLimit > 0) return;
 
-        scoringInProcess = true;
+        afterGoalLimit = AFTER_GOAL_WAIT*TIMER_COEFFICIENT;
+        playerLastScored = player;
+
         resetResponsiveness();
         resetSelection();
 
@@ -194,17 +274,8 @@ public class SoccerGameplay extends SoccerModel implements Serializable {
 
                 Log.d(GOAL_TAG, "PLayer " + player + " scored! result: " + scores[0] + ":" + scores[1]);
 
-                sleepFor(AFTER_GOAL_WAIT);
+                setAfterGoalTimer();
 
-                if (finishCriteria == FinishCriteria.GOALS && scores[player] == limit) {
-                     lastGoalScored(player);
-                } else {
-                    reset();
-                    setActive((player + 1) % 2); //OVO PRAVI PROBLEM BOTU!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                    facade.circlesReset();
-                    setResponsiveness();
-                    scoringInProcess = false;
-                }
                 return null;
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -217,6 +288,8 @@ public class SoccerGameplay extends SoccerModel implements Serializable {
             selected.push(speed);
             selected = null;
 
+            if (playingTimer != null)
+                playingTimer.cancel();
             changeActive();
         }
         return true;
@@ -311,22 +384,22 @@ public class SoccerGameplay extends SoccerModel implements Serializable {
     }
 
     public synchronized void changeActive() {
-        new AsyncTask<Void, Void, Void>() {
+        changeActive = new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(final Void... params) {
                 synchronized (field) {
-                    resetResponsiveness();
-                    if (playingCriteria == PlayingCriteria.STATIC) {
-                        while (!field.allNotMoving()) {
-                            try {
+                    try {
+                        resetResponsiveness();
+                        if (playingCriteria == PlayingCriteria.STATIC) {
+                            while (!field.allNotMoving()) {
                                 field.wait();
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
                             }
                         }
+                        setActive((active + 1) % 2);
+                        setResponsiveness();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
-                    setActive((active + 1) % 2);
-                    setResponsiveness();
                 }
                 return null;
             }
@@ -335,6 +408,13 @@ public class SoccerGameplay extends SoccerModel implements Serializable {
 
     public synchronized void setActive(int player) {
         active = player;
+
+        if (playingTimer != null) {
+            playingTimer.cancel();
+            playingLimit = PLAYING_LIMIT * TIMER_COEFFICIENT;
+            setPlayingTimer();
+        }
+
         notifyActiveBot();
         facade.refreshActive();
     }
@@ -342,14 +422,6 @@ public class SoccerGameplay extends SoccerModel implements Serializable {
     private void notifyActiveBot() {
         synchronized (bots[active]) {
             bots[active].notifyAll();
-        }
-    }
-
-    private void sleepFor(int wait) {
-        try {
-            sleep(wait * 1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
         }
     }
 

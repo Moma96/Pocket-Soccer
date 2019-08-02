@@ -22,9 +22,6 @@ public class SoccerFacade {
         this.soundUpdater = soundUpdater;
 
         soccer.setFacade(this);
-
-        //collision = MediaPlayer.create(gameplay, R.raw.collision_sound);
-        //goal = MediaPlayer.create(gameplay, R.raw.goal_sound);
     }
 
     public void pause() {
@@ -67,47 +64,6 @@ public class SoccerFacade {
         terminate();
         gameplay.gameFinished(winner);
     }
-
-/*
-    private MediaPlayer collision;
-    private MediaPlayer goal;
-
-    public void collisionHappened() {
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(final Void... params) {
-                try {
-                    if (collision.isPlaying()) {
-                        collision.stop();
-                        collision.release();
-                        collision = MediaPlayer.create(gameplay, R.raw.collision_sound);
-                    }
-                    collision.start();
-                } catch (Exception e) {
-                }
-                return null;
-            }
-        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-    }
-
-    public void goalHappened() {
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(final Void... params) {
-                try {
-                    if (goal.isPlaying()) {
-                        goal.stop();
-                        goal.release();
-                        goal = MediaPlayer.create(gameplay, R.raw.goal_sound);
-                    }
-                    goal.start();
-                } catch (Exception e) {
-                }
-                return null;
-            }
-        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-    }
-*/
 
     public void collisionHappened() {
         soundUpdater.collision();
