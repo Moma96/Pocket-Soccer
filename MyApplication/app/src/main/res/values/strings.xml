@@ -17,4 +17,6 @@
     <string name="motion_text">MOTION</string>
     <string name="goals_text">GOALS</string>
     <string name="minutes_text">MINUTES</string>
+    <string name="human_text">HUMAN</string>
+    <string name="bot_text">BOT</string>
 </resources>

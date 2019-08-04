@@ -17,7 +17,7 @@ import java.util.HashSet;
 
 public abstract class Field extends Active implements Serializable {
 
-    public static final double DISTANCE_PRECISSION = 1.0E-9;
+    public static final double DISTANCE_PRECISSION = 1.0E-8;
 
     private static final String FIELD_TAG = "Field";
     private static final String STATE_TAG = "Circle state";

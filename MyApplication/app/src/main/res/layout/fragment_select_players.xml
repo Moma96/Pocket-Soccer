@@ -8,80 +8,162 @@
     android:orientation="horizontal"
     tools:context=".view.activities.SelectPlayers"
     android:padding="@dimen/wrapper_padding"
-    android:weightSum="7">
+    android:weightSum="8">
 
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:gravity="center"
-        android:padding="20dp"
         android:layout_weight="3"
-        android:weightSum="9">
+        android:weightSum="5">
 
-        <ImageView
-            android:id="@+id/player1_left"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:padding="@dimen/img_padding"
-            android:src="@drawable/arrowleft"
-            android:layout_weight="2" />
+        <EditText
+            android:id="@+id/player1_name"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            style="@style/Text" />
 
-        <ImageView
-            android:id="@+id/player1_img"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:padding="@dimen/img_padding"
-            android:layout_weight="5" />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_weight="3"
+            android:weightSum="9">
 
-        <ImageView
-            android:id="@+id/player1_right"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:padding="@dimen/img_padding"
-            android:src="@drawable/arrowright"
-            android:layout_weight="2" />
+            <ImageView
+                android:id="@+id/player1_left"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/img_padding"
+                android:src="@drawable/arrowleft"
+                android:layout_weight="2" />
+
+            <ImageView
+                android:id="@+id/player1_img"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/img_padding"
+                android:layout_weight="5" />
+
+            <ImageView
+                android:id="@+id/player1_right"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/img_padding"
+                android:src="@drawable/arrowright"
+                android:layout_weight="2" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/player1_human"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/human_text"
+                android:padding="@dimen/human_bot_padding"
+                style="@style/Text" />
+
+            <TextView
+                android:id="@+id/player1_bot"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/bot_text"
+                android:padding="@dimen/human_bot_padding"
+                style="@style/Text" />
+
+        </LinearLayout>
+
     </LinearLayout>
 
     <TextView
         android:id="@+id/play_text"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
+        android:layout_weight="2"
         android:text="@string/play"
         style="@style/Text" />
 
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:gravity="center"
-        android:padding="20dp"
         android:layout_weight="3"
-        android:weightSum="9">
+        android:weightSum="5">
 
-        <ImageView
-            android:id="@+id/player2_left"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:padding="@dimen/img_padding"
-            android:src="@drawable/arrowleft"
-            android:layout_weight="2" />
+        <EditText
+            android:id="@+id/player2_name"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            style="@style/Text" />
 
-        <ImageView
-            android:id="@+id/player2_img"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:padding="@dimen/img_padding"
-            android:layout_weight="5" />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_weight="3"
+            android:weightSum="9">
 
-        <ImageView
-            android:id="@+id/player2_right"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:padding="@dimen/img_padding"
-            android:src="@drawable/arrowright"
-            android:layout_weight="2" />
+            <ImageView
+                android:id="@+id/player2_left"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/img_padding"
+                android:src="@drawable/arrowleft"
+                android:layout_weight="2" />
+
+            <ImageView
+                android:id="@+id/player2_img"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/img_padding"
+                android:layout_weight="5" />
+
+            <ImageView
+                android:id="@+id/player2_right"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/img_padding"
+                android:src="@drawable/arrowright"
+                android:layout_weight="2" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/player2_human"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/human_text"
+                android:padding="@dimen/human_bot_padding"
+                style="@style/Text" />
+
+            <TextView
+                android:id="@+id/player2_bot"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/bot_text"
+                android:padding="@dimen/human_bot_padding"
+                style="@style/Text" />
+
+        </LinearLayout>
+
     </LinearLayout>
 
 </LinearLayout>

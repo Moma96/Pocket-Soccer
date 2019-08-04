@@ -24,11 +24,11 @@ public class MainActivity extends AppCompatActivity {
     private Settings settings;
     private History history;
 
-    public SoccerGameplay soccer = null;///////////
+    ///////////////////////////////////////////
+    public SoccerGameplay soccer = null;
     public int[] savedteams;
     public int savedfield;
-
-    private boolean[] botplay = { false, false };
+    ////////////////////////////////////////////
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +53,8 @@ public class MainActivity extends AppCompatActivity {
             case PLAY:
                 switch (resultCode) {
                     case GAME_FINISHED_CODE:
+
+
 
                         replaceFragment(mainMenu);
                         break;
@@ -98,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra("finish criteria", gameTypeSelection.getFinishCriteria());
         intent.putExtra("limit", gameTypeSelection.getLimit());
         intent.putExtra("playing criteria", gameTypeSelection.getPlayingCriteria());
-        intent.putExtra("botplay", botplay);
+        intent.putExtra("botplay", selectPlayers.getBotplay());
 
         startActivityForResult(intent, PLAY);
     }
