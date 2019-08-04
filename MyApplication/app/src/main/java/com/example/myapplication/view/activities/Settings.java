@@ -1,5 +1,6 @@
 package com.example.myapplication.view.activities;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -11,8 +12,9 @@ import android.widget.TextView;
 
 import com.example.myapplication.R;
 
+import static android.content.Context.MODE_PRIVATE;
+
 public class Settings extends Fragment {
-    //ovde dodaj defaults
 
     private final static double BIGGEST_GAME_SPEED = 2;
     private final static double SMALLEST_GAME_SPEED = 0.5;
@@ -30,14 +32,19 @@ public class Settings extends Fragment {
 
     private final static int FIELDS = 4;
 
-    private double friction = 0.2;
-    private double gamespeed = 1;
-    private double ballMass = 0.4;
-    private int fieldimg = 0;
+    public final static double DEFAULT_FRICTION = 0.2;
+    public final static double DEFAULT_GAME_SPEED = 1.0;
+    public final static double DEFAULT_BALL_MASS = 0.4;
+    public final static int DEFAULT_FIELD_IMG = 0;
+
+    private SharedPreferences pref;
+    private SharedPreferences.Editor prefEditor;
 
     private View.OnClickListener changeGameSpeed = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
+            double gamespeed = Double.longBitsToDouble(pref.getLong("game speed", Double.doubleToLongBits(DEFAULT_GAME_SPEED)));
+
             switch(view.getId()) {
                 case R.id.game_speed_decrease:
                     if (gamespeed > SMALLEST_GAME_SPEED)
@@ -48,6 +55,9 @@ public class Settings extends Fragment {
                         gamespeed += GAME_SPEED_INCREMENT;
                     break;
             }
+            prefEditor.putLong("game speed", Double.doubleToLongBits(gamespeed));
+            prefEditor.commit();
+
             updateGameSpeedValue();
         }
     };
@@ -55,6 +65,8 @@ public class Settings extends Fragment {
     private View.OnClickListener changeFriction = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
+            double friction = Double.longBitsToDouble(pref.getLong("friction", Double.doubleToLongBits(DEFAULT_FRICTION)));
+
             double increment = FRICTION_INCREMENT;
             if (friction > FRICTION_INCREMENT_TRANSITION)
                 increment = BIGGER_FRICTION_INCREMENT;
@@ -68,13 +80,18 @@ public class Settings extends Fragment {
                         friction += increment;
                     break;
             }
+            prefEditor.putLong("friction", Double.doubleToLongBits(friction));
+            prefEditor.commit();
+
             updateFrictionValue();
         }
     };
 
-    private View.OnClickListener changeBallWeight = new View.OnClickListener() {
+    private View.OnClickListener changeBallMass = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
+            double ballMass = Double.longBitsToDouble(pref.getLong("ball mass", Double.doubleToLongBits(DEFAULT_FRICTION)));
+
             switch(view.getId()) {
                 case R.id.ball_mass_decrease:
                     if (ballMass > SMALLEST_BALL_MASS)
@@ -85,6 +102,9 @@ public class Settings extends Fragment {
                         ballMass += BALL_MASS_INCREMENT;
                     break;
             }
+            prefEditor.putLong("ball mass", Double.doubleToLongBits(ballMass));
+            prefEditor.commit();
+
             updateBallMass();
         }
     };
@@ -92,6 +112,8 @@ public class Settings extends Fragment {
     private View.OnClickListener changeField = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
+            int fieldimg = pref.getInt("field img", DEFAULT_FIELD_IMG);
+
             switch(view.getId()) {
                 case R.id.field_left:
                     fieldimg = (fieldimg - 1 + FIELDS) % FIELDS;
@@ -100,7 +122,17 @@ public class Settings extends Fragment {
                     fieldimg = (fieldimg + 1) % FIELDS;
                     break;
             }
+            prefEditor.putInt("field img", fieldimg);
+            prefEditor.commit();
+
             updateFieldImg();
+        }
+    };
+
+    private View.OnClickListener reset = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            resetPref();
         }
     };
 
@@ -115,45 +147,61 @@ public class Settings extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        pref = getContext().getSharedPreferences("MyPref", MODE_PRIVATE);
+        prefEditor = pref.edit();
+
+        initDefaultPref();
         setListener();
+        resetPref();
+    }
+
+    private void initDefaultPref() {
+        prefEditor.putLong("default friction", Double.doubleToLongBits(DEFAULT_FRICTION));
+        prefEditor.putLong("default game speed", Double.doubleToLongBits(DEFAULT_GAME_SPEED));
+        prefEditor.putLong("default ball mass", Double.doubleToLongBits(DEFAULT_BALL_MASS));
+        prefEditor.putInt("default field img", DEFAULT_FIELD_IMG);
+
+        prefEditor.commit();
+    }
+
+    private void resetPref() {
+        prefEditor.putLong("friction", pref.getLong("default friction", Double.doubleToLongBits(DEFAULT_FRICTION)));
+        prefEditor.putLong("game speed", pref.getLong("default game speed", Double.doubleToLongBits(DEFAULT_GAME_SPEED)));
+        prefEditor.putLong("ball mass", pref.getLong("default ball mass", Double.doubleToLongBits(DEFAULT_BALL_MASS)));
+        prefEditor.putInt("field img", pref.getInt("default field img", DEFAULT_FIELD_IMG));
+
+        prefEditor.commit();
+
         updateGameSpeedValue();
         updateFrictionValue();
         updateBallMass();
         updateFieldImg();
     }
 
-    public double getFriction() {
-        return friction;
-    }
-
-    public double getGamespeed() {
-        return gamespeed;
-    }
-
-    public double getBallMass() {
-        return ballMass;
-    }
-
-    public int getFieldimg() {
-        return fieldimg;
-    }
-
     private void updateGameSpeedValue() {
+        double gamespeed = Double.longBitsToDouble(pref.getLong("game speed", Double.doubleToLongBits(DEFAULT_GAME_SPEED)));
+
         TextView fv = getActivity().findViewById(R.id.game_speed_value);
         fv.setText((int)(gamespeed*100) + "%");
     }
 
     private void updateFrictionValue() {
+        double friction = Double.longBitsToDouble(pref.getLong("friction", Double.doubleToLongBits(DEFAULT_FRICTION)));
+
         TextView fv = getActivity().findViewById(R.id.friction_value);
         fv.setText((int)(friction*500) + "%");
     }
 
     private void updateBallMass() {
+        double ballMass = Double.longBitsToDouble(pref.getLong("ball mass", Double.doubleToLongBits(DEFAULT_FRICTION)));
+
         TextView bm = getActivity().findViewById(R.id.ball_mass_value);
         bm.setText((int)(ballMass*250) + "%");
     }
 
     private void updateFieldImg() {
+        int fieldimg = pref.getInt("field img", DEFAULT_FIELD_IMG);
+
         ImageView fimg = getActivity().findViewById(R.id.field_img);
         fimg.setImageResource(getResources().getIdentifier("field" + fieldimg, "drawable", getActivity().getPackageName()));
     }
@@ -163,9 +211,10 @@ public class Settings extends Fragment {
         getActivity().findViewById(R.id.game_speed_increase).setOnClickListener(changeGameSpeed);
         getActivity().findViewById(R.id.friction_decrease).setOnClickListener(changeFriction);
         getActivity().findViewById(R.id.friction_increase).setOnClickListener(changeFriction);
-        getActivity().findViewById(R.id.ball_mass_decrease).setOnClickListener(changeBallWeight);
-        getActivity().findViewById(R.id.ball_mass_increase).setOnClickListener(changeBallWeight);
+        getActivity().findViewById(R.id.ball_mass_decrease).setOnClickListener(changeBallMass);
+        getActivity().findViewById(R.id.ball_mass_increase).setOnClickListener(changeBallMass);
         getActivity().findViewById(R.id.field_left).setOnClickListener(changeField);
         getActivity().findViewById(R.id.field_right).setOnClickListener(changeField);
+        getActivity().findViewById(R.id.reset_text).setOnClickListener(reset);
     }
 }

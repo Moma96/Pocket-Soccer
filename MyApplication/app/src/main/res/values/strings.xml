@@ -19,4 +19,5 @@
     <string name="minutes_text">MINUTES</string>
     <string name="human_text">HUMAN</string>
     <string name="bot_text">BOT</string>
+    <string name="reset_text">RESET</string>
 </resources>

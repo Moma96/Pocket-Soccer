@@ -1,5 +1,6 @@
 package com.example.myapplication.view.activities;
 
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -12,6 +13,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.myapplication.R;
+
+import static android.content.Context.MODE_PRIVATE;
 
 public class SelectPlayers extends Fragment {
 
@@ -110,7 +113,7 @@ public class SelectPlayers extends Fragment {
         return teamsimg;
     }
 
-    public String getPlayerName(int id) {
+    /*public String getPlayerName(int id) {
         EditText et = null;
         switch (id) {
             case 0:
@@ -122,7 +125,7 @@ public class SelectPlayers extends Fragment {
         }
         if (et == null) return null;
         return String.valueOf(et.getText());
-    }
+    }*/
 
     private void setListener() {
         getActivity().findViewById(R.id.player1_left).setOnClickListener(changeTeam);

@@ -1,6 +1,7 @@
 package com.example.myapplication.view.activities;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -90,13 +91,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void newGame() {
+
+        SharedPreferences pref = getSharedPreferences("MyPref", MODE_PRIVATE);
+        double ballMass = Double.longBitsToDouble(pref.getLong("ball mass", Double.doubleToLongBits(Settings.DEFAULT_FRICTION)));
+        double friction = Double.longBitsToDouble(pref.getLong("friction", Double.doubleToLongBits(Settings.DEFAULT_FRICTION)));
+        double gamespeed = Double.longBitsToDouble(pref.getLong("game speed", Double.doubleToLongBits(Settings.DEFAULT_GAME_SPEED)));
+        int fieldimg = pref.getInt("field img", Settings.DEFAULT_FIELD_IMG);
+
         Intent intent = new Intent(this, GameplayActivity.class);
         intent.putExtra("mode", "new game");
         intent.putExtra("teamsimg", selectPlayers.getTeamsimg());
-        intent.putExtra("fieldimg", settings.getFieldimg());
-        intent.putExtra("gamespeed", settings.getGamespeed());
-        intent.putExtra("friction", settings.getFriction());
-        intent.putExtra("ballmass", settings.getBallMass());
+        intent.putExtra("fieldimg", fieldimg);
+        intent.putExtra("gamespeed", gamespeed);
+        intent.putExtra("friction", friction);
+        intent.putExtra("ballmass", ballMass);
         intent.putExtra("finish criteria", gameTypeSelection.getFinishCriteria());
         intent.putExtra("limit", gameTypeSelection.getLimit());
         intent.putExtra("playing criteria", gameTypeSelection.getPlayingCriteria());
