@@ -27,8 +27,8 @@ public class MainActivity extends AppCompatActivity {
 
     ///////////////////////////////////////////
     public SoccerGameplay soccer = null;
-    public int[] savedteams;
-    public int savedfield;
+    //public int[] savedteams;
+    //public int savedfield;
     ////////////////////////////////////////////
 
     @Override
@@ -61,8 +61,8 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case MAIN_MENU_CODE:
                         soccer = (SoccerGameplay)data.getSerializableExtra("soccer");
-                        savedteams = data.getIntArrayExtra("teamsimg");
-                        savedfield = data.getIntExtra("fieldimg", SoccerGameplay.DEFAULT_FIELD_IMG);
+                        //savedteams = data.getIntArrayExtra("teamsimg");
+                        //savedfield = data.getIntExtra("fieldimg", SoccerGameplay.DEFAULT_FIELD_IMG);
                         replaceFragment(mainMenu);
                         break;
                 }
@@ -118,8 +118,8 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(this, GameplayActivity.class);
             intent.putExtra("mode", "last game");
             intent.putExtra("soccer", soccer);
-            intent.putExtra("fieldimg", savedfield);
-            intent.putExtra("teamsimg", savedteams);
+           // intent.putExtra("fieldimg", savedfield);
+           // intent.putExtra("teamsimg", savedteams);
 
             startActivityForResult(intent, PLAY);
         }

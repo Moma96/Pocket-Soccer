@@ -26,11 +26,11 @@ public class ViewUpdater {
     private ImageView imgSelected;
     private ImageView imgGoalposts;
 
-    public ViewUpdater(GameplayActivity gameplay, SoccerGameplay soccer, int[] teams) {
+    public ViewUpdater(GameplayActivity gameplay, SoccerGameplay soccer) {
         this.gameplay = gameplay;
         this.soccer = soccer;
 
-        draw(teams);
+        draw();
     }
 
     public GameplayActivity getGameplay() {
@@ -41,13 +41,14 @@ public class ViewUpdater {
         return soccer;
     }
 
-    private void draw(final int[] teams) {
+    private void draw() {
         gameplay.runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 FrameLayout background = gameplay.findViewById(R.id.background);
+                drawBackground(background);
                 drawBall(background);
-                drawPlayers(background, teams);
+                drawPlayers(background);
                 drawGoals(background);
                 updateScores();
                 updateTime();
@@ -66,18 +67,23 @@ public class ViewUpdater {
         gameplay.findViewById(R.id.main_menu_text).bringToFront();
     }
 
+    private void drawBackground(FrameLayout background) {
+        int fieldimg = gameplay.getResources().getIdentifier("field" + soccer.getFieldImg(), "drawable", gameplay.getPackageName());
+        background.setBackgroundResource(fieldimg);
+    }
+
     private void drawBall(FrameLayout background) {
         Ball ball = soccer.getBall();
         ImageView ballImageView = drawCircle(background, ball, R.drawable.ball0);
         ballImageUpdater = new BallImageUpdater(this, ballImageView);
     }
 
-    private void drawPlayers(FrameLayout background, int[] teams) {
+    private void drawPlayers(FrameLayout background) {
         for (int p = 0; p < 2; p++) {
             int rotation = 90;
             if (p == 1) rotation = -90;
             for (Player player : soccer.getPlayers(p)) {
-                drawCircle(background, player, gameplay.getResources().getIdentifier("t" + teams[p], "drawable", gameplay.getPackageName())).setRotation(rotation);
+                drawCircle(background, player, gameplay.getResources().getIdentifier("t" + soccer.getTeamsImg()[p], "drawable", gameplay.getPackageName())).setRotation(rotation);
             }
         }
     }

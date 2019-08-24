@@ -23,8 +23,8 @@ public class GameplayActivity extends AppCompatActivity {
 
     private GestureDetectorCompat gestureDetectorCompat;
     private SoccerGameplay soccer;
-    private int[] teams;
-    private int field;
+    //private int[] teams;
+    //private int field;
 
     private SoccerFacade soccerFacade;
     private ViewUpdater viewUpdater;
@@ -55,8 +55,8 @@ public class GameplayActivity extends AppCompatActivity {
         public void onClick(View view) {
             Intent data = new Intent();
             data.putExtra("soccer", soccer);
-            data.putExtra("teamsimg", teams);
-            data.putExtra("fieldimg", field);
+            //data.putExtra("teamsimg", teams);
+            //data.putExtra("fieldimg", field);
 
             soccerFacade.terminate();
             setResult(MainActivity.MAIN_MENU_CODE, data);
@@ -70,13 +70,12 @@ public class GameplayActivity extends AppCompatActivity {
         setContentView(R.layout.activity_gameplay);
 
         final FrameLayout background = findViewById(R.id.background);
-
         final Intent intent = getIntent();
 
-        teams = intent.getIntArrayExtra("teamsimg");
-        field = intent.getIntExtra("fieldimg", SoccerGameplay.DEFAULT_FIELD_IMG);
-        int fieldimg = getResources().getIdentifier("field" + field, "drawable", getPackageName());
-        background.setBackgroundResource(fieldimg);
+        //teams = intent.getIntArrayExtra("teamsimg");
+        //field = intent.getIntExtra("fieldimg", SoccerGameplay.DEFAULT_FIELD_IMG);
+        //int fieldimg = getResources().getIdentifier("field" + field, "drawable", getPackageName());
+        //background.setBackgroundResource(fieldimg);
 
         resetPauseOptions();
         setListener();
@@ -86,38 +85,28 @@ public class GameplayActivity extends AppCompatActivity {
             public void run() {
                 switch (intent.getStringExtra("mode")) {
                     case "new game":
-                        setup(background,
+                        soccer = new SoccerGameplay(0, 0, background.getWidth(), background.getHeight(),
                                 intent.getDoubleExtra("friction", SoccerModel.DEFAULT_FRICTION),
                                 intent.getDoubleExtra("gamespeed", SoccerModel.DEFAULT_GAME_SPEED),
                                 intent.getDoubleExtra("ballmass", SoccerModel.DEFAULT_BALL_MASS),
                                 (SoccerGameplay.FinishCriteria)intent.getSerializableExtra("finish criteria"),
                                 intent.getDoubleExtra("limit", SoccerGameplay.DEFAULT_LIMIT),
                                 (SoccerGameplay.PlayingCriteria)intent.getSerializableExtra("playing criteria"),
-                                intent.getBooleanArrayExtra("botplay"));
+                                intent.getBooleanArrayExtra("botplay"),
+                                intent.getIntArrayExtra("teamsimg"),
+                                intent.getIntExtra("fieldimg", SoccerGameplay.DEFAULT_FIELD_IMG));
                         break;
                     case "last game":
-                        setup((SoccerGameplay) intent.getSerializableExtra("soccer"));
+                        soccer = new SoccerGameplay((SoccerGameplay) intent.getSerializableExtra("soccer"));
                 }
+                setupUpdaters();
             }
         });
     }
 
-    private void setup(FrameLayout background, double friction, double gamespeed, double ballMass,
-                       SoccerGameplay.FinishCriteria fc, double limit, SoccerGameplay.PlayingCriteria pc, boolean[] botplay) {
-
-        soccer = new SoccerGameplay(0, 0, background.getWidth(), background.getHeight(), friction, gamespeed, ballMass, fc, limit, pc, botplay);
-        setupUpdaters();
-    }
-
-    private void setup(SoccerGameplay s) {
-
-        soccer = new SoccerGameplay(s);
-        setupUpdaters();
-    }
-
     private void setupUpdaters() {
 
-        viewUpdater = new ViewUpdater(this, soccer, teams);
+        viewUpdater = new ViewUpdater(this, soccer);
         soundUpdater = new SoundUpdater(this);
         soccerFacade = new SoccerFacade(this, soccer, viewUpdater, soundUpdater);
 
@@ -171,9 +160,8 @@ public class GameplayActivity extends AppCompatActivity {
     public void gameFinished(int winner) {
         Intent data = new Intent();
         data.putExtra("soccer", soccer);
-        data.putExtra("teamsimg", teams);
-        data.putExtra("fieldimg", field);
-        data.putExtra("winner", winner);
+        //data.putExtra("teamsimg", teams);
+        //data.putExtra("fieldimg", field);
 
         setResult(MainActivity.GAME_FINISHED_CODE, data);
         finish();

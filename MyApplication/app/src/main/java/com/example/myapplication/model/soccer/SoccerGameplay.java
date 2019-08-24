@@ -54,8 +54,14 @@ public class SoccerGameplay extends SoccerModel implements Serializable {
     transient private boolean responsiveness = false;
     transient private boolean botPlaying = false;
 
-    public SoccerGameplay(double x, double y, double width, double height, double friction, double gamespeed, double ballMass, FinishCriteria fc, double limit, PlayingCriteria pc, boolean[] botplay) {
+    public int[] teamsImg;
+    public int fieldImg;
+
+    public SoccerGameplay(double x, double y, double width, double height, double friction, double gamespeed, double ballMass, FinishCriteria fc, double limit, PlayingCriteria pc, boolean[] botplay, int[] teamsImg, int fieldImg) {
         super(x, y, width, height, friction, gamespeed, ballMass);
+
+        this.teamsImg = teamsImg;
+        this.fieldImg = fieldImg;
 
         initBots(botplay);
         initCriterias(fc, limit, pc, true);
@@ -65,6 +71,9 @@ public class SoccerGameplay extends SoccerModel implements Serializable {
         super(soccer);
         this.scores = soccer.scores;
         this.active = soccer.active;
+
+        this.teamsImg = soccer.teamsImg;
+        this.fieldImg = soccer.fieldImg;
 
         initBots(soccer.botplay);
         initCriterias(soccer.finishCriteria, soccer.limit, soccer.playingCriteria, false);
@@ -103,6 +112,14 @@ public class SoccerGameplay extends SoccerModel implements Serializable {
 
     public PlayingCriteria getPlayingCriteria() {
         return playingCriteria;
+    }
+
+    public int[] getTeamsImg() {
+        return teamsImg;
+    }
+
+    public int getFieldImg() {
+        return fieldImg;
     }
 
     public synchronized void setFacade(@NotNull SoccerFacade facade) {
