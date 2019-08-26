@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
                     case GAME_FINISHED_CODE:
 
 
-
+                        resetLastGame();
                         replaceFragment(mainMenu);
                         break;
                     case MAIN_MENU_CODE:
@@ -155,5 +155,10 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public void resetLastGame() {
+        File f = new File(getFilesDir(), LAST_GAME_FILE);
+        f.delete();
     }
 }
