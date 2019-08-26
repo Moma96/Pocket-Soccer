@@ -23,8 +23,6 @@ public class GameplayActivity extends AppCompatActivity {
 
     private GestureDetectorCompat gestureDetectorCompat;
     private SoccerGameplay soccer;
-    //private int[] teams;
-    //private int field;
 
     private SoccerFacade soccerFacade;
     private ViewUpdater viewUpdater;
@@ -55,8 +53,6 @@ public class GameplayActivity extends AppCompatActivity {
         public void onClick(View view) {
             Intent data = new Intent();
             data.putExtra("soccer", soccer);
-            //data.putExtra("teamsimg", teams);
-            //data.putExtra("fieldimg", field);
 
             soccerFacade.terminate();
             setResult(MainActivity.MAIN_MENU_CODE, data);
@@ -69,16 +65,11 @@ public class GameplayActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gameplay);
 
-        final FrameLayout background = findViewById(R.id.background);
-        final Intent intent = getIntent();
-
-        //teams = intent.getIntArrayExtra("teamsimg");
-        //field = intent.getIntExtra("fieldimg", SoccerGameplay.DEFAULT_FIELD_IMG);
-        //int fieldimg = getResources().getIdentifier("field" + field, "drawable", getPackageName());
-        //background.setBackgroundResource(fieldimg);
-
         resetPauseOptions();
         setListener();
+
+        final FrameLayout background = findViewById(R.id.background);
+        final Intent intent = getIntent();
 
         background.post(new Runnable() {
             @Override
@@ -157,11 +148,9 @@ public class GameplayActivity extends AppCompatActivity {
         findViewById(R.id.main_menu_text).setOnClickListener(mainMenu);
     }
 
-    public void gameFinished(int winner) {
+    public void gameFinished() {
         Intent data = new Intent();
         data.putExtra("soccer", soccer);
-        //data.putExtra("teamsimg", teams);
-        //data.putExtra("fieldimg", field);
 
         setResult(MainActivity.GAME_FINISHED_CODE, data);
         finish();

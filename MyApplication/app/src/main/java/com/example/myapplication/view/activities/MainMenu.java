@@ -63,7 +63,7 @@ public class MainMenu extends Fragment {
 
     public void updateMenuFragment() {
         MainActivity activity = (MainActivity)getActivity();
-        if (activity.soccer == null) {
+        if (activity.loadLastGame() == null) {
             TextView clg = getActivity().findViewById(R.id.last_game);
             clg.setClickable(false);
             clg.setTextColor(Color.GRAY);

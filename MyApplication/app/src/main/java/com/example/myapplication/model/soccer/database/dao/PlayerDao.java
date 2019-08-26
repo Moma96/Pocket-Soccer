@@ -23,6 +23,9 @@ public interface PlayerDao {
     @Delete
     void delete(Player player);
 
+    @Query("SELECT * FROM player_table WHERE name = :name")
+    LiveData<Player> getPlayer(String name);
+
     @Query("SELECT * FROM player_table")
     LiveData<List<Player>> getAllPlayers();
 

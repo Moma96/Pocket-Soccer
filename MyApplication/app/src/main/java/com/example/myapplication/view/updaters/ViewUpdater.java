@@ -12,6 +12,8 @@ import com.example.myapplication.model.soccer.models.Ball;
 import com.example.myapplication.model.soccer.models.Player;
 import com.example.myapplication.view.activities.GameplayActivity;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -88,7 +90,7 @@ public class ViewUpdater {
         }
     }
 
-    private void drawGoals(FrameLayout background) {
+    private void drawGoals(@NotNull FrameLayout background) {
         imgGoalposts = new ImageView(gameplay);
         imgGoalposts.setBackgroundResource(R.drawable.goals);
 
@@ -98,7 +100,7 @@ public class ViewUpdater {
         background.addView(imgGoalposts, params);
     }
 
-    private ImageView drawCircle(FrameLayout background, Circle circle, int resid) {
+    private ImageView drawCircle(@NotNull FrameLayout background, @NotNull Circle circle, int resid) {
         ImageView img = new ImageView(gameplay);
         img.setBackgroundResource(resid);
         FrameLayout.LayoutParams params = new FrameLayout.LayoutParams((int)(circle.getImgRadius()*2), (int)(circle.getImgRadius()*2));

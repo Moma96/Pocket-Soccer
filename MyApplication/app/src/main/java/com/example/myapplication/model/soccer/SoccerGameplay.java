@@ -22,7 +22,7 @@ public class SoccerGameplay extends SoccerModel implements Serializable {
     public static final int DEFAULT_FIELD_IMG = 0;
 
     public static final int DEFAULT_LIMIT = 3; //(m)
-    public static final int PLAYING_LIMIT = 5; // (s)
+    public static final int PLAYING_LIMIT = 10; // (s)
     private static final int AFTER_GOAL_WAIT = 2; // (s)
     private static final int TIMER_COEFFICIENT = 10; // (s/10)
     private static final int TIMER_PERIOD = 100; // (ms)
@@ -146,7 +146,7 @@ public class SoccerGameplay extends SoccerModel implements Serializable {
                     facade.refreshTime();
                 if (--limit < 0) {
                     timer.cancel();
-                    timerFinished();
+                    facade.gameFinished();
                 }
             }
         }, 0, TIMER_PERIOD);
@@ -174,7 +174,7 @@ public class SoccerGameplay extends SoccerModel implements Serializable {
                     afterGoalReset.cancel();
                     afterGoalReset = null;
                     if (finishCriteria == FinishCriteria.GOALS && scores[playerLastScored] == limit) {
-                        lastGoalScored(playerLastScored);
+                        facade.gameFinished();
                     } else {
                         reset();
                         setActive((playerLastScored + 1) % 2); //OVO PRAVI PROBLEM BOTU!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -441,19 +441,6 @@ public class SoccerGameplay extends SoccerModel implements Serializable {
         synchronized (bots[active]) {
             bots[active].notifyAll();
         }
-    }
-
-    public void lastGoalScored(int player) {
-        facade.gameFinished(player);
-    }
-
-    public void timerFinished() {
-        int winner = 0;
-        if (scores[1] > scores[0])
-            winner = 1;
-        else if (scores[1] == scores[0])
-            winner = -1;
-        facade.gameFinished(winner);
     }
 
     @Override

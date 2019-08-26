@@ -60,9 +60,9 @@ public class SoccerFacade {
         viewUpdater.refreshMovingCircles();
     }
 
-    public void gameFinished(int winner) {
+    public void gameFinished() {
         terminate();
-        gameplay.gameFinished(winner);
+        gameplay.gameFinished();
     }
 
     public void collisionHappened() {
