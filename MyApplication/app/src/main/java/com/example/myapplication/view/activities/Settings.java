@@ -133,6 +133,7 @@ public class Settings extends Fragment {
         @Override
         public void onClick(View view) {
             resetPref();
+            updateParameters();
         }
     };
 
@@ -152,16 +153,31 @@ public class Settings extends Fragment {
 
         initDefaultPref();
         setListener();
-        resetPref();
+        initPref();
+        updateParameters();
+    }
+
+    private void updateParameters() {
+        updateGameSpeedValue();
+        updateFrictionValue();
+        updateBallMass();
+        updateFieldImg();
     }
 
     private void initDefaultPref() {
-        prefEditor.putLong("default friction", Double.doubleToLongBits(DEFAULT_FRICTION));
-        prefEditor.putLong("default game speed", Double.doubleToLongBits(DEFAULT_GAME_SPEED));
-        prefEditor.putLong("default ball mass", Double.doubleToLongBits(DEFAULT_BALL_MASS));
-        prefEditor.putInt("default field img", DEFAULT_FIELD_IMG);
+        if (!pref.contains("default friction") || !pref.contains("default game speed") || !pref.contains("default ball mass") || !pref.contains("default field img")) {
+            prefEditor.putLong("default friction", Double.doubleToLongBits(DEFAULT_FRICTION));
+            prefEditor.putLong("default game speed", Double.doubleToLongBits(DEFAULT_GAME_SPEED));
+            prefEditor.putLong("default ball mass", Double.doubleToLongBits(DEFAULT_BALL_MASS));
+            prefEditor.putInt("default field img", DEFAULT_FIELD_IMG);
 
-        prefEditor.commit();
+            prefEditor.commit();
+        }
+    }
+
+    private void initPref() {
+        if (!pref.contains("friction") || !pref.contains("game speed") || !pref.contains("ball mass") || !pref.contains("field img"))
+            resetPref();
     }
 
     private void resetPref() {
@@ -171,11 +187,6 @@ public class Settings extends Fragment {
         prefEditor.putInt("field img", pref.getInt("default field img", DEFAULT_FIELD_IMG));
 
         prefEditor.commit();
-
-        updateGameSpeedValue();
-        updateFrictionValue();
-        updateBallMass();
-        updateFieldImg();
     }
 
     private void updateGameSpeedValue() {

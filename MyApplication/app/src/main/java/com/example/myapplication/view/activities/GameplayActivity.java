@@ -151,7 +151,6 @@ public class GameplayActivity extends AppCompatActivity {
     public void gameFinished() {
         Intent data = new Intent();
         data.putExtra("soccer", soccer);
-
         setResult(MainActivity.GAME_FINISHED_CODE, data);
         finish();
     }

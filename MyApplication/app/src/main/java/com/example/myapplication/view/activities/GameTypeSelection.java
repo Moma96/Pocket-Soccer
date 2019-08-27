@@ -18,7 +18,7 @@ public class GameTypeSelection extends Fragment {
     private final static double SMALLEST_LIMIT = 1;
     private final static double LIMIT_INCREMENT = 1;
 
-    private double limit = 1;
+    private double limit = SoccerGameplay.DEFAULT_LIMIT;
     SoccerGameplay.FinishCriteria finishCriteria = SoccerGameplay.FinishCriteria.GOALS;
     SoccerGameplay.PlayingCriteria playingCriteria = SoccerGameplay.PlayingCriteria.MOTION;
 

@@ -52,9 +52,9 @@ public class MainActivity extends AppCompatActivity {
             case PLAY:
                 switch (resultCode) {
                     case GAME_FINISHED_CODE:
-
-
+                        saveMatch((SoccerGameplay)data.getSerializableExtra("soccer"));
                         resetLastGame();
+                        //replaceFragment(history);
                         replaceFragment(mainMenu);
                         break;
                     case MAIN_MENU_CODE:
@@ -160,5 +160,9 @@ public class MainActivity extends AppCompatActivity {
     public void resetLastGame() {
         File f = new File(getFilesDir(), LAST_GAME_FILE);
         f.delete();
+    }
+
+    private void saveMatch(SoccerGameplay soccer) {
+
     }
 }
