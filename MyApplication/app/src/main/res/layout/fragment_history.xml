@@ -7,14 +7,44 @@
     android:orientation="vertical"
     tools:context=".view.activities.History"
     android:padding="@dimen/wrapper_padding"
-    android:weightSum="6">
+    android:weightSum="9">
 
-    <ListView
-        android:id="@+id/match_list"
+    <ScrollView
         android:layout_width="wrap_content"
         android:layout_height="0dp"
-        android:layout_weight="5">
-    </ListView>
+        android:layout_weight="6">
+        <LinearLayout
+            android:id="@+id/match_list"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+        </LinearLayout>
+    </ScrollView>
+
+    <TextView
+        android:id="@+id/all_matches"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:text="@string/all_matches"
+        style="@style/Text"/>
+
+    <TextView
+        android:id="@+id/delete"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:text="@string/delete"
+        style="@style/Text"/>
+
+    <TextView
+        android:id="@+id/main_menu"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:text="@string/main_menu"
+        style="@style/Text"/>
 
 
 </LinearLayout>

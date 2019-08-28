@@ -2,13 +2,18 @@ package com.example.myapplication.view.activities;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 
 import com.example.myapplication.R;
-import com.example.myapplication.model.soccer.SoccerGameplay;
+import com.example.myapplication.controller.SoccerGameplay;
+import com.example.myapplication.model.soccer.database.entity.Match;
+import com.example.myapplication.model.soccer.database.entity.Player;
+import com.example.myapplication.model.soccer.database.repository.MatchRepository;
+import com.example.myapplication.model.soccer.database.repository.PlayerRepository;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -26,7 +31,6 @@ public class MainActivity extends AppCompatActivity {
     private MainMenu mainMenu;
     private GameTypeSelection gameTypeSelection;
     private SelectPlayers selectPlayers;
-    private Settings settings;
     private History history;
 
     @Override
@@ -37,7 +41,6 @@ public class MainActivity extends AppCompatActivity {
         mainMenu = new MainMenu();
         gameTypeSelection = new GameTypeSelection();
         selectPlayers = new SelectPlayers();
-        settings = new Settings();
         history = new History();
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
@@ -52,10 +55,10 @@ public class MainActivity extends AppCompatActivity {
             case PLAY:
                 switch (resultCode) {
                     case GAME_FINISHED_CODE:
-                        saveMatch((SoccerGameplay)data.getSerializableExtra("soccer"));
-                        resetLastGame();
-                        //replaceFragment(history);
-                        replaceFragment(mainMenu);
+                        SoccerGameplay soccer = (SoccerGameplay)data.getSerializableExtra("soccer");
+                        saveMatch(soccer);
+                        replaceFragment(new History(soccer.getPlayerNames()[0], soccer.getPlayerNames()[1]));
+                        //replaceFragment(mainMenu);
                         break;
                     case MAIN_MENU_CODE:
                         saveLastGame((SoccerGameplay)data.getSerializableExtra("soccer"));
@@ -78,15 +81,12 @@ public class MainActivity extends AppCompatActivity {
         return selectPlayers;
     }
 
-    public Settings getSettings() {
-        return settings;
-    }
-
     public History getHistory() {
         return history;
     }
 
     public void newGame() {
+        resetLastGame();
 
         SharedPreferences pref = getSharedPreferences("MyPref", MODE_PRIVATE);
         double ballMass = Double.longBitsToDouble(pref.getLong("ball mass", Double.doubleToLongBits(Settings.DEFAULT_FRICTION)));
@@ -96,6 +96,7 @@ public class MainActivity extends AppCompatActivity {
 
         Intent intent = new Intent(this, GameplayActivity.class);
         intent.putExtra("mode", "new game");
+        intent.putExtra("playernames", selectPlayers.getPlayerNames());
         intent.putExtra("teamsimg", selectPlayers.getTeamsimg());
         intent.putExtra("fieldimg", fieldimg);
         intent.putExtra("gamespeed", gamespeed);
@@ -162,7 +163,38 @@ public class MainActivity extends AppCompatActivity {
         f.delete();
     }
 
-    private void saveMatch(SoccerGameplay soccer) {
+    private void saveMatch(final SoccerGameplay soccer) {
+        new AsyncTask<Match, Void, Void>() {
+            @Override
+            protected Void doInBackground(final Match... matches) {
+                String[] playerNames = soccer.getPlayerNames();
+                int[] scores = soccer.getScores();
+                MatchRepository matchRes = new MatchRepository(getApplication());
+                PlayerRepository playerRes = new PlayerRepository(getApplication());
 
+                Match match = new Match(playerNames[0], soccer.getTeamsImg()[0], playerNames[1], soccer.getTeamsImg()[1], scores[0], scores[1]);
+                Player player1 = playerRes.getPlayer(playerNames[0]);
+                if (player1 == null) {
+                    player1 = new Player(playerNames[0], 0);
+                    playerRes.insert(player1);
+                }
+                Player player2 = playerRes.getPlayer(playerNames[1]);
+                if (player2 == null) {
+                    player2 = new Player(playerNames[1], 0);
+                    playerRes.insert(player2);
+                }
+
+                if (scores[0] > scores[1]) {
+                    player1.addVictory();
+                    playerRes.update(player1);
+                } else if (scores[1] > scores[0]) {
+                    player2.addVictory();
+                    playerRes.update(player2);
+                }
+
+                matchRes.insert(match);
+                return null;
+            }
+        }.execute();
     }
 }

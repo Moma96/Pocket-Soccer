@@ -1,9 +1,7 @@
-package com.example.myapplication.model.soccer;
+package com.example.myapplication.controller;
 
-import android.media.MediaPlayer;
 import android.os.AsyncTask;
 
-import com.example.myapplication.R;
 import com.example.myapplication.view.activities.GameplayActivity;
 import com.example.myapplication.view.updaters.SoundUpdater;
 import com.example.myapplication.view.updaters.ViewUpdater;

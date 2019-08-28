@@ -26,4 +26,8 @@ public class Player {
     public int getVictories() {
         return victories;
     }
+
+    public void addVictory() {
+        victories++;
+    }
 }

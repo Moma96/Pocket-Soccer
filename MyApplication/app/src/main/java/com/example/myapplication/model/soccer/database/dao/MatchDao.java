@@ -1,6 +1,5 @@
 package com.example.myapplication.model.soccer.database.dao;
 
-import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
@@ -24,12 +23,15 @@ public interface MatchDao {
     void delete(Match lastGame);
 
     @Query("SELECT * FROM match_table")
-    LiveData<List<Match>> getAllMatches();
+    List<Match> getAllMatches();
+
+    @Query("SELECT * FROM match_table WHERE (player1Name = :player1Name AND player2Name = :player2Name) OR (player1Name = :player2Name AND player2Name = :player1Name)")
+    List<Match> getAllBetween(String player1Name, String player2Name);
 
     @Query("DELETE FROM match_table")
     void deleteAll();
 
-    @Query("DELETE FROM match_table WHERE player1Name = :player1Name AND player2Name = :player2Name")
+    @Query("DELETE FROM match_table WHERE (player1Name = :player1Name AND player2Name = :player2Name) OR (player1Name = :player2Name AND player2Name = :player1Name)")
     void deleteAllBetween(String player1Name, String player2Name);
 
 }

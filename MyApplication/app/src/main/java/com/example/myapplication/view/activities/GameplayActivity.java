@@ -1,7 +1,6 @@
 package com.example.myapplication.view.activities;
 
 import android.content.Intent;
-import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -12,8 +11,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.myapplication.R;
-import com.example.myapplication.model.soccer.SoccerFacade;
-import com.example.myapplication.model.soccer.SoccerGameplay;
+import com.example.myapplication.controller.SoccerFacade;
+import com.example.myapplication.controller.SoccerGameplay;
 import com.example.myapplication.model.soccer.models.SoccerModel;
 import com.example.myapplication.view.GestureListener;
 import com.example.myapplication.view.updaters.SoundUpdater;
@@ -84,6 +83,7 @@ public class GameplayActivity extends AppCompatActivity {
                                 intent.getDoubleExtra("limit", SoccerGameplay.DEFAULT_LIMIT),
                                 (SoccerGameplay.PlayingCriteria)intent.getSerializableExtra("playing criteria"),
                                 intent.getBooleanArrayExtra("botplay"),
+                                intent.getStringArrayExtra("playernames"),
                                 intent.getIntArrayExtra("teamsimg"),
                                 intent.getIntExtra("fieldimg", SoccerGameplay.DEFAULT_FIELD_IMG));
                         break;

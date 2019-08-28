@@ -1,7 +1,6 @@
 package com.example.myapplication.model.soccer.database.repository;
 
 import android.app.Application;
-import android.arch.lifecycle.LiveData;
 import android.os.AsyncTask;
 
 import com.example.myapplication.model.soccer.database.SoccerDatabase;
@@ -13,12 +12,10 @@ import java.util.List;
 public class MatchRepository {
 
     private MatchDao matchDao;
-    private LiveData<List<Match>> allMatches;
 
     public MatchRepository(Application application) {
         SoccerDatabase database = SoccerDatabase.getInstance(application);
         matchDao = database.matchDao();
-        allMatches = matchDao.getAllMatches();
     }
 
     public void insert(Match match) {
@@ -49,6 +46,14 @@ public class MatchRepository {
                 return null;
             }
         }.execute(match);
+    }
+
+    public List<Match> getAll() {
+        return matchDao.getAllMatches();
+    }
+
+    public List<Match> getAllBetween(String player1, String player2) {
+        return matchDao.getAllBetween(player1, player2);
     }
 
     public void deleteAll() {

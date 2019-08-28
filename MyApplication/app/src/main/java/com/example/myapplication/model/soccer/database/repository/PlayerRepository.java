@@ -1,7 +1,6 @@
 package com.example.myapplication.model.soccer.database.repository;
 
 import android.app.Application;
-import android.arch.lifecycle.LiveData;
 import android.os.AsyncTask;
 
 import com.example.myapplication.model.soccer.database.SoccerDatabase;
@@ -47,7 +46,7 @@ public class PlayerRepository {
         }.execute(player);
     }
 
-    public LiveData<Player> getPlayer(String name) {
+    public Player getPlayer(String name) {
         return playerDao.getPlayer(name);
     }
 

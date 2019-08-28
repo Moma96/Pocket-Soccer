@@ -7,7 +7,7 @@ import android.widget.TextView;
 
 import com.example.myapplication.R;
 import com.example.myapplication.model.collidables.active.Circle;
-import com.example.myapplication.model.soccer.SoccerGameplay;
+import com.example.myapplication.controller.SoccerGameplay;
 import com.example.myapplication.model.soccer.models.Ball;
 import com.example.myapplication.model.soccer.models.Player;
 import com.example.myapplication.view.activities.GameplayActivity;
@@ -69,7 +69,7 @@ public class ViewUpdater {
         gameplay.findViewById(R.id.main_menu_text).bringToFront();
     }
 
-    private void drawBackground(FrameLayout background) {
+    private void drawBackground(@NotNull FrameLayout background) {
         int fieldimg = gameplay.getResources().getIdentifier("field" + soccer.getFieldImg(), "drawable", gameplay.getPackageName());
         background.setBackgroundResource(fieldimg);
     }
@@ -220,7 +220,7 @@ public class ViewUpdater {
         });
     }
 
-    private void removeView(FrameLayout background, View view) {
+    private void removeView(@NotNull FrameLayout background, View view) {
         background.removeView(view);
     }
 

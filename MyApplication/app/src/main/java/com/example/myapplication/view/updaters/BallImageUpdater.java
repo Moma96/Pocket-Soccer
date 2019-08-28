@@ -6,6 +6,8 @@ import android.widget.ImageView;
 import com.example.myapplication.model.Active;
 import com.example.myapplication.model.soccer.models.Ball;
 
+import org.jetbrains.annotations.NotNull;
+
 public class BallImageUpdater extends Active {
 
     private static final String STATE_TAG = "Ball image updater";
@@ -17,7 +19,7 @@ public class BallImageUpdater extends Active {
     private ImageView ballImageView;
     private int current = 0;
 
-    public BallImageUpdater(ViewUpdater viewUpdater, ImageView ballImageView) {
+    public BallImageUpdater(@NotNull ViewUpdater viewUpdater, ImageView ballImageView) {
         this.viewUpdater = viewUpdater;
         ball = viewUpdater.getSoccer().getBall();
         this.ballImageView = ballImageView;

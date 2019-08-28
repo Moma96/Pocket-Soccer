@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.myapplication.R;
-import com.example.myapplication.model.soccer.SoccerGameplay;
+import com.example.myapplication.controller.SoccerGameplay;
 
 public class GameTypeSelection extends Fragment {
 

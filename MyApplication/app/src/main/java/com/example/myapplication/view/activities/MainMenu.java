@@ -24,10 +24,10 @@ public class MainMenu extends Fragment {
                         frag = activity.getGameTypeSelection();
                         break;
                     case R.id.settings:
-                        frag = activity.getSettings();
+                        frag = new Settings();
                         break;
                     case R.id.history:
-                        frag = activity.getHistory();
+                        frag = new History();
                         break;
                 }
 

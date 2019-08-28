@@ -208,7 +208,6 @@ public class GeneticTesting {
             calculateFitness();
             if (finished != null)
                 return finished;
-            //////AKO JE NEKO ZAVRSIO OVDE - VRACAJ TO!!!!
             crossBreed();
             fittest = fittest();
 

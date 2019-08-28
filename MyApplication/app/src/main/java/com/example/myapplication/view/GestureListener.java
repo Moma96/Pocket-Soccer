@@ -1,11 +1,9 @@
 package com.example.myapplication.view;
 
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 
-import com.example.myapplication.model.soccer.SoccerFacade;
-import com.example.myapplication.view.activities.GameplayActivity;
+import com.example.myapplication.controller.SoccerFacade;
 
 public class GestureListener extends GestureDetector.SimpleOnGestureListener {
 

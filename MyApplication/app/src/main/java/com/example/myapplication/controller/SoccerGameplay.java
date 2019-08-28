@@ -1,4 +1,4 @@
-package com.example.myapplication.model.soccer;
+package com.example.myapplication.controller;
 
 import android.os.AsyncTask;
 import android.util.Log;
@@ -54,12 +54,14 @@ public class SoccerGameplay extends SoccerModel implements Serializable {
     transient private boolean responsiveness = false;
     transient private boolean botPlaying = false;
 
+    public String[] playerNames;
     public int[] teamsImg;
     public int fieldImg;
 
-    public SoccerGameplay(double x, double y, double width, double height, double friction, double gamespeed, double ballMass, FinishCriteria fc, double limit, PlayingCriteria pc, boolean[] botplay, int[] teamsImg, int fieldImg) {
+    public SoccerGameplay(double x, double y, double width, double height, double friction, double gamespeed, double ballMass, FinishCriteria fc, double limit, PlayingCriteria pc, boolean[] botplay, String[] playerNames, int[] teamsImg, int fieldImg) {
         super(x, y, width, height, friction, gamespeed, ballMass);
 
+        this.playerNames = playerNames;
         this.teamsImg = teamsImg;
         this.fieldImg = fieldImg;
 
@@ -72,6 +74,7 @@ public class SoccerGameplay extends SoccerModel implements Serializable {
         this.scores = soccer.scores;
         this.active = soccer.active;
 
+        this.playerNames = soccer.playerNames;
         this.teamsImg = soccer.teamsImg;
         this.fieldImg = soccer.fieldImg;
 
@@ -112,6 +115,10 @@ public class SoccerGameplay extends SoccerModel implements Serializable {
 
     public PlayingCriteria getPlayingCriteria() {
         return playingCriteria;
+    }
+
+    public String[] getPlayerNames() {
+        return playerNames;
     }
 
     public int[] getTeamsImg() {
@@ -177,7 +184,8 @@ public class SoccerGameplay extends SoccerModel implements Serializable {
                         facade.gameFinished();
                     } else {
                         reset();
-                        setActive((playerLastScored + 1) % 2); //OVO PRAVI PROBLEM BOTU!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                        //setActive((playerLastScored + 1) % 2); //OVO PRAVI PROBLEM BOTU!!!!!!!!!!
+                        changeActive();
                         facade.circlesReset();
                         setResponsiveness();
                     }

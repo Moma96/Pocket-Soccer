@@ -113,19 +113,10 @@ public class SelectPlayers extends Fragment {
         return teamsimg;
     }
 
-    /*public String getPlayerName(int id) {
-        EditText et = null;
-        switch (id) {
-            case 0:
-                et = getActivity().findViewById(R.id.player1_name);
-                break;
-            case 1:
-                et = getActivity().findViewById(R.id.player2_name);
-                break;
-        }
-        if (et == null) return null;
-        return String.valueOf(et.getText());
-    }*/
+    public String[] getPlayerNames() {
+       String[] names = { ((TextView)getActivity().findViewById(R.id.player1_name)).getText().toString(), ((TextView)getActivity().findViewById(R.id.player2_name)).getText().toString() };
+       return names;
+    }
 
     private void setListener() {
         getActivity().findViewById(R.id.player1_left).setOnClickListener(changeTeam);
