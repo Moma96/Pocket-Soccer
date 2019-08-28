@@ -115,9 +115,9 @@ public class History extends Fragment {
         @Override
         public void onClick(View view) {
             MatchView matchView = (MatchView)view;
-            strPlayer1Name = String.valueOf(matchView.player1Name.getText());
-            strPlayer2Name = String.valueOf(matchView.player2Name.getText());
-            showMatches(strPlayer2Name, strPlayer2Name);
+            strPlayer1Name = matchView.player1Name.getText().toString();
+            strPlayer2Name = matchView.player2Name.getText().toString();
+            showMatches(matchView.player1Name.getText().toString(), matchView.player2Name.getText().toString());
         }
     };
 
@@ -207,6 +207,7 @@ public class History extends Fragment {
             protected Void doInBackground(final Match... matches) {
                 MatchRepository matchRep = new MatchRepository(getActivity().getApplication());
                 matchRep.deleteAll();
+                showMatches();
                 return null;
             }
         }.execute();
@@ -218,6 +219,7 @@ public class History extends Fragment {
             protected Void doInBackground(final Match... matches) {
                 MatchRepository matchRep = new MatchRepository(getActivity().getApplication());
                 matchRep.deleteAllBetween(player1, player2);
+                showMatches(player1, player2);
                 return null;
             }
         }.execute();
